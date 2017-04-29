@@ -41,5 +41,4 @@ class ExceptionTest extends TestCase
             $this->assertEquals($e->getCode(), 2001);
         }
     }
-
 }
