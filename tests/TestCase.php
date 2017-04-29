@@ -14,10 +14,15 @@ use Aws\Result;
 use Aws\MockHandler;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter as FileSystemCachePool;
 
 class TestCase extends PHPUnitTestCase
 {
     const FILE_SYSTEM_CACHE_NAMESPACE = 'tests';
+
+    protected $logger;
+    protected $fileSystemCacheDir;
+    protected static $fileSystemCachePool;
 
     protected function setUp()
     {
