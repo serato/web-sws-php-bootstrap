@@ -1,10 +1,10 @@
 <?php
 namespace Serato\SwsApp\Test\Slim\Middleware;
 
+use PHPUnit\Framework\TestCase;
 use Serato\SwsApp\Slim\Middleware\MaintenanceMode;
 use Serato\SwsApp\Slim\Middleware\EmptyWare;
 use Serato\SwsApp\Slim\Http\MockRequestBody;
-use PHPUnit\Framework\TestCase;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Http\Environment;
