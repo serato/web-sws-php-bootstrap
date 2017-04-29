@@ -6,6 +6,7 @@ use Slim\Handlers\Error as SlimError;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface as Logger;
+use Exception;
 use UnexpectedValueException;
 
 /**
@@ -73,12 +74,12 @@ final class Error extends SlimError
      *
      * @param ServerRequestInterface $request   The most recent Request object
      * @param ResponseInterface      $response  The most recent Response object
-     * @param \Exception             $exception The caught Exception object
+     * @param Exception             $exception The caught Exception object
      *
      * @return ResponseInterface
      * @throws UnexpectedValueException
      */
-    public function __invoke(Request $request, Response $response, \Exception $exception): Response
+    public function __invoke(Request $request, Response $response, Exception $exception): Response
     {
         $this->requestMethod        = $request->getMethod();
         $this->requestPath          = $request->getUri()->getPath();

@@ -71,7 +71,7 @@ final class PhpError extends SlimPhpError
     }
 
     /**
-     * Write to the error log if displayErrorDetails is false
+     * Write to the error log
      *
      * @todo Specify void return type in PHP 7.1
      *
