@@ -84,6 +84,67 @@ class AccessTokenTest extends TestCase
         }
     }
 
+    /**
+     * Force a token validation error by checking the `aud` claim against a value
+     * that doesn't exist in the token
+     *
+     * @expectedException \Serato\SwsApp\Http\Rest\Exception\InvalidAccessTokenException
+     */
+    public function testMiddlewareWithInvalidAudienceTokenInAuthHeader()
+    {
+        $awsSdk = $this->getAwsSdkWithKmsResults();
+
+        $token = $this->getAccessToken(
+            $awsSdk,
+            time() + 300,
+            [self::WEBSERVICE_NAME]
+        );
+
+        $middleware = new AccessTokenMiddleware(
+            $awsSdk,
+            $this->getLogger(),
+            $this->getFileSystemCachePool(),
+            self::WEBSERVICE_NAME . ' invalidate'
+        );
+
+        $response = $middleware(
+            $this->getRequest([
+                'HTTP_AUTHORIZATION' => 'Bearer ' . (string)$token
+            ]),
+            new Response,
+            new EmptyWare
+        );
+    }
+
+    /**
+     * @expectedException \Serato\SwsApp\Http\Rest\Exception\ExpiredAccessTokenException
+     */
+    public function testMiddlewareWithExpiredTokenInAuthHeader()
+    {
+        $awsSdk = $this->getAwsSdkWithKmsResults();
+
+        $token = $this->getAccessToken(
+            $awsSdk,
+            time() - 5, // Expired
+            [self::WEBSERVICE_NAME]
+        );
+
+        $middleware = new AccessTokenMiddleware(
+            $awsSdk,
+            $this->getLogger(),
+            $this->getFileSystemCachePool(),
+            self::WEBSERVICE_NAME
+        );
+
+        $response = $middleware(
+            $this->getRequest([
+                'HTTP_AUTHORIZATION' => 'Bearer ' . (string)$token
+            ]),
+            new Response,
+            new EmptyWare
+        );
+    }
+
     private function getAccessToken(Sdk $awsSdk, int $expiry, array $audience)
     {
         $token = new MockAccessToken($awsSdk);
