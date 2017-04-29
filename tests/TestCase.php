@@ -1,0 +1,103 @@
+<?php
+namespace Serato\SwsApp\Test;
+
+use PHPUnit\Framework\TestCase as PHPUnitTestCase;
+use Serato\SwsApp\Slim\Http\MockRequestBody;
+use Slim\Http\Request;
+use Slim\Http\Environment;
+use Slim\Http\Uri;
+use Slim\Http\Headers;
+use Slim\Http\Cookies;
+use Slim\Http\UploadedFile;
+use Aws\Sdk;
+use Aws\Result;
+use Aws\MockHandler;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
+class TestCase extends PHPUnitTestCase
+{
+    const FILE_SYSTEM_CACHE_NAMESPACE = 'tests';
+
+    protected function setUp()
+    {
+        $this->fileSystemCacheDir = sys_get_temp_dir() . '/fs-cache';
+        $this->deleteFileSystemCacheDir();
+    }
+
+    protected function tearDown()
+    {
+        $this->deleteFileSystemCacheDir();
+    }
+
+    protected function getRequest(array $env = []): Request
+    {
+        $environment = Environment::mock($env);
+        $headers = Headers::createFromEnvironment($environment);
+        return new Request(
+            $environment['REQUEST_METHOD'],
+            Uri::createFromEnvironment($environment),
+            $headers,
+            Cookies::parseHeader($headers->get('Cookie', [])),
+            $environment->all(),
+            new MockRequestBody,
+            UploadedFile::createFromEnvironment($environment)
+        );
+    }
+
+    protected function getAwsSdk(array $mockResults = []): Sdk
+    {
+        $mock = new MockHandler();
+        foreach ($mockResults as $result) {
+            $mock->append(new Result($result));
+        }
+        return new Sdk([
+            'region' => 'us-east-1',
+            'version' => '2014-11-01',
+            'credentials' => [
+                'key' => 'my-access-key-id',
+                'secret' => 'my-secret-access-key'
+            ],
+            'handler' => $mock
+        ]);
+    }
+
+    protected function getLogger(): Logger
+    {
+        if ($this->logger === null) {
+            $this->logger = new Logger('logger');
+            $debugLogStream = new StreamHandler(
+                __DIR__ . '/log/debug.log',
+                Logger::DEBUG
+            );
+            $this->logger->pushHandler($debugLogStream);
+        }
+        return $this->logger;
+    }
+
+    /**
+     * Gets a PSR-6 compliant file system based cache pool
+     *
+     * @return FileSystemCachePool
+     */
+    protected function getFileSystemCachePool(): FileSystemCachePool
+    {
+        if (self::$fileSystemCachePool === null) {
+            self::$fileSystemCachePool = new FileSystemCachePool('tests', 0, $this->fileSystemCacheDir);
+        }
+        return self::$fileSystemCachePool;
+    }
+
+    protected function deleteFileSystemCacheDir()
+    {
+        if ($this->fileSystemCacheDir !== null && is_dir($this->fileSystemCacheDir)) {
+            exec('rm -rf '. escapeshellarg($this->fileSystemCacheDir));
+        }
+    }
+
+    protected function hasCacheFiles(): bool
+    {
+        $cache_dir = $this->fileSystemCacheDir . '/' . self::FILE_SYSTEM_CACHE_NAMESPACE;
+        return is_dir($cache_dir) && count(glob($cache_dir . '/*')) > 0;
+    }
+}

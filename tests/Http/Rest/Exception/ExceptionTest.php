@@ -1,7 +1,7 @@
 <?php
 namespace Serato\SwsApp\Test\Http\Rest\Exception;
 
-use PHPUnit\Framework\TestCase;
+use Serato\SwsApp\Test\TestCase;
 use Serato\SwsApp\Http\Rest\Exception\ClientUserGrantsException;
 use Serato\SwsApp\Http\Rest\Exception\ExpiredAccessTokenException;
 use Serato\SwsApp\Http\Rest\Exception\InvalidAccessTokenException;

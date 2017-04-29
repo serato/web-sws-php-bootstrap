@@ -1,17 +1,10 @@
 <?php
 namespace Serato\SwsApp\Test\Slim\Middleware;
 
-use PHPUnit\Framework\TestCase;
+use Serato\SwsApp\Test\TestCase;
 use Serato\SwsApp\Slim\Middleware\MaintenanceMode;
 use Serato\SwsApp\Slim\Middleware\EmptyWare;
-use Serato\SwsApp\Slim\Http\MockRequestBody;
-use Slim\Http\Request;
 use Slim\Http\Response;
-use Slim\Http\Environment;
-use Slim\Http\Uri;
-use Slim\Http\Headers;
-use Slim\Http\Cookies;
-use Slim\Http\UploadedFile;
 
 /**
  * Unit tests for Serato\SwsApp\Slim\Middleware\MaintenanceMode
@@ -91,20 +84,5 @@ class MaintenanceModeTest extends TestCase
 
         $this->assertEquals($xml->message, '503 Service Unavailable');
         $this->assertEquals(503, $response->getStatusCode());
-    }
-
-    private function getRequest(array $env = []): Request
-    {
-        $environment = Environment::mock($env);
-        $headers = Headers::createFromEnvironment($environment);
-        return new Request(
-            $environment['REQUEST_METHOD'],
-            Uri::createFromEnvironment($environment),
-            $headers,
-            Cookies::parseHeader($headers->get('Cookie', [])),
-            $environment->all(),
-            new MockRequestBody,
-            UploadedFile::createFromEnvironment($environment)
-        );
     }
 }
