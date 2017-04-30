@@ -61,7 +61,7 @@ class ErrorTest extends TestCase
             // Should have a single line in the error log file
             $this->assertEquals(1, count(explode("\n", $logContents)), $assertText);
             // Log should contain exception text
-            $this->assertRegExp( '/' . $exception->getMessage() . '/', $logContents, $assertText);
+            $this->assertRegExp('/' . $exception->getMessage() . '/', $logContents, $assertText);
         }
 
         $this->assertEquals($httpResponseCode, $response->getStatusCode(), $assertText);
