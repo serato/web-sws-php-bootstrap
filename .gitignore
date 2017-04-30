@@ -8,3 +8,4 @@ composer.lock
 /docs
 /tests/reports
 debug.log
+error.log
