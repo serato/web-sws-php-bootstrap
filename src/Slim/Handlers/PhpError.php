@@ -1,5 +1,5 @@
 <?php
-namespace Serato\SwsApp\Slim\Handler;
+namespace Serato\SwsApp\Slim\Handlers;
 
 use Slim\Handlers\Error as SlimPhpError;
 use Psr\Log\LoggerInterface as Logger;

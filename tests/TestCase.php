@@ -20,7 +20,6 @@ class TestCase extends PHPUnitTestCase
 {
     const FILE_SYSTEM_CACHE_NAMESPACE = 'tests';
 
-    protected $logger;
     protected $fileSystemCacheDir;
     protected static $fileSystemCachePool;
 
@@ -69,15 +68,18 @@ class TestCase extends PHPUnitTestCase
 
     protected function getLogger(): Logger
     {
-        if ($this->logger === null) {
-            $this->logger = new Logger('logger');
-            $debugLogStream = new StreamHandler(
-                __DIR__ . '/log/debug.log',
-                Logger::DEBUG
-            );
-            $this->logger->pushHandler($debugLogStream);
-        }
-        return $this->logger;
+        return new Logger('logger');
+    }
+
+    protected function getDebugLogger(): Logger
+    {
+        $logger = $this->getLogger();
+        $debugLogStream = new StreamHandler(
+            __DIR__ . '/log/debug.log',
+            Logger::DEBUG
+        );
+        $logger->pushHandler($debugLogStream);
+        return $logger;
     }
 
     /**
