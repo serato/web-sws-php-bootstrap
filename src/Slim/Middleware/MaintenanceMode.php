@@ -34,6 +34,7 @@ class MaintenanceMode extends AbstractHandler
      *
      * @param ServerRequestInterface $request   The most recent Request object
      * @param ResponseInterface      $response  The most recent Response object
+     * @param Callable               $next      The next middleware to call
      *
      * @return ResponseInterface
      */
