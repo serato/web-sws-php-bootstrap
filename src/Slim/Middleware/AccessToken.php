@@ -51,9 +51,10 @@ class AccessToken extends AbstractHandler
     protected $cache;
 
     /**
-     * @param Sdk               $awsSdk
-     * @param LoggerInterface   $logger
-     * @param string            $webServiceName
+     * @param Sdk                       $awsSdk             AWS SDK v3.x
+     * @param LoggerInterface           $logger             PSR-3 logger interface
+     * @param CacheItemPoolInterface    $cache              PSR-6 cache item pool
+     * @param string                    $webServiceName     Name of the host web application
      *
      */
     public function __construct(
