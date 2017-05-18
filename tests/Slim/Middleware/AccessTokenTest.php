@@ -5,6 +5,9 @@ use Serato\SwsApp\Test\TestCase;
 use Serato\SwsApp\Test\Slim\Middleware\AccessToken as MockAccessToken;
 use Serato\SwsApp\Slim\Middleware\AccessToken as AccessTokenMiddleware;
 use Serato\SwsApp\Slim\Middleware\EmptyWare;
+use Serato\Slimulator\EnvironmentBuilder;
+use Serato\Slimulator\Request;
+use Serato\Slimulator\Authorization\BearerToken;
 use Slim\Http\Response;
 use Aws\Sdk;
 
@@ -28,7 +31,7 @@ class AccessTokenTest extends TestCase
             self::WEBSERVICE_NAME
         );
         $response = $middleware(
-            $this->getRequest(),
+            Request::createFromEnvironmentBuilder(EnvironmentBuilder::create()),
             new Response,
             new EmptyWare
         );
@@ -59,9 +62,10 @@ class AccessTokenTest extends TestCase
         $nextMiddleware = new EmptyWare;
 
         $response = $middleware(
-            $this->getRequest([
-                'HTTP_AUTHORIZATION' => 'Bearer ' . (string)$token
-            ]),
+            Request::createFromEnvironmentBuilder(
+                EnvironmentBuilder::create()
+                    ->setAuthorization(BearerToken::create((string)$token))
+            ),
             new Response,
             $nextMiddleware
         );
@@ -108,9 +112,10 @@ class AccessTokenTest extends TestCase
         );
 
         $response = $middleware(
-            $this->getRequest([
-                'HTTP_AUTHORIZATION' => 'Bearer ' . (string)$token
-            ]),
+            Request::createFromEnvironmentBuilder(
+                EnvironmentBuilder::create()
+                    ->setAuthorization(BearerToken::create((string)$token))
+            ),
             new Response,
             new EmptyWare
         );
@@ -137,9 +142,10 @@ class AccessTokenTest extends TestCase
         );
 
         $response = $middleware(
-            $this->getRequest([
-                'HTTP_AUTHORIZATION' => 'Bearer ' . (string)$token
-            ]),
+            Request::createFromEnvironmentBuilder(
+                EnvironmentBuilder::create()
+                    ->setAuthorization(BearerToken::create((string)$token))
+            ),
             new Response,
             new EmptyWare
         );

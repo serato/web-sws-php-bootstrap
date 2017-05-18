@@ -2,8 +2,6 @@
 namespace Serato\SwsApp\Test;
 
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
-use Serato\SwsApp\Slim\Http\MockRequestBody;
-use Slim\Http\Request;
 use Slim\Http\Environment;
 use Slim\Http\Uri;
 use Slim\Http\Headers;
@@ -32,21 +30,6 @@ class TestCase extends PHPUnitTestCase
     protected function tearDown()
     {
         $this->deleteFileSystemCacheDir();
-    }
-
-    protected function getRequest(array $env = []): Request
-    {
-        $environment = Environment::mock($env);
-        $headers = Headers::createFromEnvironment($environment);
-        return new Request(
-            $environment['REQUEST_METHOD'],
-            Uri::createFromEnvironment($environment),
-            $headers,
-            Cookies::parseHeader($headers->get('Cookie', [])),
-            $environment->all(),
-            new MockRequestBody,
-            UploadedFile::createFromEnvironment($environment)
-        );
     }
 
     protected function getAwsSdk(array $mockResults = []): Sdk

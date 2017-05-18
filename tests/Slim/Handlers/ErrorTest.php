@@ -3,6 +3,8 @@ namespace Serato\SwsApp\Test\Slim\Handlers;
 
 use Serato\SwsApp\Test\TestCase;
 use Serato\SwsApp\Slim\Handlers\Error as ErrorHandler;
+use Serato\Slimulator\EnvironmentBuilder;
+use Serato\Slimulator\Request;
 use Slim\Http\Response;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
@@ -50,7 +52,10 @@ class ErrorTest extends TestCase
         $exception = new $exceptionClass();
 
         $response = $errorHandler(
-            $this->getRequest(['HTTP_ACCEPT' => 'application/json']),
+            Request::createFromEnvironmentBuilder(
+                EnvironmentBuilder::create()
+                    ->addHeader('Accept', 'application/json')
+            ),
             new Response,
             $exception
         );
