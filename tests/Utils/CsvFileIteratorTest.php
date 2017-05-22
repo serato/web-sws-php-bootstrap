@@ -41,5 +41,4 @@ class CsvFileIteratorTest extends TestCase
     {
         return new CsvFileIterator(__DIR__ . '/../resources/csv.csv');
     }
-
 }
