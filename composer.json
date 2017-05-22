@@ -12,7 +12,7 @@
 	"require-dev": {
 		"phpunit/phpunit": "~6.0",
 		"squizlabs/php_codesniffer": "~2.0",
-		"symfony/cache": "dev-master#16b647274f0c6e5045284f72125316904b028034",
+		"symfony/cache": "v3.3.0-RC1",
 		"monolog/monolog": "^1.21.0",
 		"serato/slimulator": "^1.0.0"
 	},
