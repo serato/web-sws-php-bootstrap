@@ -4,6 +4,8 @@ namespace Serato\SwsApp\Test\Slim\Middleware;
 use Serato\SwsApp\Test\TestCase;
 use Serato\SwsApp\Slim\Middleware\MaintenanceMode;
 use Serato\SwsApp\Slim\Middleware\EmptyWare;
+use Serato\Slimulator\EnvironmentBuilder;
+use Serato\Slimulator\Request;
 use Slim\Http\Response;
 
 /**
@@ -16,7 +18,7 @@ class MaintenanceModeTest extends TestCase
         $middleware = new MaintenanceMode(false);
 
         $response = $middleware(
-            $this->getRequest(),
+            Request::createFromEnvironmentBuilder(EnvironmentBuilder::create()),
             new Response,
             new EmptyWare
         );
@@ -29,7 +31,10 @@ class MaintenanceModeTest extends TestCase
         $middleware = new MaintenanceMode(true);
 
         $response = $middleware(
-            $this->getRequest(['HTTP_ACCEPT' => 'application/json']),
+            Request::createFromEnvironmentBuilder(
+                EnvironmentBuilder::create()
+                    ->addHeader('Accept', 'application/json')
+            ),
             new Response,
             new EmptyWare
         );
@@ -45,7 +50,10 @@ class MaintenanceModeTest extends TestCase
         $middleware = new MaintenanceMode(true);
 
         $response = $middleware(
-            $this->getRequest(['HTTP_ACCEPT' => 'text/html']),
+            Request::createFromEnvironmentBuilder(
+                EnvironmentBuilder::create()
+                    ->addHeader('Accept', 'text/html')
+            ),
             new Response,
             new EmptyWare
         );
@@ -59,7 +67,10 @@ class MaintenanceModeTest extends TestCase
         $middleware = new MaintenanceMode(true);
 
         $response = $middleware(
-            $this->getRequest(['HTTP_ACCEPT' => 'text/xml']),
+            Request::createFromEnvironmentBuilder(
+                EnvironmentBuilder::create()
+                    ->addHeader('Accept', 'text/xml')
+            ),
             new Response,
             new EmptyWare
         );
@@ -75,7 +86,10 @@ class MaintenanceModeTest extends TestCase
         $middleware = new MaintenanceMode(true);
 
         $response = $middleware(
-            $this->getRequest(['HTTP_ACCEPT' => 'application/xml']),
+            Request::createFromEnvironmentBuilder(
+                EnvironmentBuilder::create()
+                    ->addHeader('Accept', 'application/xml')
+            ),
             new Response,
             new EmptyWare
         );
