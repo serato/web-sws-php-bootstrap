@@ -1,6 +1,7 @@
 <?php
 namespace Serato\SwsApp\Controller\Status;
 
+use Psr\Log\LoggerInterface;
 use Serato\SwsApp\Controller\AbstractController;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -24,23 +25,19 @@ final class StatusController extends AbstractController
     /**
      * Constructs the controller
      *
+     * @param LoggerInterface   $logger   A PSR-3 logger interface
      * @param string    $gitCommitFilePath  Path to file containing most recent git commit hash
      */
-    public function __construct(string $gitCommitFilePath)
+    public function __construct(LoggerInterface $logger, string $gitCommitFilePath)
     {
+        parent::__construct($logger);
         $this->gitCommitFilePath = $gitCommitFilePath;
     }
 
     /**
-     * Execute the endpoint action
-     *
-     * @todo Specify void return type in PHP 7.1
-     *
-     * @param  Request     $request            Request interface
-     * @param  Response    $response           Response interface
-     * @param  array       $args               Request args
+     * {@inheritdoc}
      */
-    final public function __invoke(Request $request, Response $response, array $args) : Response
+    protected function execute(Request $request, Response $response, array $args)
     {
         $negotiator = new Negotiator();
         $contentTypePriorities = ['application/json', 'text/html'];
@@ -96,10 +93,10 @@ final class StatusController extends AbstractController
                 JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
             );
         }
-        return $response
-                ->withStatus(200)
-                ->withHeader('Content-type', $contentType)
-                ->write($content);
+        $response
+            ->withStatus(200)
+            ->withHeader('Content-type', $contentType)
+            ->write($content);
     }
 
     /**

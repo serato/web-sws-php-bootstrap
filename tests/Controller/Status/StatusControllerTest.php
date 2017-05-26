@@ -24,7 +24,7 @@ class StatusControllerTest extends TestCase
     public function testJsonContentTypeNoGitCommitFile()
     {
         $response = $this->executeControllerTest(
-            new StatusController('./not_such_file'),
+            new StatusController($this->getDebugLogger(), './not_such_file'),
             Request::createFromEnvironmentBuilder(
                 EnvironmentBuilder::create()->addHeader('Accept', 'application/json')
             )
@@ -46,7 +46,7 @@ class StatusControllerTest extends TestCase
     public function testJsonContentTypeGitCommitFile()
     {
         $response = $this->executeControllerTest(
-            new StatusController(__DIR__ . '/../../resources/git_commit.txt'),
+            new StatusController($this->getDebugLogger(), __DIR__ . '/../../resources/git_commit.txt'),
             Request::createFromEnvironmentBuilder(
                 EnvironmentBuilder::create()->addHeader('Accept', 'application/json')
             )
@@ -69,7 +69,7 @@ class StatusControllerTest extends TestCase
     public function testHtmlContentTypeGitCommitFile()
     {
         $response = $this->executeControllerTest(
-            new StatusController(__DIR__ . '/../../resources/git_commit.txt'),
+            new StatusController($this->getDebugLogger(), __DIR__ . '/../../resources/git_commit.txt'),
             Request::createFromEnvironmentBuilder(
                 EnvironmentBuilder::create()->addHeader('Accept', 'text/html')
             )
@@ -98,7 +98,7 @@ class StatusControllerTest extends TestCase
     public function testHtmlContentTypeValidUrlOverride()
     {
         $response = $this->executeControllerTest(
-            new StatusController(__DIR__ . '/../../resources/git_commit.txt'),
+            new StatusController($this->getDebugLogger(), __DIR__ . '/../../resources/git_commit.txt'),
             Request::createFromEnvironmentBuilder(
                 EnvironmentBuilder::create()
                     ->addHeader('Accept', 'text/html')
@@ -126,7 +126,7 @@ class StatusControllerTest extends TestCase
     public function testHtmlContentTypeInvalidUrlOverride()
     {
         $response = $this->executeControllerTest(
-            new StatusController(__DIR__ . '/../../resources/git_commit.txt'),
+            new StatusController($this->getDebugLogger(), __DIR__ . '/../../resources/git_commit.txt'),
             Request::createFromEnvironmentBuilder(
                 EnvironmentBuilder::create()
                     ->addHeader('Accept', 'text/html')
