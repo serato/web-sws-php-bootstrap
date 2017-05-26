@@ -8,8 +8,6 @@ use Serato\Slimulator\RequestBody\UrlEncoded;
 use Serato\Slimulator\Request;
 use Slim\Http\Response;
 use ReflectionClass;
-// use Serato\SwsApp\Slim\Handlers\Error as ErrorHandler;
-// use Serato\SwsApp\Http\Rest\Exception\AbstractException as ClientException;
 
 /**
  * Unit tests for Serato\SwsApp\Controller\Traits\ControllerTraitValidateRequiredRequestBodyParams
@@ -44,13 +42,13 @@ class ControllerTraitValidateRequiredRequestBodyParamsTest extends TestCase
             ->expects($this->once())
             ->method('handleMissingRequestBodyParams')
             ->with(
-                $this->callback(function($arg){
+                $this->callback(function ($arg) {
                     return is_a($arg, '\Serato\Slimulator\Request');
                 }),
-                $this->callback(function($arg){
+                $this->callback(function ($arg) {
                     return is_a($arg, '\Slim\Http\Response');
                 }),
-                $this->callback(function($arg){
+                $this->callback(function ($arg) {
                     return is_array($arg);
                 })
             )

@@ -34,10 +34,10 @@ class ControllerTraitValidateApiEndpointVersionTest extends TestCase
             ->expects($this->exactly($isValid ? 0 : 1))
             ->method('onInvalidEndpointVersion')
             ->with(
-                $this->callback(function($arg){
+                $this->callback(function ($arg) {
                     return is_a($arg, '\Serato\Slimulator\Request');
                 }),
-                $this->callback(function($arg){
+                $this->callback(function ($arg) {
                     return is_a($arg, '\Slim\Http\Response');
                 })
             );
