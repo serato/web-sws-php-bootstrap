@@ -41,7 +41,7 @@ trait ControllerTraitValidateRequiredRequestBodyParams
     }
 
     /**
-     * Validates that required request body params are present in the request.
+     * Handle missing required request body parameters.
      *
      * @todo Specify void return type in PHP 7.1
      *
