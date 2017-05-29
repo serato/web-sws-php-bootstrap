@@ -1,8 +1,8 @@
 <?php
-namespace Serato\SwsApp\Controller;
+namespace Serato\SwsApp\Slim\Controller;
 
-use Serato\SwsApp\Controller\AbstractController;
-use Serato\SwsApp\Controller\Scopes;
+use Serato\SwsApp\Slim\Controller\AbstractController;
+use Serato\SwsApp\Slim\Controller\Scopes;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
@@ -21,7 +21,7 @@ use Psr\Http\Message\ResponseInterface as Response;
  *      $userScopes = $request->getAttribute('scopes');
  *
  * A child class defines required scopes of access by implementing the
- * `self::getControllerScopes` method returning a `Serato\SwsApp\Controller\Scopes` instance.
+ * `self::getControllerScopes` method returning a `Serato\SwsApp\Slim\Controller\Scopes` instance.
  *
  * Scopes are validated in an `any of` pattern. ie. An end user requires only one of the
  * Controller's defined scopes of access.

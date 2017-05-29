@@ -1,14 +1,14 @@
 <?php
-namespace Serato\SwsApp\Test\Controller\Status;
+namespace Serato\SwsApp\Test\Slim\Controller\Status;
 
 use Serato\SwsApp\Test\TestCase;
-use Serato\SwsApp\Controller\AbstractController;
+use Serato\SwsApp\Slim\Controller\AbstractController;
 use Serato\Slimulator\EnvironmentBuilder;
 use Serato\Slimulator\Request;
 use Slim\Http\Response;
 
 /**
- * Unit tests for Serato\SwsApp\Controller\AbstractController
+ * Unit tests for Serato\SwsApp\Slim\Controller\AbstractController
  */
 class AbstractControllerTest extends TestCase
 {

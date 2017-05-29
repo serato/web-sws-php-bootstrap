@@ -1,5 +1,5 @@
 <?php
-namespace Serato\SwsApp\Controller;
+namespace Serato\SwsApp\Slim\Controller;
 
 use Serato\SwsApp\Slim\Handlers\Error as ErrorHandler;
 use Slim\Http\Response as SlimResponse;

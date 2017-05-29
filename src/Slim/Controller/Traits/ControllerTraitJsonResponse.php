@@ -1,5 +1,5 @@
 <?php
-namespace Serato\SwsApp\Controller\Traits;
+namespace Serato\SwsApp\Slim\Controller\Traits;
 
 use Psr\Http\Message\ResponseInterface as Response;
 

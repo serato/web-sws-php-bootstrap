@@ -1,13 +1,13 @@
 <?php
-namespace Serato\SwsApp\Test\Controller\Traits;
+namespace Serato\SwsApp\Test\Slim\Controller\Traits;
 
 use Serato\SwsApp\Test\TestCase;
-use Serato\SwsApp\Controller\Traits\ControllerTraitJsonResponse;
+use Serato\SwsApp\Slim\Controller\Traits\ControllerTraitJsonResponse;
 use ReflectionClass;
 use Slim\Http\Response;
 
 /**
- * Unit tests for Serato\SwsApp\Controller\Traits\ControllerTraitJsonResponse
+ * Unit tests for Serato\SwsApp\Slim\Controller\Traits\ControllerTraitJsonResponse
  */
 class ControllerTraitJsonResponseTest extends TestCase
 {

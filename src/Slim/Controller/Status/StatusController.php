@@ -1,8 +1,8 @@
 <?php
-namespace Serato\SwsApp\Controller\Status;
+namespace Serato\SwsApp\Slim\Controller\Status;
 
 use Psr\Log\LoggerInterface;
-use Serato\SwsApp\Controller\AbstractController;
+use Serato\SwsApp\Slim\Controller\AbstractController;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Negotiation\Negotiator;

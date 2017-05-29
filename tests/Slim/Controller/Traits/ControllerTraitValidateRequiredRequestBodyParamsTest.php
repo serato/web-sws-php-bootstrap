@@ -1,8 +1,8 @@
 <?php
-namespace Serato\SwsApp\Test\Controller\Traits;
+namespace Serato\SwsApp\Test\Slim\Controller\Traits;
 
 use Serato\SwsApp\Test\TestCase;
-use Serato\SwsApp\Controller\Traits\ControllerTraitValidateRequiredRequestBodyParams;
+use Serato\SwsApp\Slim\Controller\Traits\ControllerTraitValidateRequiredRequestBodyParams;
 use Serato\Slimulator\EnvironmentBuilder;
 use Serato\Slimulator\RequestBody\UrlEncoded;
 use Serato\Slimulator\Request;
@@ -10,7 +10,7 @@ use Slim\Http\Response;
 use ReflectionClass;
 
 /**
- * Unit tests for Serato\SwsApp\Controller\Traits\ControllerTraitValidateRequiredRequestBodyParams
+ * Unit tests for Serato\SwsApp\Slim\Controller\Traits\ControllerTraitValidateRequiredRequestBodyParams
  */
 class ControllerTraitValidateRequiredRequestBodyParamsTest extends TestCase
 {
