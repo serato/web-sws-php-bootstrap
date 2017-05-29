@@ -12,7 +12,7 @@ use Slim\Http\Response;
  */
 class AbstractControllerTest extends TestCase
 {
-    public function testMockInvoke()
+    public function testInvoke()
     {
         $logger = $this->getDebugLogger();
 
@@ -40,7 +40,7 @@ class AbstractControllerTest extends TestCase
         );
     }
 
-    public function testMockSetGetHttpResponseCode()
+    public function testSetGetHttpResponseCode()
     {
         $logger = $this->getDebugLogger();
         $controller = $this->getMockForAbstractClass(AbstractController::class, [$logger]);
@@ -48,5 +48,16 @@ class AbstractControllerTest extends TestCase
         $controller->setHttpResponseCode(400);
 
         $this->assertEquals(400, $controller->getHttpResponseCode());
+    }
+
+    public function testMockInvoke()
+    {
+        $logger = $this->getDebugLogger();
+        $controller = $this->getMockForAbstractClass(AbstractController::class, [$logger]);
+        $response = $controller->mockInvoke(
+            Request::createFromEnvironmentBuilder(EnvironmentBuilder::create())
+        );
+
+        $this->assertTrue(is_a($response, '\Slim\Http\Response'));
     }
 }
