@@ -1,5 +1,5 @@
 <?php
-namespace Serato\SwsApp\Controller;
+namespace Serato\SwsApp\Slim\Controller;
 
 /**
  * Controller Scopes

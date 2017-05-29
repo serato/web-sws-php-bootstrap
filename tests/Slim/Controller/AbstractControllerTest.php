@@ -1,18 +1,18 @@
 <?php
-namespace Serato\SwsApp\Test\Controller\Status;
+namespace Serato\SwsApp\Test\Slim\Controller\Status;
 
 use Serato\SwsApp\Test\TestCase;
-use Serato\SwsApp\Controller\AbstractController;
+use Serato\SwsApp\Slim\Controller\AbstractController;
 use Serato\Slimulator\EnvironmentBuilder;
 use Serato\Slimulator\Request;
 use Slim\Http\Response;
 
 /**
- * Unit tests for Serato\SwsApp\Controller\AbstractController
+ * Unit tests for Serato\SwsApp\Slim\Controller\AbstractController
  */
 class AbstractControllerTest extends TestCase
 {
-    public function testMockInvoke()
+    public function testInvoke()
     {
         $logger = $this->getDebugLogger();
 
@@ -40,7 +40,7 @@ class AbstractControllerTest extends TestCase
         );
     }
 
-    public function testMockSetGetHttpResponseCode()
+    public function testSetGetHttpResponseCode()
     {
         $logger = $this->getDebugLogger();
         $controller = $this->getMockForAbstractClass(AbstractController::class, [$logger]);
@@ -48,5 +48,16 @@ class AbstractControllerTest extends TestCase
         $controller->setHttpResponseCode(400);
 
         $this->assertEquals(400, $controller->getHttpResponseCode());
+    }
+
+    public function testMockInvoke()
+    {
+        $logger = $this->getDebugLogger();
+        $controller = $this->getMockForAbstractClass(AbstractController::class, [$logger]);
+        $response = $controller->mockInvoke(
+            Request::createFromEnvironmentBuilder(EnvironmentBuilder::create())
+        );
+
+        $this->assertTrue(is_a($response, '\Slim\Http\Response'));
     }
 }

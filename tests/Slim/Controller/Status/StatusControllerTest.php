@@ -1,9 +1,9 @@
 <?php
-namespace Serato\SwsApp\Test\Controller\Status;
+namespace Serato\SwsApp\Test\Slim\Controller\Status;
 
 use Serato\SwsApp\Test\TestCase;
-use Serato\SwsApp\Controller\AbstractController;
-use Serato\SwsApp\Controller\Status\StatusController;
+use Serato\SwsApp\Slim\Controller\AbstractController;
+use Serato\SwsApp\Slim\Controller\Status\StatusController;
 use Serato\Slimulator\EnvironmentBuilder;
 use Serato\Slimulator\Request;
 use Slim\Http\Response;
@@ -11,7 +11,7 @@ use Serato\SwsApp\Slim\Handlers\Error as ErrorHandler;
 use Serato\SwsApp\Http\Rest\Exception\AbstractException as ClientException;
 
 /**
- * Unit tests for Serato\SwsApp\Controller\Status\StatusController
+ * Unit tests for Serato\SwsApp\Slim\Controller\StatusController
  */
 class StatusControllerTest extends TestCase
 {
@@ -46,7 +46,7 @@ class StatusControllerTest extends TestCase
     public function testJsonContentTypeGitCommitFile()
     {
         $response = $this->executeControllerTest(
-            new StatusController($this->getDebugLogger(), __DIR__ . '/../../resources/git_commit.txt'),
+            new StatusController($this->getDebugLogger(), __DIR__ . '/../../../resources/git_commit.txt'),
             Request::createFromEnvironmentBuilder(
                 EnvironmentBuilder::create()->addHeader('Accept', 'application/json')
             )
@@ -69,7 +69,7 @@ class StatusControllerTest extends TestCase
     public function testHtmlContentTypeGitCommitFile()
     {
         $response = $this->executeControllerTest(
-            new StatusController($this->getDebugLogger(), __DIR__ . '/../../resources/git_commit.txt'),
+            new StatusController($this->getDebugLogger(), __DIR__ . '/../../../resources/git_commit.txt'),
             Request::createFromEnvironmentBuilder(
                 EnvironmentBuilder::create()->addHeader('Accept', 'text/html')
             )
@@ -98,7 +98,7 @@ class StatusControllerTest extends TestCase
     public function testHtmlContentTypeValidUrlOverride()
     {
         $response = $this->executeControllerTest(
-            new StatusController($this->getDebugLogger(), __DIR__ . '/../../resources/git_commit.txt'),
+            new StatusController($this->getDebugLogger(), __DIR__ . '/../../../resources/git_commit.txt'),
             Request::createFromEnvironmentBuilder(
                 EnvironmentBuilder::create()
                     ->addHeader('Accept', 'text/html')

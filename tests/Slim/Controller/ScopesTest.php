@@ -1,11 +1,11 @@
 <?php
-namespace Serato\SwsApp\Test\Controller;
+namespace Serato\SwsApp\Test\Slim\Controller;
 
 use Serato\SwsApp\Test\TestCase;
-use Serato\SwsApp\Controller\Scopes;
+use Serato\SwsApp\Slim\Controller\Scopes;
 
 /**
- * Unit tests for Serato\SwsApp\Controller\Scopes
+ * Unit tests for Serato\SwsApp\Slim\Controller\Scopes
  */
 class ScopesTest extends TestCase
 {

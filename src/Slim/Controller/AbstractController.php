@@ -1,7 +1,8 @@
 <?php
-namespace Serato\SwsApp\Controller;
+namespace Serato\SwsApp\Slim\Controller;
 
 use Serato\SwsApp\Slim\Handlers\Error as ErrorHandler;
+use Slim\Http\Response as SlimResponse;
 use Serato\SwsApp\Http\Rest\Exception\AbstractException as ClientException;
 use Psr\Log\LoggerInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -73,12 +74,12 @@ abstract class AbstractController
      *
      * @return Response
      */
-    protected function mockInvoke(
+    public function mockInvoke(
         Request $request,
         array $uriArgs = [],
         bool $catchClientErrors = false
     ) : Response {
-        $response = new Response();
+        $response = new SlimResponse();
 
         if ($catchClientErrors) {
             try {

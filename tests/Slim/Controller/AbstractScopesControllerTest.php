@@ -1,15 +1,15 @@
 <?php
-namespace Serato\SwsApp\Test\Controller\Status;
+namespace Serato\SwsApp\Test\Slim\Controller\Status;
 
 use Serato\SwsApp\Test\TestCase;
-use Serato\SwsApp\Controller\AbstractScopesController;
-use Serato\SwsApp\Controller\Scopes;
+use Serato\SwsApp\Slim\Controller\AbstractScopesController;
+use Serato\SwsApp\Slim\Controller\Scopes;
 use Serato\Slimulator\EnvironmentBuilder;
 use Serato\Slimulator\Request;
 use Slim\Http\Response;
 
 /**
- * Unit tests for Serato\SwsApp\Controller\AbstractController
+ * Unit tests for Serato\SwsApp\Slim\Controller\AbstractController
  */
 class AbstractScopesControllerTest extends TestCase
 {
@@ -40,7 +40,7 @@ class AbstractScopesControllerTest extends TestCase
                     return is_a($arg, '\Slim\Http\Response');
                 }),
                 $this->callback(function ($arg) {
-                    return is_a($arg, '\Serato\SwsApp\Controller\Scopes');
+                    return is_a($arg, '\Serato\SwsApp\Slim\Controller\Scopes');
                 })
             );
 
