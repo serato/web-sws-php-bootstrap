@@ -39,7 +39,7 @@ trait ControllerTraitValidateApiEndpointVersion
     protected function validateEndpointVersion(Request $request, Response $response, int $version)
     {
         if (!in_array($version, $this->endpointVersions)) {
-            $this->onInvalidEndpointVersion($request, $response);
+            $this->handleInvalidEndpointVersion($request, $response);
         }
     }
 
@@ -51,5 +51,5 @@ trait ControllerTraitValidateApiEndpointVersion
      *
      * @return void
      */
-    abstract protected function onInvalidEndpointVersion(Request $request, Response $response);
+    abstract protected function handleInvalidEndpointVersion(Request $request, Response $response);
 }
