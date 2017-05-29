@@ -15,7 +15,7 @@ class BootstrapTest extends TestCase
     {
         $bootstrap = $this->getMockForAbstractClass(Bootstrap::class, []);
 
-        $this->assertTrue(is_a($bootstrap->getApp(), '\Slim\App'));
+        $this->assertTrue(is_a($bootstrap->createApp(), '\Slim\App'));
         $this->assertTrue(is_a($bootstrap->getContainer(), '\Psr\Container\ContainerInterface'));
 
         $bootstrap->register('mykey', function () {
@@ -44,6 +44,6 @@ class BootstrapTest extends TestCase
             ->expects($this->once())
             ->method('registerControllers');
 
-        $bootstrap->getApp();
+        $bootstrap->createApp();
     }
 }

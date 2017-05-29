@@ -43,7 +43,7 @@ abstract class Bootstrap
      *
      * @return App
      */
-    public function getApp(): App
+    public function createApp(): App
     {
         // Register and configure common services
         $this->registerControllers();
@@ -52,7 +52,7 @@ abstract class Bootstrap
         $this->addAppMiddleware();
         $this->addRoutes();
 
-        return $this->app;
+        return $this->getApp();
     }
 
     /**
@@ -77,6 +77,16 @@ abstract class Bootstrap
     {
         $this->container[$key] = $f;
         return $this;
+    }
+
+    /**
+     * Get the Slim application instance
+     *
+     * @return App
+     */
+    protected function getApp(): App
+    {
+        return $this->app;
     }
 
     /**
