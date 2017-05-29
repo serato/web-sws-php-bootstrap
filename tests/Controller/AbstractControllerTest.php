@@ -16,9 +16,9 @@ class AbstractControllerTest extends TestCase
     {
         $logger = $this->getDebugLogger();
 
-        $mock = $this->getMockForAbstractClass(AbstractController::class, [$logger]);
+        $controller = $this->getMockForAbstractClass(AbstractController::class, [$logger]);
 
-        $mock
+        $controller
             ->expects($this->once())
             ->method('execute')
             ->with(
@@ -33,7 +33,7 @@ class AbstractControllerTest extends TestCase
                 })
             );
 
-        $mock(
+        $controller(
             Request::createFromEnvironmentBuilder(EnvironmentBuilder::create()),
             new Response(),
             []
@@ -43,10 +43,10 @@ class AbstractControllerTest extends TestCase
     public function testMockSetGetHttpResponseCode()
     {
         $logger = $this->getDebugLogger();
-        $mock = $this->getMockForAbstractClass(AbstractController::class, [$logger]);
+        $controller = $this->getMockForAbstractClass(AbstractController::class, [$logger]);
 
-        $mock->setHttpResponseCode(400);
+        $controller->setHttpResponseCode(400);
 
-        $this->assertEquals(400, $mock->getHttpResponseCode());
+        $this->assertEquals(400, $controller->getHttpResponseCode());
     }
 }
