@@ -18,7 +18,9 @@ class BootstrapTest extends TestCase
         $this->assertTrue(is_a($bootstrap->getApp(), '\Slim\App'));
         $this->assertTrue(is_a($bootstrap->getContainer(), '\Psr\Container\ContainerInterface'));
 
-        $bootstrap->register('mykey', function(){return self::CONTAINER_ITEM;});
+        $bootstrap->register('mykey', function () {
+            return self::CONTAINER_ITEM;
+        });
         $this->assertEquals(self::CONTAINER_ITEM, $bootstrap->getContainer()['mykey']);
     }
 
