@@ -1,6 +1,8 @@
 <?php
 namespace Serato\SwsApp\Controller;
 
+use Serato\SwsApp\Slim\Handlers\Error as ErrorHandler;
+use Serato\SwsApp\Http\Rest\Exception\AbstractException as ClientException;
 use Psr\Log\LoggerInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -60,6 +62,35 @@ abstract class AbstractController
     {
         $this->execute($request, $response, $args);
         return $response;
+    }
+
+    /**
+     * Simulate a controller invocation. For testing purposes only.
+     *
+     * @param Request       $request            Request interface
+     * @param array         $uriArgs            Name/value pairs of dynamic URI parameters
+     * @param bool          $catchClientErrors  When true catch client errors and invoke the error handler
+     *
+     * @return Response
+     */
+    protected function mockInvoke(
+        Request $request,
+        array $uriArgs = [],
+        bool $catchClientErrors = false
+    ) : Response {
+        $response = new Response();
+
+        if ($catchClientErrors) {
+            try {
+                return $this->__invoke($request, $response, $uriArgs);
+            } catch (ClientException $e) {
+                $error = new ErrorHandler('Controller MockInvoke', false, $this->getLogger());
+                // Returns a Response object
+                return $error($request, $response, $e);
+            }
+        } else {
+            return $this->__invoke($request, $response, $uriArgs);
+        }
     }
 
     /**
