@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="default" defaultIdMethod="native" defaultPhpNamingMethod="underscore" namespace="Serato\SwsApp\Test\Propel\Model">
+  <table name="product_serial_number_license_types" idMethod="native" phpName="LicenseType" allowPkInsert="true">
+    <column name="license_type_id" phpName="Id" type="TINYINT" size="3" sqlType="tinyint(3) unsigned" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="name" phpName="Name" type="VARCHAR" size="50" required="true"/>
+    <column name="current" phpName="Current" type="TINYINT" size="3" sqlType="tinyint(3) unsigned" required="true" defaultValue="0"/>
+    <column name="auth_type" phpName="AuthType" type="CHAR" sqlType="enum('','asset','software','card','disk','ilok','server','ilok_token','dummy')" required="true" defaultValue=""/>
+    <column name="rlm_product_name" phpName="RlmProductName" type="VARCHAR" size="20" required="true" defaultValue=""/>
+    <column name="rlm_license_version" phpName="RlmLicenseVersion" type="VARCHAR" size="5" required="true" defaultValue=""/>
+    <column name="license_options" phpName="Options" type="VARCHAR" size="5" required="true" defaultValue=""/>
+    <column name="host_app_checksum" phpName="ClientApplicationChecksum" type="BIGINT" sqlType="bigint(20) unsigned" required="true" defaultValue="0"/>
+    <column name="serial_number_type" phpName="SerialNumberType" type="CHAR" sqlType="enum('plugins','seratovideo','videosl','seratodj','ilok_token','seratosample')" required="true" defaultValue="seratodj"/>
+    <column name="authorization_limit" phpName="AuthorizationLimit" type="TINYINT" size="1" sqlType="tinyint(1) unsigned" required="true" defaultValue="2"/>
+    <column name="expires_days" phpName="ExpiresDays" type="TINYINT" size="3" sqlType="tinyint(3) unsigned" required="true" defaultValue="0"/>
+    <column name="expires_date" phpName="ExpiresDate" type="TIMESTAMP" required="true" defaultValue="0000-00-00 00:00:00"/>
+    <index name="current">
+      <index-column name="current"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+</database>

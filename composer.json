@@ -8,6 +8,7 @@
 		"slim/slim": "^3.5.0",
 		"serato/jwt": "^1.0.0",
 		"aws/aws-sdk-php": "^3.0",
+		"propel/propel": "2.0.0-alpha7",
 		"willdurand/negotiation": "~2.2.0"
 	},
 	"require-dev": {
@@ -24,7 +25,8 @@
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"Serato\\SwsApp\\Test\\": "tests/"
+			"Serato\\SwsApp\\Test\\": "tests/",
+			"Serato\\SwsApp\\Test\\Propel\\Model\\": "tests/resources/propel/model"
 		}
 	}
 }

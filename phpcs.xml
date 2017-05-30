@@ -4,4 +4,6 @@
     <rule ref="PSR2"/>
     <file>src</file>
     <file>tests</file>
+    <exclude-pattern>tests/resources/propel/model/Base/*</exclude-pattern>
+    <exclude-pattern>tests/resources/propel/model/Map/*</exclude-pattern>
 </ruleset>
