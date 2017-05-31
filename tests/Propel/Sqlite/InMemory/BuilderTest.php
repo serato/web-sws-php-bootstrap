@@ -14,7 +14,7 @@ class BuilderTest extends TestCase
 {
     const SCHEMA_DIR            = __DIR__ . '/../../../resources/propel/schemas';
     const JSON_DATA_DIR         = __DIR__ . '/' . '../../../resources/propel/data';
-    const MODEL_NAMESPACE       = '\Serato\SwsApp\Test\Propel\Model';
+    const MODEL_NAMESPACE       = '\Serato\SwsApp\Test\Propel\Model\\';
     const COMMON_TABLE_NAMES    = ['LicenseType', 'ProductType'];
 
     public function testCreateDb()
@@ -27,7 +27,7 @@ class BuilderTest extends TestCase
         // Import data, but only into one database
         foreach (self::COMMON_TABLE_NAMES as $name) {
             Builder::importJsonDataFile(
-                self::MODEL_NAMESPACE . '\\' . $name,
+                self::MODEL_NAMESPACE . $name,
                 self::JSON_DATA_DIR . '/' . $name . '.json',
                 $conns['conn1']
             );
@@ -46,7 +46,7 @@ class BuilderTest extends TestCase
         
         foreach (self::COMMON_TABLE_NAMES as $name) {
             Builder::importJsonDataFile(
-                self::MODEL_NAMESPACE . '\\' . $name,
+                self::MODEL_NAMESPACE . $name,
                 self::JSON_DATA_DIR . '/' . $name . '.json'
             );
         }
