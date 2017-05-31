@@ -19,21 +19,11 @@ use Serato\SwsApp\Test\Propel\Model\Map\ProductTypeTableMap;
  *
  *
  *
- * @method     ChildProductTypeQuery orderById($order = Criteria::ASC) Order by the StockTypeID column
- * @method     ChildProductTypeQuery orderByName($order = Criteria::ASC) Order by the CurrentName column
- * @method     ChildProductTypeQuery orderByType($order = Criteria::ASC) Order by the type column
- * @method     ChildProductTypeQuery orderByActive($order = Criteria::ASC) Order by the active column
- * @method     ChildProductTypeQuery orderByTrial($order = Criteria::ASC) Order by the trial column
- * @method     ChildProductTypeQuery orderByClientApplicationChecksum($order = Criteria::ASC) Order by the host_app_checksum column
- * @method     ChildProductTypeQuery orderBySerialNumberType($order = Criteria::ASC) Order by the serial_number_type column
+ * @method     ChildProductTypeQuery orderById($order = Criteria::ASC) Order by the id column
+ * @method     ChildProductTypeQuery orderByName($order = Criteria::ASC) Order by the name column
  *
- * @method     ChildProductTypeQuery groupById() Group by the StockTypeID column
- * @method     ChildProductTypeQuery groupByName() Group by the CurrentName column
- * @method     ChildProductTypeQuery groupByType() Group by the type column
- * @method     ChildProductTypeQuery groupByActive() Group by the active column
- * @method     ChildProductTypeQuery groupByTrial() Group by the trial column
- * @method     ChildProductTypeQuery groupByClientApplicationChecksum() Group by the host_app_checksum column
- * @method     ChildProductTypeQuery groupBySerialNumberType() Group by the serial_number_type column
+ * @method     ChildProductTypeQuery groupById() Group by the id column
+ * @method     ChildProductTypeQuery groupByName() Group by the name column
  *
  * @method     ChildProductTypeQuery leftJoin($relation) Adds a LEFT JOIN clause to the query
  * @method     ChildProductTypeQuery rightJoin($relation) Adds a RIGHT JOIN clause to the query
@@ -46,33 +36,18 @@ use Serato\SwsApp\Test\Propel\Model\Map\ProductTypeTableMap;
  * @method     ChildProductType findOne(ConnectionInterface $con = null) Return the first ChildProductType matching the query
  * @method     ChildProductType findOneOrCreate(ConnectionInterface $con = null) Return the first ChildProductType matching the query, or a new ChildProductType object populated from the query conditions when no match is found
  *
- * @method     ChildProductType findOneById(int $StockTypeID) Return the first ChildProductType filtered by the StockTypeID column
- * @method     ChildProductType findOneByName(string $CurrentName) Return the first ChildProductType filtered by the CurrentName column
- * @method     ChildProductType findOneByType(string $type) Return the first ChildProductType filtered by the type column
- * @method     ChildProductType findOneByActive(int $active) Return the first ChildProductType filtered by the active column
- * @method     ChildProductType findOneByTrial(boolean $trial) Return the first ChildProductType filtered by the trial column
- * @method     ChildProductType findOneByClientApplicationChecksum(string $host_app_checksum) Return the first ChildProductType filtered by the host_app_checksum column
- * @method     ChildProductType findOneBySerialNumberType(string $serial_number_type) Return the first ChildProductType filtered by the serial_number_type column *
+ * @method     ChildProductType findOneById(int $id) Return the first ChildProductType filtered by the id column
+ * @method     ChildProductType findOneByName(string $name) Return the first ChildProductType filtered by the name column *
 
  * @method     ChildProductType requirePk($key, ConnectionInterface $con = null) Return the ChildProductType by primary key and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  * @method     ChildProductType requireOne(ConnectionInterface $con = null) Return the first ChildProductType matching the query and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
- * @method     ChildProductType requireOneById(int $StockTypeID) Return the first ChildProductType filtered by the StockTypeID column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildProductType requireOneByName(string $CurrentName) Return the first ChildProductType filtered by the CurrentName column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildProductType requireOneByType(string $type) Return the first ChildProductType filtered by the type column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildProductType requireOneByActive(int $active) Return the first ChildProductType filtered by the active column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildProductType requireOneByTrial(boolean $trial) Return the first ChildProductType filtered by the trial column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildProductType requireOneByClientApplicationChecksum(string $host_app_checksum) Return the first ChildProductType filtered by the host_app_checksum column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
- * @method     ChildProductType requireOneBySerialNumberType(string $serial_number_type) Return the first ChildProductType filtered by the serial_number_type column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildProductType requireOneById(int $id) Return the first ChildProductType filtered by the id column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
+ * @method     ChildProductType requireOneByName(string $name) Return the first ChildProductType filtered by the name column and throws \Propel\Runtime\Exception\EntityNotFoundException when not found
  *
  * @method     ChildProductType[]|ObjectCollection find(ConnectionInterface $con = null) Return ChildProductType objects based on current ModelCriteria
- * @method     ChildProductType[]|ObjectCollection findById(int $StockTypeID) Return ChildProductType objects filtered by the StockTypeID column
- * @method     ChildProductType[]|ObjectCollection findByName(string $CurrentName) Return ChildProductType objects filtered by the CurrentName column
- * @method     ChildProductType[]|ObjectCollection findByType(string $type) Return ChildProductType objects filtered by the type column
- * @method     ChildProductType[]|ObjectCollection findByActive(int $active) Return ChildProductType objects filtered by the active column
- * @method     ChildProductType[]|ObjectCollection findByTrial(boolean $trial) Return ChildProductType objects filtered by the trial column
- * @method     ChildProductType[]|ObjectCollection findByClientApplicationChecksum(string $host_app_checksum) Return ChildProductType objects filtered by the host_app_checksum column
- * @method     ChildProductType[]|ObjectCollection findBySerialNumberType(string $serial_number_type) Return ChildProductType objects filtered by the serial_number_type column
+ * @method     ChildProductType[]|ObjectCollection findById(int $id) Return ChildProductType objects filtered by the id column
+ * @method     ChildProductType[]|ObjectCollection findByName(string $name) Return ChildProductType objects filtered by the name column
  * @method     ChildProductType[]|\Propel\Runtime\Util\PropelModelPager paginate($page = 1, $maxPerPage = 10, ConnectionInterface $con = null) Issue a SELECT query based on the current ModelCriteria and uses a page and a maximum number of results per page to compute an offset and a limit
  *
  */
@@ -171,7 +146,7 @@ abstract class ProductTypeQuery extends ModelCriteria
      */
     protected function findPkSimple($key, ConnectionInterface $con)
     {
-        $sql = 'SELECT StockTypeID, CurrentName, type, active, trial, host_app_checksum, serial_number_type FROM shop_products WHERE StockTypeID = :p0';
+        $sql = 'SELECT id, name FROM shop_products WHERE id = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -245,7 +220,7 @@ abstract class ProductTypeQuery extends ModelCriteria
     public function filterByPrimaryKey($key)
     {
 
-        return $this->addUsingAlias(ProductTypeTableMap::COL_STOCKTYPEID, $key, Criteria::EQUAL);
+        return $this->addUsingAlias(ProductTypeTableMap::COL_ID, $key, Criteria::EQUAL);
     }
 
     /**
@@ -258,17 +233,17 @@ abstract class ProductTypeQuery extends ModelCriteria
     public function filterByPrimaryKeys($keys)
     {
 
-        return $this->addUsingAlias(ProductTypeTableMap::COL_STOCKTYPEID, $keys, Criteria::IN);
+        return $this->addUsingAlias(ProductTypeTableMap::COL_ID, $keys, Criteria::IN);
     }
 
     /**
-     * Filter the query on the StockTypeID column
+     * Filter the query on the id column
      *
      * Example usage:
      * <code>
-     * $query->filterById(1234); // WHERE StockTypeID = 1234
-     * $query->filterById(array(12, 34)); // WHERE StockTypeID IN (12, 34)
-     * $query->filterById(array('min' => 12)); // WHERE StockTypeID > 12
+     * $query->filterById(1234); // WHERE id = 1234
+     * $query->filterById(array(12, 34)); // WHERE id IN (12, 34)
+     * $query->filterById(array('min' => 12)); // WHERE id > 12
      * </code>
      *
      * @param     mixed $id The value to use as filter.
@@ -284,11 +259,11 @@ abstract class ProductTypeQuery extends ModelCriteria
         if (is_array($id)) {
             $useMinMax = false;
             if (isset($id['min'])) {
-                $this->addUsingAlias(ProductTypeTableMap::COL_STOCKTYPEID, $id['min'], Criteria::GREATER_EQUAL);
+                $this->addUsingAlias(ProductTypeTableMap::COL_ID, $id['min'], Criteria::GREATER_EQUAL);
                 $useMinMax = true;
             }
             if (isset($id['max'])) {
-                $this->addUsingAlias(ProductTypeTableMap::COL_STOCKTYPEID, $id['max'], Criteria::LESS_EQUAL);
+                $this->addUsingAlias(ProductTypeTableMap::COL_ID, $id['max'], Criteria::LESS_EQUAL);
                 $useMinMax = true;
             }
             if ($useMinMax) {
@@ -299,16 +274,16 @@ abstract class ProductTypeQuery extends ModelCriteria
             }
         }
 
-        return $this->addUsingAlias(ProductTypeTableMap::COL_STOCKTYPEID, $id, $comparison);
+        return $this->addUsingAlias(ProductTypeTableMap::COL_ID, $id, $comparison);
     }
 
     /**
-     * Filter the query on the CurrentName column
+     * Filter the query on the name column
      *
      * Example usage:
      * <code>
-     * $query->filterByName('fooValue');   // WHERE CurrentName = 'fooValue'
-     * $query->filterByName('%fooValue%', Criteria::LIKE); // WHERE CurrentName LIKE '%fooValue%'
+     * $query->filterByName('fooValue');   // WHERE name = 'fooValue'
+     * $query->filterByName('%fooValue%', Criteria::LIKE); // WHERE name LIKE '%fooValue%'
      * </code>
      *
      * @param     string $name The value to use as filter.
@@ -324,166 +299,7 @@ abstract class ProductTypeQuery extends ModelCriteria
             }
         }
 
-        return $this->addUsingAlias(ProductTypeTableMap::COL_CURRENTNAME, $name, $comparison);
-    }
-
-    /**
-     * Filter the query on the type column
-     *
-     * Example usage:
-     * <code>
-     * $query->filterByType('fooValue');   // WHERE type = 'fooValue'
-     * $query->filterByType('%fooValue%', Criteria::LIKE); // WHERE type LIKE '%fooValue%'
-     * </code>
-     *
-     * @param     string $type The value to use as filter.
-     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return $this|ChildProductTypeQuery The current query, for fluid interface
-     */
-    public function filterByType($type = null, $comparison = null)
-    {
-        if (null === $comparison) {
-            if (is_array($type)) {
-                $comparison = Criteria::IN;
-            }
-        }
-
-        return $this->addUsingAlias(ProductTypeTableMap::COL_TYPE, $type, $comparison);
-    }
-
-    /**
-     * Filter the query on the active column
-     *
-     * Example usage:
-     * <code>
-     * $query->filterByActive(1234); // WHERE active = 1234
-     * $query->filterByActive(array(12, 34)); // WHERE active IN (12, 34)
-     * $query->filterByActive(array('min' => 12)); // WHERE active > 12
-     * </code>
-     *
-     * @param     mixed $active The value to use as filter.
-     *              Use scalar values for equality.
-     *              Use array values for in_array() equivalent.
-     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
-     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return $this|ChildProductTypeQuery The current query, for fluid interface
-     */
-    public function filterByActive($active = null, $comparison = null)
-    {
-        if (is_array($active)) {
-            $useMinMax = false;
-            if (isset($active['min'])) {
-                $this->addUsingAlias(ProductTypeTableMap::COL_ACTIVE, $active['min'], Criteria::GREATER_EQUAL);
-                $useMinMax = true;
-            }
-            if (isset($active['max'])) {
-                $this->addUsingAlias(ProductTypeTableMap::COL_ACTIVE, $active['max'], Criteria::LESS_EQUAL);
-                $useMinMax = true;
-            }
-            if ($useMinMax) {
-                return $this;
-            }
-            if (null === $comparison) {
-                $comparison = Criteria::IN;
-            }
-        }
-
-        return $this->addUsingAlias(ProductTypeTableMap::COL_ACTIVE, $active, $comparison);
-    }
-
-    /**
-     * Filter the query on the trial column
-     *
-     * Example usage:
-     * <code>
-     * $query->filterByTrial(true); // WHERE trial = true
-     * $query->filterByTrial('yes'); // WHERE trial = true
-     * </code>
-     *
-     * @param     boolean|string $trial The value to use as filter.
-     *              Non-boolean arguments are converted using the following rules:
-     *                * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
-     *                * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
-     *              Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
-     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return $this|ChildProductTypeQuery The current query, for fluid interface
-     */
-    public function filterByTrial($trial = null, $comparison = null)
-    {
-        if (is_string($trial)) {
-            $trial = in_array(strtolower($trial), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
-        }
-
-        return $this->addUsingAlias(ProductTypeTableMap::COL_TRIAL, $trial, $comparison);
-    }
-
-    /**
-     * Filter the query on the host_app_checksum column
-     *
-     * Example usage:
-     * <code>
-     * $query->filterByClientApplicationChecksum(1234); // WHERE host_app_checksum = 1234
-     * $query->filterByClientApplicationChecksum(array(12, 34)); // WHERE host_app_checksum IN (12, 34)
-     * $query->filterByClientApplicationChecksum(array('min' => 12)); // WHERE host_app_checksum > 12
-     * </code>
-     *
-     * @param     mixed $clientApplicationChecksum The value to use as filter.
-     *              Use scalar values for equality.
-     *              Use array values for in_array() equivalent.
-     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
-     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return $this|ChildProductTypeQuery The current query, for fluid interface
-     */
-    public function filterByClientApplicationChecksum($clientApplicationChecksum = null, $comparison = null)
-    {
-        if (is_array($clientApplicationChecksum)) {
-            $useMinMax = false;
-            if (isset($clientApplicationChecksum['min'])) {
-                $this->addUsingAlias(ProductTypeTableMap::COL_HOST_APP_CHECKSUM, $clientApplicationChecksum['min'], Criteria::GREATER_EQUAL);
-                $useMinMax = true;
-            }
-            if (isset($clientApplicationChecksum['max'])) {
-                $this->addUsingAlias(ProductTypeTableMap::COL_HOST_APP_CHECKSUM, $clientApplicationChecksum['max'], Criteria::LESS_EQUAL);
-                $useMinMax = true;
-            }
-            if ($useMinMax) {
-                return $this;
-            }
-            if (null === $comparison) {
-                $comparison = Criteria::IN;
-            }
-        }
-
-        return $this->addUsingAlias(ProductTypeTableMap::COL_HOST_APP_CHECKSUM, $clientApplicationChecksum, $comparison);
-    }
-
-    /**
-     * Filter the query on the serial_number_type column
-     *
-     * Example usage:
-     * <code>
-     * $query->filterBySerialNumberType('fooValue');   // WHERE serial_number_type = 'fooValue'
-     * $query->filterBySerialNumberType('%fooValue%', Criteria::LIKE); // WHERE serial_number_type LIKE '%fooValue%'
-     * </code>
-     *
-     * @param     string $serialNumberType The value to use as filter.
-     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
-     *
-     * @return $this|ChildProductTypeQuery The current query, for fluid interface
-     */
-    public function filterBySerialNumberType($serialNumberType = null, $comparison = null)
-    {
-        if (null === $comparison) {
-            if (is_array($serialNumberType)) {
-                $comparison = Criteria::IN;
-            }
-        }
-
-        return $this->addUsingAlias(ProductTypeTableMap::COL_SERIAL_NUMBER_TYPE, $serialNumberType, $comparison);
+        return $this->addUsingAlias(ProductTypeTableMap::COL_NAME, $name, $comparison);
     }
 
     /**
@@ -496,7 +312,7 @@ abstract class ProductTypeQuery extends ModelCriteria
     public function prune($productType = null)
     {
         if ($productType) {
-            $this->addUsingAlias(ProductTypeTableMap::COL_STOCKTYPEID, $productType->getId(), Criteria::NOT_EQUAL);
+            $this->addUsingAlias(ProductTypeTableMap::COL_ID, $productType->getId(), Criteria::NOT_EQUAL);
         }
 
         return $this;

@@ -1,38 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <database name="default" defaultIdMethod="native" defaultPhpNamingMethod="underscore" namespace="Serato\SwsApp\Test\Propel\Model">
   <table name="product_licenses" idMethod="native" phpName="License" allowPkInsert="true">
-    <column name="license_serial_number" phpName="Id" type="VARCHAR" size="50" primaryKey="true" required="true" defaultValue=""/>
-    <column name="serial_number" phpName="ProductId" type="VARCHAR" size="30" required="true" defaultValue=""/>
+    <column name="id" phpName="Id" type="VARCHAR" size="50" primaryKey="true" required="true" defaultValue=""/>
+    <column name="product_id" phpName="ProductId" type="VARCHAR" size="30" required="true" defaultValue=""/>
     <column name="license_type_id" phpName="LicenseTypeId" type="TINYINT" size="3" sqlType="tinyint(3) unsigned" required="true" defaultValue="0"/>
-    <column name="date_generated" phpName="DateGenerated" type="TIMESTAMP" required="true" defaultValue="0000-00-00 00:00:00"/>
-    <column name="authorization_limit" phpName="AuthorizationLimit" type="TINYINT" size="3" sqlType="tinyint(3) unsigned" required="true" defaultValue="0"/>
-    <column name="blacklisted" phpName="Blacklisted" type="TINYINT" required="true" defaultValue="0"/>
-    <column name="deleted_flag" phpName="DeletedFlag" type="TINYINT" required="true" defaultValue="0"/>
-    <column name="expires" phpName="Expires" type="INTEGER" size="10" sqlType="int(10) unsigned" required="true" defaultValue="0"/>
-    <column name="user_id" phpName="UserId" type="INTEGER" size="10" sqlType="int(10) unsigned" required="true" defaultValue="0"/>
-    <column name="user_date_added" phpName="UserAddedAt" type="TIMESTAMP" required="true" defaultValue="0000-00-00 00:00:00"/>
-    <index name="date_generated">
-      <index-column name="date_generated"/>
-    </index>
-    <index name="license_deleted_flag">
-      <index-column name="deleted_flag"/>
-    </index>
-    <index name="blacklisted">
-      <index-column name="blacklisted"/>
-    </index>
-    <index name="product_licenses_license_type_id">
-      <index-column name="license_type_id"/>
-    </index>
-    <index name="serial_number">
-      <index-column name="serial_number"/>
-    </index>
-    <index name="expires">
-      <index-column name="expires"/>
-    </index>
-    <behavior name="timestampable">
-      <parameter name="create_column" value="date_generated" />
-      <parameter name="disable_updated_at" value="true" />
-    </behavior>
     <vendor type="mysql">
       <parameter name="Engine" value="InnoDB"/>
     </vendor>

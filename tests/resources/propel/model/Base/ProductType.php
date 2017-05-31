@@ -60,58 +60,18 @@ abstract class ProductType implements ActiveRecordInterface
     protected $virtualColumns = array();
 
     /**
-     * The value for the stocktypeid field.
+     * The value for the id field.
      *
      * @var        int
      */
-    protected $stocktypeid;
+    protected $id;
 
     /**
-     * The value for the currentname field.
+     * The value for the name field.
      *
      * @var        string
      */
-    protected $currentname;
-
-    /**
-     * The value for the type field.
-     *
-     * Note: this column has a database default value of: 'download'
-     * @var        string
-     */
-    protected $type;
-
-    /**
-     * The value for the active field.
-     *
-     * Note: this column has a database default value of: 0
-     * @var        int
-     */
-    protected $active;
-
-    /**
-     * The value for the trial field.
-     *
-     * Note: this column has a database default value of: false
-     * @var        boolean
-     */
-    protected $trial;
-
-    /**
-     * The value for the host_app_checksum field.
-     *
-     * Note: this column has a database default value of: '0'
-     * @var        string
-     */
-    protected $host_app_checksum;
-
-    /**
-     * The value for the serial_number_type field.
-     *
-     * Note: this column has a database default value of: 'seratodj'
-     * @var        string
-     */
-    protected $serial_number_type;
+    protected $name;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -122,27 +82,10 @@ abstract class ProductType implements ActiveRecordInterface
     protected $alreadyInSave = false;
 
     /**
-     * Applies default values to this object.
-     * This method should be called from the object's constructor (or
-     * equivalent initialization method).
-     * @see __construct()
-     */
-    public function applyDefaultValues()
-    {
-        $this->type = 'download';
-        $this->active = 0;
-        $this->trial = false;
-        $this->host_app_checksum = '0';
-        $this->serial_number_type = 'seratodj';
-    }
-
-    /**
      * Initializes internal state of Serato\SwsApp\Test\Propel\Model\Base\ProductType object.
-     * @see applyDefaults()
      */
     public function __construct()
     {
-        $this->applyDefaultValues();
     }
 
     /**
@@ -364,87 +307,27 @@ abstract class ProductType implements ActiveRecordInterface
     }
 
     /**
-     * Get the [stocktypeid] column value.
+     * Get the [id] column value.
      *
      * @return int
      */
     public function getId()
     {
-        return $this->stocktypeid;
+        return $this->id;
     }
 
     /**
-     * Get the [currentname] column value.
+     * Get the [name] column value.
      *
      * @return string
      */
     public function getName()
     {
-        return $this->currentname;
+        return $this->name;
     }
 
     /**
-     * Get the [type] column value.
-     *
-     * @return string
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * Get the [active] column value.
-     *
-     * @return int
-     */
-    public function getActive()
-    {
-        return $this->active;
-    }
-
-    /**
-     * Get the [trial] column value.
-     *
-     * @return boolean
-     */
-    public function getTrial()
-    {
-        return $this->trial;
-    }
-
-    /**
-     * Get the [trial] column value.
-     *
-     * @return boolean
-     */
-    public function isTrial()
-    {
-        return $this->getTrial();
-    }
-
-    /**
-     * Get the [host_app_checksum] column value.
-     *
-     * @return string
-     */
-    public function getClientApplicationChecksum()
-    {
-        return $this->host_app_checksum;
-    }
-
-    /**
-     * Get the [serial_number_type] column value.
-     *
-     * @return string
-     */
-    public function getSerialNumberType()
-    {
-        return $this->serial_number_type;
-    }
-
-    /**
-     * Set the value of [stocktypeid] column.
+     * Set the value of [id] column.
      *
      * @param int $v new value
      * @return $this|\Serato\SwsApp\Test\Propel\Model\ProductType The current object (for fluent API support)
@@ -455,16 +338,16 @@ abstract class ProductType implements ActiveRecordInterface
             $v = (int) $v;
         }
 
-        if ($this->stocktypeid !== $v) {
-            $this->stocktypeid = $v;
-            $this->modifiedColumns[ProductTypeTableMap::COL_STOCKTYPEID] = true;
+        if ($this->id !== $v) {
+            $this->id = $v;
+            $this->modifiedColumns[ProductTypeTableMap::COL_ID] = true;
         }
 
         return $this;
     } // setId()
 
     /**
-     * Set the value of [currentname] column.
+     * Set the value of [name] column.
      *
      * @param string $v new value
      * @return $this|\Serato\SwsApp\Test\Propel\Model\ProductType The current object (for fluent API support)
@@ -475,121 +358,13 @@ abstract class ProductType implements ActiveRecordInterface
             $v = (string) $v;
         }
 
-        if ($this->currentname !== $v) {
-            $this->currentname = $v;
-            $this->modifiedColumns[ProductTypeTableMap::COL_CURRENTNAME] = true;
+        if ($this->name !== $v) {
+            $this->name = $v;
+            $this->modifiedColumns[ProductTypeTableMap::COL_NAME] = true;
         }
 
         return $this;
     } // setName()
-
-    /**
-     * Set the value of [type] column.
-     *
-     * @param string $v new value
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\ProductType The current object (for fluent API support)
-     */
-    public function setType($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->type !== $v) {
-            $this->type = $v;
-            $this->modifiedColumns[ProductTypeTableMap::COL_TYPE] = true;
-        }
-
-        return $this;
-    } // setType()
-
-    /**
-     * Set the value of [active] column.
-     *
-     * @param int $v new value
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\ProductType The current object (for fluent API support)
-     */
-    public function setActive($v)
-    {
-        if ($v !== null) {
-            $v = (int) $v;
-        }
-
-        if ($this->active !== $v) {
-            $this->active = $v;
-            $this->modifiedColumns[ProductTypeTableMap::COL_ACTIVE] = true;
-        }
-
-        return $this;
-    } // setActive()
-
-    /**
-     * Sets the value of the [trial] column.
-     * Non-boolean arguments are converted using the following rules:
-     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
-     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
-     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
-     *
-     * @param  boolean|integer|string $v The new value
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\ProductType The current object (for fluent API support)
-     */
-    public function setTrial($v)
-    {
-        if ($v !== null) {
-            if (is_string($v)) {
-                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
-            } else {
-                $v = (boolean) $v;
-            }
-        }
-
-        if ($this->trial !== $v) {
-            $this->trial = $v;
-            $this->modifiedColumns[ProductTypeTableMap::COL_TRIAL] = true;
-        }
-
-        return $this;
-    } // setTrial()
-
-    /**
-     * Set the value of [host_app_checksum] column.
-     *
-     * @param string $v new value
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\ProductType The current object (for fluent API support)
-     */
-    public function setClientApplicationChecksum($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->host_app_checksum !== $v) {
-            $this->host_app_checksum = $v;
-            $this->modifiedColumns[ProductTypeTableMap::COL_HOST_APP_CHECKSUM] = true;
-        }
-
-        return $this;
-    } // setClientApplicationChecksum()
-
-    /**
-     * Set the value of [serial_number_type] column.
-     *
-     * @param string $v new value
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\ProductType The current object (for fluent API support)
-     */
-    public function setSerialNumberType($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->serial_number_type !== $v) {
-            $this->serial_number_type = $v;
-            $this->modifiedColumns[ProductTypeTableMap::COL_SERIAL_NUMBER_TYPE] = true;
-        }
-
-        return $this;
-    } // setSerialNumberType()
 
     /**
      * Indicates whether the columns in this object are only set to default values.
@@ -601,26 +376,6 @@ abstract class ProductType implements ActiveRecordInterface
      */
     public function hasOnlyDefaultValues()
     {
-            if ($this->type !== 'download') {
-                return false;
-            }
-
-            if ($this->active !== 0) {
-                return false;
-            }
-
-            if ($this->trial !== false) {
-                return false;
-            }
-
-            if ($this->host_app_checksum !== '0') {
-                return false;
-            }
-
-            if ($this->serial_number_type !== 'seratodj') {
-                return false;
-            }
-
         // otherwise, everything was equal, so return TRUE
         return true;
     } // hasOnlyDefaultValues()
@@ -648,25 +403,10 @@ abstract class ProductType implements ActiveRecordInterface
         try {
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : ProductTypeTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->stocktypeid = (null !== $col) ? (int) $col : null;
+            $this->id = (null !== $col) ? (int) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : ProductTypeTableMap::translateFieldName('Name', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->currentname = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : ProductTypeTableMap::translateFieldName('Type', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->type = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : ProductTypeTableMap::translateFieldName('Active', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->active = (null !== $col) ? (int) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : ProductTypeTableMap::translateFieldName('Trial', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->trial = (null !== $col) ? (boolean) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : ProductTypeTableMap::translateFieldName('ClientApplicationChecksum', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->host_app_checksum = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : ProductTypeTableMap::translateFieldName('SerialNumberType', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->serial_number_type = (null !== $col) ? (string) $col : null;
+            $this->name = (null !== $col) ? (string) $col : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -675,7 +415,7 @@ abstract class ProductType implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 7; // 7 = ProductTypeTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 2; // 2 = ProductTypeTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Serato\\SwsApp\\Test\\Propel\\Model\\ProductType'), 0, $e);
@@ -870,29 +610,14 @@ abstract class ProductType implements ActiveRecordInterface
         $modifiedColumns = array();
         $index = 0;
 
-        $this->modifiedColumns[ProductTypeTableMap::COL_STOCKTYPEID] = true;
+        $this->modifiedColumns[ProductTypeTableMap::COL_ID] = true;
 
          // check the columns in natural order for more readable SQL queries
-        if ($this->isColumnModified(ProductTypeTableMap::COL_STOCKTYPEID)) {
-            $modifiedColumns[':p' . $index++]  = 'StockTypeID';
+        if ($this->isColumnModified(ProductTypeTableMap::COL_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'id';
         }
-        if ($this->isColumnModified(ProductTypeTableMap::COL_CURRENTNAME)) {
-            $modifiedColumns[':p' . $index++]  = 'CurrentName';
-        }
-        if ($this->isColumnModified(ProductTypeTableMap::COL_TYPE)) {
-            $modifiedColumns[':p' . $index++]  = 'type';
-        }
-        if ($this->isColumnModified(ProductTypeTableMap::COL_ACTIVE)) {
-            $modifiedColumns[':p' . $index++]  = 'active';
-        }
-        if ($this->isColumnModified(ProductTypeTableMap::COL_TRIAL)) {
-            $modifiedColumns[':p' . $index++]  = 'trial';
-        }
-        if ($this->isColumnModified(ProductTypeTableMap::COL_HOST_APP_CHECKSUM)) {
-            $modifiedColumns[':p' . $index++]  = 'host_app_checksum';
-        }
-        if ($this->isColumnModified(ProductTypeTableMap::COL_SERIAL_NUMBER_TYPE)) {
-            $modifiedColumns[':p' . $index++]  = 'serial_number_type';
+        if ($this->isColumnModified(ProductTypeTableMap::COL_NAME)) {
+            $modifiedColumns[':p' . $index++]  = 'name';
         }
 
         $sql = sprintf(
@@ -905,26 +630,11 @@ abstract class ProductType implements ActiveRecordInterface
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case 'StockTypeID':
-                        $stmt->bindValue($identifier, $this->stocktypeid, PDO::PARAM_INT);
+                    case 'id':
+                        $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case 'CurrentName':
-                        $stmt->bindValue($identifier, $this->currentname, PDO::PARAM_STR);
-                        break;
-                    case 'type':
-                        $stmt->bindValue($identifier, $this->type, PDO::PARAM_STR);
-                        break;
-                    case 'active':
-                        $stmt->bindValue($identifier, $this->active, PDO::PARAM_INT);
-                        break;
-                    case 'trial':
-                        $stmt->bindValue($identifier, $this->trial, PDO::PARAM_BOOL);
-                        break;
-                    case 'host_app_checksum':
-                        $stmt->bindValue($identifier, $this->host_app_checksum, PDO::PARAM_INT);
-                        break;
-                    case 'serial_number_type':
-                        $stmt->bindValue($identifier, $this->serial_number_type, PDO::PARAM_STR);
+                    case 'name':
+                        $stmt->bindValue($identifier, $this->name, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -996,21 +706,6 @@ abstract class ProductType implements ActiveRecordInterface
             case 1:
                 return $this->getName();
                 break;
-            case 2:
-                return $this->getType();
-                break;
-            case 3:
-                return $this->getActive();
-                break;
-            case 4:
-                return $this->getTrial();
-                break;
-            case 5:
-                return $this->getClientApplicationChecksum();
-                break;
-            case 6:
-                return $this->getSerialNumberType();
-                break;
             default:
                 return null;
                 break;
@@ -1042,11 +737,6 @@ abstract class ProductType implements ActiveRecordInterface
         $result = array(
             $keys[0] => $this->getId(),
             $keys[1] => $this->getName(),
-            $keys[2] => $this->getType(),
-            $keys[3] => $this->getActive(),
-            $keys[4] => $this->getTrial(),
-            $keys[5] => $this->getClientApplicationChecksum(),
-            $keys[6] => $this->getSerialNumberType(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1092,21 +782,6 @@ abstract class ProductType implements ActiveRecordInterface
             case 1:
                 $this->setName($value);
                 break;
-            case 2:
-                $this->setType($value);
-                break;
-            case 3:
-                $this->setActive($value);
-                break;
-            case 4:
-                $this->setTrial($value);
-                break;
-            case 5:
-                $this->setClientApplicationChecksum($value);
-                break;
-            case 6:
-                $this->setSerialNumberType($value);
-                break;
         } // switch()
 
         return $this;
@@ -1138,21 +813,6 @@ abstract class ProductType implements ActiveRecordInterface
         }
         if (array_key_exists($keys[1], $arr)) {
             $this->setName($arr[$keys[1]]);
-        }
-        if (array_key_exists($keys[2], $arr)) {
-            $this->setType($arr[$keys[2]]);
-        }
-        if (array_key_exists($keys[3], $arr)) {
-            $this->setActive($arr[$keys[3]]);
-        }
-        if (array_key_exists($keys[4], $arr)) {
-            $this->setTrial($arr[$keys[4]]);
-        }
-        if (array_key_exists($keys[5], $arr)) {
-            $this->setClientApplicationChecksum($arr[$keys[5]]);
-        }
-        if (array_key_exists($keys[6], $arr)) {
-            $this->setSerialNumberType($arr[$keys[6]]);
         }
     }
 
@@ -1195,26 +855,11 @@ abstract class ProductType implements ActiveRecordInterface
     {
         $criteria = new Criteria(ProductTypeTableMap::DATABASE_NAME);
 
-        if ($this->isColumnModified(ProductTypeTableMap::COL_STOCKTYPEID)) {
-            $criteria->add(ProductTypeTableMap::COL_STOCKTYPEID, $this->stocktypeid);
+        if ($this->isColumnModified(ProductTypeTableMap::COL_ID)) {
+            $criteria->add(ProductTypeTableMap::COL_ID, $this->id);
         }
-        if ($this->isColumnModified(ProductTypeTableMap::COL_CURRENTNAME)) {
-            $criteria->add(ProductTypeTableMap::COL_CURRENTNAME, $this->currentname);
-        }
-        if ($this->isColumnModified(ProductTypeTableMap::COL_TYPE)) {
-            $criteria->add(ProductTypeTableMap::COL_TYPE, $this->type);
-        }
-        if ($this->isColumnModified(ProductTypeTableMap::COL_ACTIVE)) {
-            $criteria->add(ProductTypeTableMap::COL_ACTIVE, $this->active);
-        }
-        if ($this->isColumnModified(ProductTypeTableMap::COL_TRIAL)) {
-            $criteria->add(ProductTypeTableMap::COL_TRIAL, $this->trial);
-        }
-        if ($this->isColumnModified(ProductTypeTableMap::COL_HOST_APP_CHECKSUM)) {
-            $criteria->add(ProductTypeTableMap::COL_HOST_APP_CHECKSUM, $this->host_app_checksum);
-        }
-        if ($this->isColumnModified(ProductTypeTableMap::COL_SERIAL_NUMBER_TYPE)) {
-            $criteria->add(ProductTypeTableMap::COL_SERIAL_NUMBER_TYPE, $this->serial_number_type);
+        if ($this->isColumnModified(ProductTypeTableMap::COL_NAME)) {
+            $criteria->add(ProductTypeTableMap::COL_NAME, $this->name);
         }
 
         return $criteria;
@@ -1233,7 +878,7 @@ abstract class ProductType implements ActiveRecordInterface
     public function buildPkeyCriteria()
     {
         $criteria = ChildProductTypeQuery::create();
-        $criteria->add(ProductTypeTableMap::COL_STOCKTYPEID, $this->stocktypeid);
+        $criteria->add(ProductTypeTableMap::COL_ID, $this->id);
 
         return $criteria;
     }
@@ -1270,7 +915,7 @@ abstract class ProductType implements ActiveRecordInterface
     }
 
     /**
-     * Generic method to set the primary key (stocktypeid column).
+     * Generic method to set the primary key (id column).
      *
      * @param       int $key Primary key.
      * @return void
@@ -1303,11 +948,6 @@ abstract class ProductType implements ActiveRecordInterface
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
         $copyObj->setName($this->getName());
-        $copyObj->setType($this->getType());
-        $copyObj->setActive($this->getActive());
-        $copyObj->setTrial($this->getTrial());
-        $copyObj->setClientApplicationChecksum($this->getClientApplicationChecksum());
-        $copyObj->setSerialNumberType($this->getSerialNumberType());
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -1343,16 +983,10 @@ abstract class ProductType implements ActiveRecordInterface
      */
     public function clear()
     {
-        $this->stocktypeid = null;
-        $this->currentname = null;
-        $this->type = null;
-        $this->active = null;
-        $this->trial = null;
-        $this->host_app_checksum = null;
-        $this->serial_number_type = null;
+        $this->id = null;
+        $this->name = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
-        $this->applyDefaultValues();
         $this->resetModified();
         $this->setNew(true);
         $this->setDeleted(false);
