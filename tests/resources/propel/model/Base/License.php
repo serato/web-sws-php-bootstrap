@@ -2,7 +2,6 @@
 
 namespace Serato\SwsApp\Test\Propel\Model\Base;
 
-use \DateTime;
 use \Exception;
 use \PDO;
 use Propel\Runtime\Propel;
@@ -16,7 +15,6 @@ use Propel\Runtime\Exception\LogicException;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
-use Propel\Runtime\Util\PropelDateTime;
 use Serato\SwsApp\Test\Propel\Model\LicenseQuery as ChildLicenseQuery;
 use Serato\SwsApp\Test\Propel\Model\Map\LicenseTableMap;
 
@@ -62,20 +60,20 @@ abstract class License implements ActiveRecordInterface
     protected $virtualColumns = array();
 
     /**
-     * The value for the license_serial_number field.
+     * The value for the id field.
      *
      * Note: this column has a database default value of: ''
      * @var        string
      */
-    protected $license_serial_number;
+    protected $id;
 
     /**
-     * The value for the serial_number field.
+     * The value for the product_id field.
      *
      * Note: this column has a database default value of: ''
      * @var        string
      */
-    protected $serial_number;
+    protected $product_id;
 
     /**
      * The value for the license_type_id field.
@@ -84,62 +82,6 @@ abstract class License implements ActiveRecordInterface
      * @var        int
      */
     protected $license_type_id;
-
-    /**
-     * The value for the date_generated field.
-     *
-     * Note: this column has a database default value of: '-0001-11-30 00:00:00.000000'
-     * @var        DateTime
-     */
-    protected $date_generated;
-
-    /**
-     * The value for the authorization_limit field.
-     *
-     * Note: this column has a database default value of: 0
-     * @var        int
-     */
-    protected $authorization_limit;
-
-    /**
-     * The value for the blacklisted field.
-     *
-     * Note: this column has a database default value of: 0
-     * @var        int
-     */
-    protected $blacklisted;
-
-    /**
-     * The value for the deleted_flag field.
-     *
-     * Note: this column has a database default value of: 0
-     * @var        int
-     */
-    protected $deleted_flag;
-
-    /**
-     * The value for the expires field.
-     *
-     * Note: this column has a database default value of: 0
-     * @var        int
-     */
-    protected $expires;
-
-    /**
-     * The value for the user_id field.
-     *
-     * Note: this column has a database default value of: 0
-     * @var        int
-     */
-    protected $user_id;
-
-    /**
-     * The value for the user_date_added field.
-     *
-     * Note: this column has a database default value of: '-0001-11-30 00:00:00.000000'
-     * @var        DateTime
-     */
-    protected $user_date_added;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -157,16 +99,9 @@ abstract class License implements ActiveRecordInterface
      */
     public function applyDefaultValues()
     {
-        $this->license_serial_number = '';
-        $this->serial_number = '';
+        $this->id = '';
+        $this->product_id = '';
         $this->license_type_id = 0;
-        $this->date_generated = PropelDateTime::newInstance('-0001-11-30 00:00:00.000000', null, 'DateTime');
-        $this->authorization_limit = 0;
-        $this->blacklisted = 0;
-        $this->deleted_flag = 0;
-        $this->expires = 0;
-        $this->user_id = 0;
-        $this->user_date_added = PropelDateTime::newInstance('-0001-11-30 00:00:00.000000', null, 'DateTime');
     }
 
     /**
@@ -397,23 +332,23 @@ abstract class License implements ActiveRecordInterface
     }
 
     /**
-     * Get the [license_serial_number] column value.
+     * Get the [id] column value.
      *
      * @return string
      */
     public function getId()
     {
-        return $this->license_serial_number;
+        return $this->id;
     }
 
     /**
-     * Get the [serial_number] column value.
+     * Get the [product_id] column value.
      *
      * @return string
      */
     public function getProductId()
     {
-        return $this->serial_number;
+        return $this->product_id;
     }
 
     /**
@@ -427,97 +362,7 @@ abstract class License implements ActiveRecordInterface
     }
 
     /**
-     * Get the [optionally formatted] temporal [date_generated] column value.
-     *
-     *
-     * @param      string $format The date/time format string (either date()-style or strftime()-style).
-     *                            If format is NULL, then the raw DateTime object will be returned.
-     *
-     * @return string|DateTime Formatted date/time value as string or DateTime object (if format is NULL), NULL if column is NULL
-     *
-     * @throws PropelException - if unable to parse/validate the date/time value.
-     */
-    public function getDateGenerated($format = NULL)
-    {
-        if ($format === null) {
-            return $this->date_generated;
-        } else {
-            return $this->date_generated instanceof \DateTimeInterface ? $this->date_generated->format($format) : null;
-        }
-    }
-
-    /**
-     * Get the [authorization_limit] column value.
-     *
-     * @return int
-     */
-    public function getAuthorizationLimit()
-    {
-        return $this->authorization_limit;
-    }
-
-    /**
-     * Get the [blacklisted] column value.
-     *
-     * @return int
-     */
-    public function getBlacklisted()
-    {
-        return $this->blacklisted;
-    }
-
-    /**
-     * Get the [deleted_flag] column value.
-     *
-     * @return int
-     */
-    public function getDeletedFlag()
-    {
-        return $this->deleted_flag;
-    }
-
-    /**
-     * Get the [expires] column value.
-     *
-     * @return int
-     */
-    public function getExpires()
-    {
-        return $this->expires;
-    }
-
-    /**
-     * Get the [user_id] column value.
-     *
-     * @return int
-     */
-    public function getUserId()
-    {
-        return $this->user_id;
-    }
-
-    /**
-     * Get the [optionally formatted] temporal [user_date_added] column value.
-     *
-     *
-     * @param      string $format The date/time format string (either date()-style or strftime()-style).
-     *                            If format is NULL, then the raw DateTime object will be returned.
-     *
-     * @return string|DateTime Formatted date/time value as string or DateTime object (if format is NULL), NULL if column is NULL
-     *
-     * @throws PropelException - if unable to parse/validate the date/time value.
-     */
-    public function getUserAddedAt($format = NULL)
-    {
-        if ($format === null) {
-            return $this->user_date_added;
-        } else {
-            return $this->user_date_added instanceof \DateTimeInterface ? $this->user_date_added->format($format) : null;
-        }
-    }
-
-    /**
-     * Set the value of [license_serial_number] column.
+     * Set the value of [id] column.
      *
      * @param string $v new value
      * @return $this|\Serato\SwsApp\Test\Propel\Model\License The current object (for fluent API support)
@@ -528,16 +373,16 @@ abstract class License implements ActiveRecordInterface
             $v = (string) $v;
         }
 
-        if ($this->license_serial_number !== $v) {
-            $this->license_serial_number = $v;
-            $this->modifiedColumns[LicenseTableMap::COL_LICENSE_SERIAL_NUMBER] = true;
+        if ($this->id !== $v) {
+            $this->id = $v;
+            $this->modifiedColumns[LicenseTableMap::COL_ID] = true;
         }
 
         return $this;
     } // setId()
 
     /**
-     * Set the value of [serial_number] column.
+     * Set the value of [product_id] column.
      *
      * @param string $v new value
      * @return $this|\Serato\SwsApp\Test\Propel\Model\License The current object (for fluent API support)
@@ -548,9 +393,9 @@ abstract class License implements ActiveRecordInterface
             $v = (string) $v;
         }
 
-        if ($this->serial_number !== $v) {
-            $this->serial_number = $v;
-            $this->modifiedColumns[LicenseTableMap::COL_SERIAL_NUMBER] = true;
+        if ($this->product_id !== $v) {
+            $this->product_id = $v;
+            $this->modifiedColumns[LicenseTableMap::COL_PRODUCT_ID] = true;
         }
 
         return $this;
@@ -577,150 +422,6 @@ abstract class License implements ActiveRecordInterface
     } // setLicenseTypeId()
 
     /**
-     * Sets the value of [date_generated] column to a normalized version of the date/time value specified.
-     *
-     * @param  mixed $v string, integer (timestamp), or \DateTimeInterface value.
-     *               Empty strings are treated as NULL.
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\License The current object (for fluent API support)
-     */
-    public function setDateGenerated($v)
-    {
-        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
-        if ($this->date_generated !== null || $dt !== null) {
-            if ( ($dt != $this->date_generated) // normalized values don't match
-                || ($dt->format('Y-m-d H:i:s.u') === '-0001-11-30 00:00:00.000000') // or the entered value matches the default
-                 ) {
-                $this->date_generated = $dt === null ? null : clone $dt;
-                $this->modifiedColumns[LicenseTableMap::COL_DATE_GENERATED] = true;
-            }
-        } // if either are not null
-
-        return $this;
-    } // setDateGenerated()
-
-    /**
-     * Set the value of [authorization_limit] column.
-     *
-     * @param int $v new value
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\License The current object (for fluent API support)
-     */
-    public function setAuthorizationLimit($v)
-    {
-        if ($v !== null) {
-            $v = (int) $v;
-        }
-
-        if ($this->authorization_limit !== $v) {
-            $this->authorization_limit = $v;
-            $this->modifiedColumns[LicenseTableMap::COL_AUTHORIZATION_LIMIT] = true;
-        }
-
-        return $this;
-    } // setAuthorizationLimit()
-
-    /**
-     * Set the value of [blacklisted] column.
-     *
-     * @param int $v new value
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\License The current object (for fluent API support)
-     */
-    public function setBlacklisted($v)
-    {
-        if ($v !== null) {
-            $v = (int) $v;
-        }
-
-        if ($this->blacklisted !== $v) {
-            $this->blacklisted = $v;
-            $this->modifiedColumns[LicenseTableMap::COL_BLACKLISTED] = true;
-        }
-
-        return $this;
-    } // setBlacklisted()
-
-    /**
-     * Set the value of [deleted_flag] column.
-     *
-     * @param int $v new value
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\License The current object (for fluent API support)
-     */
-    public function setDeletedFlag($v)
-    {
-        if ($v !== null) {
-            $v = (int) $v;
-        }
-
-        if ($this->deleted_flag !== $v) {
-            $this->deleted_flag = $v;
-            $this->modifiedColumns[LicenseTableMap::COL_DELETED_FLAG] = true;
-        }
-
-        return $this;
-    } // setDeletedFlag()
-
-    /**
-     * Set the value of [expires] column.
-     *
-     * @param int $v new value
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\License The current object (for fluent API support)
-     */
-    public function setExpires($v)
-    {
-        if ($v !== null) {
-            $v = (int) $v;
-        }
-
-        if ($this->expires !== $v) {
-            $this->expires = $v;
-            $this->modifiedColumns[LicenseTableMap::COL_EXPIRES] = true;
-        }
-
-        return $this;
-    } // setExpires()
-
-    /**
-     * Set the value of [user_id] column.
-     *
-     * @param int $v new value
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\License The current object (for fluent API support)
-     */
-    public function setUserId($v)
-    {
-        if ($v !== null) {
-            $v = (int) $v;
-        }
-
-        if ($this->user_id !== $v) {
-            $this->user_id = $v;
-            $this->modifiedColumns[LicenseTableMap::COL_USER_ID] = true;
-        }
-
-        return $this;
-    } // setUserId()
-
-    /**
-     * Sets the value of [user_date_added] column to a normalized version of the date/time value specified.
-     *
-     * @param  mixed $v string, integer (timestamp), or \DateTimeInterface value.
-     *               Empty strings are treated as NULL.
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\License The current object (for fluent API support)
-     */
-    public function setUserAddedAt($v)
-    {
-        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
-        if ($this->user_date_added !== null || $dt !== null) {
-            if ( ($dt != $this->user_date_added) // normalized values don't match
-                || ($dt->format('Y-m-d H:i:s.u') === '-0001-11-30 00:00:00.000000') // or the entered value matches the default
-                 ) {
-                $this->user_date_added = $dt === null ? null : clone $dt;
-                $this->modifiedColumns[LicenseTableMap::COL_USER_DATE_ADDED] = true;
-            }
-        } // if either are not null
-
-        return $this;
-    } // setUserAddedAt()
-
-    /**
      * Indicates whether the columns in this object are only set to default values.
      *
      * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -730,43 +431,15 @@ abstract class License implements ActiveRecordInterface
      */
     public function hasOnlyDefaultValues()
     {
-            if ($this->license_serial_number !== '') {
+            if ($this->id !== '') {
                 return false;
             }
 
-            if ($this->serial_number !== '') {
+            if ($this->product_id !== '') {
                 return false;
             }
 
             if ($this->license_type_id !== 0) {
-                return false;
-            }
-
-            if ($this->date_generated && $this->date_generated->format('Y-m-d H:i:s.u') !== '-0001-11-30 00:00:00.000000') {
-                return false;
-            }
-
-            if ($this->authorization_limit !== 0) {
-                return false;
-            }
-
-            if ($this->blacklisted !== 0) {
-                return false;
-            }
-
-            if ($this->deleted_flag !== 0) {
-                return false;
-            }
-
-            if ($this->expires !== 0) {
-                return false;
-            }
-
-            if ($this->user_id !== 0) {
-                return false;
-            }
-
-            if ($this->user_date_added && $this->user_date_added->format('Y-m-d H:i:s.u') !== '-0001-11-30 00:00:00.000000') {
                 return false;
             }
 
@@ -797,34 +470,13 @@ abstract class License implements ActiveRecordInterface
         try {
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : LicenseTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->license_serial_number = (null !== $col) ? (string) $col : null;
+            $this->id = (null !== $col) ? (string) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : LicenseTableMap::translateFieldName('ProductId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->serial_number = (null !== $col) ? (string) $col : null;
+            $this->product_id = (null !== $col) ? (string) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : LicenseTableMap::translateFieldName('LicenseTypeId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->license_type_id = (null !== $col) ? (int) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : LicenseTableMap::translateFieldName('DateGenerated', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->date_generated = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : LicenseTableMap::translateFieldName('AuthorizationLimit', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->authorization_limit = (null !== $col) ? (int) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : LicenseTableMap::translateFieldName('Blacklisted', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->blacklisted = (null !== $col) ? (int) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : LicenseTableMap::translateFieldName('DeletedFlag', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->deleted_flag = (null !== $col) ? (int) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : LicenseTableMap::translateFieldName('Expires', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->expires = (null !== $col) ? (int) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : LicenseTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->user_id = (null !== $col) ? (int) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : LicenseTableMap::translateFieldName('UserAddedAt', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->user_date_added = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -833,7 +485,7 @@ abstract class License implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 10; // 10 = LicenseTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 3; // 3 = LicenseTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Serato\\SwsApp\\Test\\Propel\\Model\\License'), 0, $e);
@@ -960,11 +612,6 @@ abstract class License implements ActiveRecordInterface
             $isInsert = $this->isNew();
             if ($isInsert) {
                 $ret = $ret && $this->preInsert($con);
-                // timestampable behavior
-
-                if (!$this->isColumnModified(LicenseTableMap::COL_DATE_GENERATED)) {
-                    $this->setDateGenerated(\Propel\Runtime\Util\PropelDateTime::createHighPrecision());
-                }
             } else {
                 $ret = $ret && $this->preUpdate($con);
             }
@@ -1035,35 +682,14 @@ abstract class License implements ActiveRecordInterface
 
 
          // check the columns in natural order for more readable SQL queries
-        if ($this->isColumnModified(LicenseTableMap::COL_LICENSE_SERIAL_NUMBER)) {
-            $modifiedColumns[':p' . $index++]  = 'license_serial_number';
+        if ($this->isColumnModified(LicenseTableMap::COL_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'id';
         }
-        if ($this->isColumnModified(LicenseTableMap::COL_SERIAL_NUMBER)) {
-            $modifiedColumns[':p' . $index++]  = 'serial_number';
+        if ($this->isColumnModified(LicenseTableMap::COL_PRODUCT_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'product_id';
         }
         if ($this->isColumnModified(LicenseTableMap::COL_LICENSE_TYPE_ID)) {
             $modifiedColumns[':p' . $index++]  = 'license_type_id';
-        }
-        if ($this->isColumnModified(LicenseTableMap::COL_DATE_GENERATED)) {
-            $modifiedColumns[':p' . $index++]  = 'date_generated';
-        }
-        if ($this->isColumnModified(LicenseTableMap::COL_AUTHORIZATION_LIMIT)) {
-            $modifiedColumns[':p' . $index++]  = 'authorization_limit';
-        }
-        if ($this->isColumnModified(LicenseTableMap::COL_BLACKLISTED)) {
-            $modifiedColumns[':p' . $index++]  = 'blacklisted';
-        }
-        if ($this->isColumnModified(LicenseTableMap::COL_DELETED_FLAG)) {
-            $modifiedColumns[':p' . $index++]  = 'deleted_flag';
-        }
-        if ($this->isColumnModified(LicenseTableMap::COL_EXPIRES)) {
-            $modifiedColumns[':p' . $index++]  = 'expires';
-        }
-        if ($this->isColumnModified(LicenseTableMap::COL_USER_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'user_id';
-        }
-        if ($this->isColumnModified(LicenseTableMap::COL_USER_DATE_ADDED)) {
-            $modifiedColumns[':p' . $index++]  = 'user_date_added';
         }
 
         $sql = sprintf(
@@ -1076,35 +702,14 @@ abstract class License implements ActiveRecordInterface
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case 'license_serial_number':
-                        $stmt->bindValue($identifier, $this->license_serial_number, PDO::PARAM_STR);
+                    case 'id':
+                        $stmt->bindValue($identifier, $this->id, PDO::PARAM_STR);
                         break;
-                    case 'serial_number':
-                        $stmt->bindValue($identifier, $this->serial_number, PDO::PARAM_STR);
+                    case 'product_id':
+                        $stmt->bindValue($identifier, $this->product_id, PDO::PARAM_STR);
                         break;
                     case 'license_type_id':
                         $stmt->bindValue($identifier, $this->license_type_id, PDO::PARAM_INT);
-                        break;
-                    case 'date_generated':
-                        $stmt->bindValue($identifier, $this->date_generated ? $this->date_generated->format("Y-m-d H:i:s.u") : null, PDO::PARAM_STR);
-                        break;
-                    case 'authorization_limit':
-                        $stmt->bindValue($identifier, $this->authorization_limit, PDO::PARAM_INT);
-                        break;
-                    case 'blacklisted':
-                        $stmt->bindValue($identifier, $this->blacklisted, PDO::PARAM_INT);
-                        break;
-                    case 'deleted_flag':
-                        $stmt->bindValue($identifier, $this->deleted_flag, PDO::PARAM_INT);
-                        break;
-                    case 'expires':
-                        $stmt->bindValue($identifier, $this->expires, PDO::PARAM_INT);
-                        break;
-                    case 'user_id':
-                        $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
-                        break;
-                    case 'user_date_added':
-                        $stmt->bindValue($identifier, $this->user_date_added ? $this->user_date_added->format("Y-m-d H:i:s.u") : null, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -1170,27 +775,6 @@ abstract class License implements ActiveRecordInterface
             case 2:
                 return $this->getLicenseTypeId();
                 break;
-            case 3:
-                return $this->getDateGenerated();
-                break;
-            case 4:
-                return $this->getAuthorizationLimit();
-                break;
-            case 5:
-                return $this->getBlacklisted();
-                break;
-            case 6:
-                return $this->getDeletedFlag();
-                break;
-            case 7:
-                return $this->getExpires();
-                break;
-            case 8:
-                return $this->getUserId();
-                break;
-            case 9:
-                return $this->getUserAddedAt();
-                break;
             default:
                 return null;
                 break;
@@ -1223,22 +807,7 @@ abstract class License implements ActiveRecordInterface
             $keys[0] => $this->getId(),
             $keys[1] => $this->getProductId(),
             $keys[2] => $this->getLicenseTypeId(),
-            $keys[3] => $this->getDateGenerated(),
-            $keys[4] => $this->getAuthorizationLimit(),
-            $keys[5] => $this->getBlacklisted(),
-            $keys[6] => $this->getDeletedFlag(),
-            $keys[7] => $this->getExpires(),
-            $keys[8] => $this->getUserId(),
-            $keys[9] => $this->getUserAddedAt(),
         );
-        if ($result[$keys[3]] instanceof \DateTime) {
-            $result[$keys[3]] = $result[$keys[3]]->format('c');
-        }
-
-        if ($result[$keys[9]] instanceof \DateTime) {
-            $result[$keys[9]] = $result[$keys[9]]->format('c');
-        }
-
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
@@ -1286,27 +855,6 @@ abstract class License implements ActiveRecordInterface
             case 2:
                 $this->setLicenseTypeId($value);
                 break;
-            case 3:
-                $this->setDateGenerated($value);
-                break;
-            case 4:
-                $this->setAuthorizationLimit($value);
-                break;
-            case 5:
-                $this->setBlacklisted($value);
-                break;
-            case 6:
-                $this->setDeletedFlag($value);
-                break;
-            case 7:
-                $this->setExpires($value);
-                break;
-            case 8:
-                $this->setUserId($value);
-                break;
-            case 9:
-                $this->setUserAddedAt($value);
-                break;
         } // switch()
 
         return $this;
@@ -1341,27 +889,6 @@ abstract class License implements ActiveRecordInterface
         }
         if (array_key_exists($keys[2], $arr)) {
             $this->setLicenseTypeId($arr[$keys[2]]);
-        }
-        if (array_key_exists($keys[3], $arr)) {
-            $this->setDateGenerated($arr[$keys[3]]);
-        }
-        if (array_key_exists($keys[4], $arr)) {
-            $this->setAuthorizationLimit($arr[$keys[4]]);
-        }
-        if (array_key_exists($keys[5], $arr)) {
-            $this->setBlacklisted($arr[$keys[5]]);
-        }
-        if (array_key_exists($keys[6], $arr)) {
-            $this->setDeletedFlag($arr[$keys[6]]);
-        }
-        if (array_key_exists($keys[7], $arr)) {
-            $this->setExpires($arr[$keys[7]]);
-        }
-        if (array_key_exists($keys[8], $arr)) {
-            $this->setUserId($arr[$keys[8]]);
-        }
-        if (array_key_exists($keys[9], $arr)) {
-            $this->setUserAddedAt($arr[$keys[9]]);
         }
     }
 
@@ -1404,35 +931,14 @@ abstract class License implements ActiveRecordInterface
     {
         $criteria = new Criteria(LicenseTableMap::DATABASE_NAME);
 
-        if ($this->isColumnModified(LicenseTableMap::COL_LICENSE_SERIAL_NUMBER)) {
-            $criteria->add(LicenseTableMap::COL_LICENSE_SERIAL_NUMBER, $this->license_serial_number);
+        if ($this->isColumnModified(LicenseTableMap::COL_ID)) {
+            $criteria->add(LicenseTableMap::COL_ID, $this->id);
         }
-        if ($this->isColumnModified(LicenseTableMap::COL_SERIAL_NUMBER)) {
-            $criteria->add(LicenseTableMap::COL_SERIAL_NUMBER, $this->serial_number);
+        if ($this->isColumnModified(LicenseTableMap::COL_PRODUCT_ID)) {
+            $criteria->add(LicenseTableMap::COL_PRODUCT_ID, $this->product_id);
         }
         if ($this->isColumnModified(LicenseTableMap::COL_LICENSE_TYPE_ID)) {
             $criteria->add(LicenseTableMap::COL_LICENSE_TYPE_ID, $this->license_type_id);
-        }
-        if ($this->isColumnModified(LicenseTableMap::COL_DATE_GENERATED)) {
-            $criteria->add(LicenseTableMap::COL_DATE_GENERATED, $this->date_generated);
-        }
-        if ($this->isColumnModified(LicenseTableMap::COL_AUTHORIZATION_LIMIT)) {
-            $criteria->add(LicenseTableMap::COL_AUTHORIZATION_LIMIT, $this->authorization_limit);
-        }
-        if ($this->isColumnModified(LicenseTableMap::COL_BLACKLISTED)) {
-            $criteria->add(LicenseTableMap::COL_BLACKLISTED, $this->blacklisted);
-        }
-        if ($this->isColumnModified(LicenseTableMap::COL_DELETED_FLAG)) {
-            $criteria->add(LicenseTableMap::COL_DELETED_FLAG, $this->deleted_flag);
-        }
-        if ($this->isColumnModified(LicenseTableMap::COL_EXPIRES)) {
-            $criteria->add(LicenseTableMap::COL_EXPIRES, $this->expires);
-        }
-        if ($this->isColumnModified(LicenseTableMap::COL_USER_ID)) {
-            $criteria->add(LicenseTableMap::COL_USER_ID, $this->user_id);
-        }
-        if ($this->isColumnModified(LicenseTableMap::COL_USER_DATE_ADDED)) {
-            $criteria->add(LicenseTableMap::COL_USER_DATE_ADDED, $this->user_date_added);
         }
 
         return $criteria;
@@ -1451,7 +957,7 @@ abstract class License implements ActiveRecordInterface
     public function buildPkeyCriteria()
     {
         $criteria = ChildLicenseQuery::create();
-        $criteria->add(LicenseTableMap::COL_LICENSE_SERIAL_NUMBER, $this->license_serial_number);
+        $criteria->add(LicenseTableMap::COL_ID, $this->id);
 
         return $criteria;
     }
@@ -1488,7 +994,7 @@ abstract class License implements ActiveRecordInterface
     }
 
     /**
-     * Generic method to set the primary key (license_serial_number column).
+     * Generic method to set the primary key (id column).
      *
      * @param       string $key Primary key.
      * @return void
@@ -1523,13 +1029,6 @@ abstract class License implements ActiveRecordInterface
         $copyObj->setId($this->getId());
         $copyObj->setProductId($this->getProductId());
         $copyObj->setLicenseTypeId($this->getLicenseTypeId());
-        $copyObj->setDateGenerated($this->getDateGenerated());
-        $copyObj->setAuthorizationLimit($this->getAuthorizationLimit());
-        $copyObj->setBlacklisted($this->getBlacklisted());
-        $copyObj->setDeletedFlag($this->getDeletedFlag());
-        $copyObj->setExpires($this->getExpires());
-        $copyObj->setUserId($this->getUserId());
-        $copyObj->setUserAddedAt($this->getUserAddedAt());
         if ($makeNew) {
             $copyObj->setNew(true);
         }
@@ -1564,16 +1063,9 @@ abstract class License implements ActiveRecordInterface
      */
     public function clear()
     {
-        $this->license_serial_number = null;
-        $this->serial_number = null;
+        $this->id = null;
+        $this->product_id = null;
         $this->license_type_id = null;
-        $this->date_generated = null;
-        $this->authorization_limit = null;
-        $this->blacklisted = null;
-        $this->deleted_flag = null;
-        $this->expires = null;
-        $this->user_id = null;
-        $this->user_date_added = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->applyDefaultValues();

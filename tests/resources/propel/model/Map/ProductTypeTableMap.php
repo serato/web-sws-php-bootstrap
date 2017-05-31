@@ -59,7 +59,7 @@ class ProductTypeTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 7;
+    const NUM_COLUMNS = 2;
 
     /**
      * The number of lazy-loaded columns
@@ -69,42 +69,17 @@ class ProductTypeTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 7;
+    const NUM_HYDRATE_COLUMNS = 2;
 
     /**
-     * the column name for the StockTypeID field
+     * the column name for the id field
      */
-    const COL_STOCKTYPEID = 'shop_products.StockTypeID';
+    const COL_ID = 'shop_products.id';
 
     /**
-     * the column name for the CurrentName field
+     * the column name for the name field
      */
-    const COL_CURRENTNAME = 'shop_products.CurrentName';
-
-    /**
-     * the column name for the type field
-     */
-    const COL_TYPE = 'shop_products.type';
-
-    /**
-     * the column name for the active field
-     */
-    const COL_ACTIVE = 'shop_products.active';
-
-    /**
-     * the column name for the trial field
-     */
-    const COL_TRIAL = 'shop_products.trial';
-
-    /**
-     * the column name for the host_app_checksum field
-     */
-    const COL_HOST_APP_CHECKSUM = 'shop_products.host_app_checksum';
-
-    /**
-     * the column name for the serial_number_type field
-     */
-    const COL_SERIAL_NUMBER_TYPE = 'shop_products.serial_number_type';
+    const COL_NAME = 'shop_products.name';
 
     /**
      * The default string format for model objects of the related table
@@ -118,11 +93,11 @@ class ProductTypeTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Name', 'Type', 'Active', 'Trial', 'ClientApplicationChecksum', 'SerialNumberType', ),
-        self::TYPE_CAMELNAME     => array('id', 'name', 'type', 'active', 'trial', 'clientApplicationChecksum', 'serialNumberType', ),
-        self::TYPE_COLNAME       => array(ProductTypeTableMap::COL_STOCKTYPEID, ProductTypeTableMap::COL_CURRENTNAME, ProductTypeTableMap::COL_TYPE, ProductTypeTableMap::COL_ACTIVE, ProductTypeTableMap::COL_TRIAL, ProductTypeTableMap::COL_HOST_APP_CHECKSUM, ProductTypeTableMap::COL_SERIAL_NUMBER_TYPE, ),
-        self::TYPE_FIELDNAME     => array('StockTypeID', 'CurrentName', 'type', 'active', 'trial', 'host_app_checksum', 'serial_number_type', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
+        self::TYPE_PHPNAME       => array('Id', 'Name', ),
+        self::TYPE_CAMELNAME     => array('id', 'name', ),
+        self::TYPE_COLNAME       => array(ProductTypeTableMap::COL_ID, ProductTypeTableMap::COL_NAME, ),
+        self::TYPE_FIELDNAME     => array('id', 'name', ),
+        self::TYPE_NUM           => array(0, 1, )
     );
 
     /**
@@ -132,11 +107,11 @@ class ProductTypeTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Name' => 1, 'Type' => 2, 'Active' => 3, 'Trial' => 4, 'ClientApplicationChecksum' => 5, 'SerialNumberType' => 6, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'name' => 1, 'type' => 2, 'active' => 3, 'trial' => 4, 'clientApplicationChecksum' => 5, 'serialNumberType' => 6, ),
-        self::TYPE_COLNAME       => array(ProductTypeTableMap::COL_STOCKTYPEID => 0, ProductTypeTableMap::COL_CURRENTNAME => 1, ProductTypeTableMap::COL_TYPE => 2, ProductTypeTableMap::COL_ACTIVE => 3, ProductTypeTableMap::COL_TRIAL => 4, ProductTypeTableMap::COL_HOST_APP_CHECKSUM => 5, ProductTypeTableMap::COL_SERIAL_NUMBER_TYPE => 6, ),
-        self::TYPE_FIELDNAME     => array('StockTypeID' => 0, 'CurrentName' => 1, 'type' => 2, 'active' => 3, 'trial' => 4, 'host_app_checksum' => 5, 'serial_number_type' => 6, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Name' => 1, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'name' => 1, ),
+        self::TYPE_COLNAME       => array(ProductTypeTableMap::COL_ID => 0, ProductTypeTableMap::COL_NAME => 1, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'name' => 1, ),
+        self::TYPE_NUM           => array(0, 1, )
     );
 
     /**
@@ -156,13 +131,8 @@ class ProductTypeTableMap extends TableMap
         $this->setPackage('');
         $this->setUseIdGenerator(true);
         // columns
-        $this->addPrimaryKey('StockTypeID', 'Id', 'TINYINT', true, 3, null);
-        $this->addColumn('CurrentName', 'Name', 'VARCHAR', true, 60, null);
-        $this->addColumn('type', 'Type', 'CHAR', true, null, 'download');
-        $this->addColumn('active', 'Active', 'TINYINT', true, 3, 0);
-        $this->addColumn('trial', 'Trial', 'BOOLEAN', true, 1, false);
-        $this->addColumn('host_app_checksum', 'ClientApplicationChecksum', 'BIGINT', true, null, 0);
-        $this->addColumn('serial_number_type', 'SerialNumberType', 'CHAR', true, null, 'seratodj');
+        $this->addPrimaryKey('id', 'Id', 'TINYINT', true, 3, null);
+        $this->addColumn('name', 'Name', 'VARCHAR', true, 60, null);
     } // initialize()
 
     /**
@@ -313,21 +283,11 @@ class ProductTypeTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(ProductTypeTableMap::COL_STOCKTYPEID);
-            $criteria->addSelectColumn(ProductTypeTableMap::COL_CURRENTNAME);
-            $criteria->addSelectColumn(ProductTypeTableMap::COL_TYPE);
-            $criteria->addSelectColumn(ProductTypeTableMap::COL_ACTIVE);
-            $criteria->addSelectColumn(ProductTypeTableMap::COL_TRIAL);
-            $criteria->addSelectColumn(ProductTypeTableMap::COL_HOST_APP_CHECKSUM);
-            $criteria->addSelectColumn(ProductTypeTableMap::COL_SERIAL_NUMBER_TYPE);
+            $criteria->addSelectColumn(ProductTypeTableMap::COL_ID);
+            $criteria->addSelectColumn(ProductTypeTableMap::COL_NAME);
         } else {
-            $criteria->addSelectColumn($alias . '.StockTypeID');
-            $criteria->addSelectColumn($alias . '.CurrentName');
-            $criteria->addSelectColumn($alias . '.type');
-            $criteria->addSelectColumn($alias . '.active');
-            $criteria->addSelectColumn($alias . '.trial');
-            $criteria->addSelectColumn($alias . '.host_app_checksum');
-            $criteria->addSelectColumn($alias . '.serial_number_type');
+            $criteria->addSelectColumn($alias . '.id');
+            $criteria->addSelectColumn($alias . '.name');
         }
     }
 
@@ -379,7 +339,7 @@ class ProductTypeTableMap extends TableMap
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
             $criteria = new Criteria(ProductTypeTableMap::DATABASE_NAME);
-            $criteria->add(ProductTypeTableMap::COL_STOCKTYPEID, (array) $values, Criteria::IN);
+            $criteria->add(ProductTypeTableMap::COL_ID, (array) $values, Criteria::IN);
         }
 
         $query = ProductTypeQuery::create()->mergeWith($criteria);

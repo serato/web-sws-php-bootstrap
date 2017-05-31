@@ -1,22 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <database name="default" defaultIdMethod="native" defaultPhpNamingMethod="underscore" namespace="Serato\SwsApp\Test\Propel\Model">
   <table name="shop_products" idMethod="native" phpName="ProductType" allowPkInsert="true">
-    <column name="StockTypeID" phpName="Id" type="TINYINT" size="3" sqlType="tinyint(3) unsigned" primaryKey="true" autoIncrement="true" required="true"/>
-    <column name="CurrentName" phpName="Name" type="VARCHAR" size="60" required="true"/>
-    <column name="type" phpName="Type" type="CHAR" sqlType="enum('download','box','subscription')" required="true" defaultValue="download"/>
-    <column name="active" phpName="Active" type="TINYINT" size="3" sqlType="tinyint(3) unsigned" required="true" defaultValue="0"/>
-    <column name="trial" phpName="Trial" type="BOOLEAN" size="1" sqlType="tinyint(1) unsigned" required="true" defaultValue="false"/>
-    <column name="host_app_checksum" phpName="ClientApplicationChecksum" type="BIGINT" sqlType="bigint(20) unsigned" required="true" defaultValue="0"/>
-    <column name="serial_number_type" phpName="SerialNumberType" type="CHAR" sqlType="enum('plugins','seratovideo','videosl','seratodj','apple_appstore','seratosample')" required="true" defaultValue="seratodj"/>
-    <index name="active">
-      <index-column name="active"/>
-    </index>
-    <index name="type">
-      <index-column name="type"/>
-    </index>
-    <index name="shop_products_trial">
-      <index-column name="trial"/>
-    </index>
+    <column name="id" phpName="Id" type="TINYINT" size="3" sqlType="tinyint(3) unsigned" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="name" phpName="Name" type="VARCHAR" size="60" required="true"/>
     <vendor type="mysql">
       <parameter name="Engine" value="InnoDB"/>
     </vendor>

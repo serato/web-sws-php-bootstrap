@@ -59,7 +59,7 @@ class LicenseTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 10;
+    const NUM_COLUMNS = 3;
 
     /**
      * The number of lazy-loaded columns
@@ -69,57 +69,22 @@ class LicenseTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 10;
+    const NUM_HYDRATE_COLUMNS = 3;
 
     /**
-     * the column name for the license_serial_number field
+     * the column name for the id field
      */
-    const COL_LICENSE_SERIAL_NUMBER = 'product_licenses.license_serial_number';
+    const COL_ID = 'product_licenses.id';
 
     /**
-     * the column name for the serial_number field
+     * the column name for the product_id field
      */
-    const COL_SERIAL_NUMBER = 'product_licenses.serial_number';
+    const COL_PRODUCT_ID = 'product_licenses.product_id';
 
     /**
      * the column name for the license_type_id field
      */
     const COL_LICENSE_TYPE_ID = 'product_licenses.license_type_id';
-
-    /**
-     * the column name for the date_generated field
-     */
-    const COL_DATE_GENERATED = 'product_licenses.date_generated';
-
-    /**
-     * the column name for the authorization_limit field
-     */
-    const COL_AUTHORIZATION_LIMIT = 'product_licenses.authorization_limit';
-
-    /**
-     * the column name for the blacklisted field
-     */
-    const COL_BLACKLISTED = 'product_licenses.blacklisted';
-
-    /**
-     * the column name for the deleted_flag field
-     */
-    const COL_DELETED_FLAG = 'product_licenses.deleted_flag';
-
-    /**
-     * the column name for the expires field
-     */
-    const COL_EXPIRES = 'product_licenses.expires';
-
-    /**
-     * the column name for the user_id field
-     */
-    const COL_USER_ID = 'product_licenses.user_id';
-
-    /**
-     * the column name for the user_date_added field
-     */
-    const COL_USER_DATE_ADDED = 'product_licenses.user_date_added';
 
     /**
      * The default string format for model objects of the related table
@@ -133,11 +98,11 @@ class LicenseTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'ProductId', 'LicenseTypeId', 'DateGenerated', 'AuthorizationLimit', 'Blacklisted', 'DeletedFlag', 'Expires', 'UserId', 'UserAddedAt', ),
-        self::TYPE_CAMELNAME     => array('id', 'productId', 'licenseTypeId', 'dateGenerated', 'authorizationLimit', 'blacklisted', 'deletedFlag', 'expires', 'userId', 'userAddedAt', ),
-        self::TYPE_COLNAME       => array(LicenseTableMap::COL_LICENSE_SERIAL_NUMBER, LicenseTableMap::COL_SERIAL_NUMBER, LicenseTableMap::COL_LICENSE_TYPE_ID, LicenseTableMap::COL_DATE_GENERATED, LicenseTableMap::COL_AUTHORIZATION_LIMIT, LicenseTableMap::COL_BLACKLISTED, LicenseTableMap::COL_DELETED_FLAG, LicenseTableMap::COL_EXPIRES, LicenseTableMap::COL_USER_ID, LicenseTableMap::COL_USER_DATE_ADDED, ),
-        self::TYPE_FIELDNAME     => array('license_serial_number', 'serial_number', 'license_type_id', 'date_generated', 'authorization_limit', 'blacklisted', 'deleted_flag', 'expires', 'user_id', 'user_date_added', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
+        self::TYPE_PHPNAME       => array('Id', 'ProductId', 'LicenseTypeId', ),
+        self::TYPE_CAMELNAME     => array('id', 'productId', 'licenseTypeId', ),
+        self::TYPE_COLNAME       => array(LicenseTableMap::COL_ID, LicenseTableMap::COL_PRODUCT_ID, LicenseTableMap::COL_LICENSE_TYPE_ID, ),
+        self::TYPE_FIELDNAME     => array('id', 'product_id', 'license_type_id', ),
+        self::TYPE_NUM           => array(0, 1, 2, )
     );
 
     /**
@@ -147,11 +112,11 @@ class LicenseTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'ProductId' => 1, 'LicenseTypeId' => 2, 'DateGenerated' => 3, 'AuthorizationLimit' => 4, 'Blacklisted' => 5, 'DeletedFlag' => 6, 'Expires' => 7, 'UserId' => 8, 'UserAddedAt' => 9, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'productId' => 1, 'licenseTypeId' => 2, 'dateGenerated' => 3, 'authorizationLimit' => 4, 'blacklisted' => 5, 'deletedFlag' => 6, 'expires' => 7, 'userId' => 8, 'userAddedAt' => 9, ),
-        self::TYPE_COLNAME       => array(LicenseTableMap::COL_LICENSE_SERIAL_NUMBER => 0, LicenseTableMap::COL_SERIAL_NUMBER => 1, LicenseTableMap::COL_LICENSE_TYPE_ID => 2, LicenseTableMap::COL_DATE_GENERATED => 3, LicenseTableMap::COL_AUTHORIZATION_LIMIT => 4, LicenseTableMap::COL_BLACKLISTED => 5, LicenseTableMap::COL_DELETED_FLAG => 6, LicenseTableMap::COL_EXPIRES => 7, LicenseTableMap::COL_USER_ID => 8, LicenseTableMap::COL_USER_DATE_ADDED => 9, ),
-        self::TYPE_FIELDNAME     => array('license_serial_number' => 0, 'serial_number' => 1, 'license_type_id' => 2, 'date_generated' => 3, 'authorization_limit' => 4, 'blacklisted' => 5, 'deleted_flag' => 6, 'expires' => 7, 'user_id' => 8, 'user_date_added' => 9, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'ProductId' => 1, 'LicenseTypeId' => 2, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'productId' => 1, 'licenseTypeId' => 2, ),
+        self::TYPE_COLNAME       => array(LicenseTableMap::COL_ID => 0, LicenseTableMap::COL_PRODUCT_ID => 1, LicenseTableMap::COL_LICENSE_TYPE_ID => 2, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'product_id' => 1, 'license_type_id' => 2, ),
+        self::TYPE_NUM           => array(0, 1, 2, )
     );
 
     /**
@@ -171,16 +136,9 @@ class LicenseTableMap extends TableMap
         $this->setPackage('');
         $this->setUseIdGenerator(false);
         // columns
-        $this->addPrimaryKey('license_serial_number', 'Id', 'VARCHAR', true, 50, '');
-        $this->addColumn('serial_number', 'ProductId', 'VARCHAR', true, 30, '');
+        $this->addPrimaryKey('id', 'Id', 'VARCHAR', true, 50, '');
+        $this->addColumn('product_id', 'ProductId', 'VARCHAR', true, 30, '');
         $this->addColumn('license_type_id', 'LicenseTypeId', 'TINYINT', true, 3, 0);
-        $this->addColumn('date_generated', 'DateGenerated', 'TIMESTAMP', true, null, '0000-00-00 00:00:00');
-        $this->addColumn('authorization_limit', 'AuthorizationLimit', 'TINYINT', true, 3, 0);
-        $this->addColumn('blacklisted', 'Blacklisted', 'TINYINT', true, null, 0);
-        $this->addColumn('deleted_flag', 'DeletedFlag', 'TINYINT', true, null, 0);
-        $this->addColumn('expires', 'Expires', 'INTEGER', true, 10, 0);
-        $this->addColumn('user_id', 'UserId', 'INTEGER', true, 10, 0);
-        $this->addColumn('user_date_added', 'UserAddedAt', 'TIMESTAMP', true, null, '0000-00-00 00:00:00');
     } // initialize()
 
     /**
@@ -189,19 +147,6 @@ class LicenseTableMap extends TableMap
     public function buildRelations()
     {
     } // buildRelations()
-
-    /**
-     *
-     * Gets the list of behaviors registered for this table
-     *
-     * @return array Associative array (name => parameters) of behaviors
-     */
-    public function getBehaviors()
-    {
-        return array(
-            'timestampable' => array('create_column' => 'date_generated', 'update_column' => 'updated_at', 'disable_created_at' => 'false', 'disable_updated_at' => 'true', ),
-        );
-    } // getBehaviors()
 
     /**
      * Retrieves a string version of the primary key from the DB resultset row that can be used to uniquely identify a row in this table.
@@ -344,27 +289,13 @@ class LicenseTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(LicenseTableMap::COL_LICENSE_SERIAL_NUMBER);
-            $criteria->addSelectColumn(LicenseTableMap::COL_SERIAL_NUMBER);
+            $criteria->addSelectColumn(LicenseTableMap::COL_ID);
+            $criteria->addSelectColumn(LicenseTableMap::COL_PRODUCT_ID);
             $criteria->addSelectColumn(LicenseTableMap::COL_LICENSE_TYPE_ID);
-            $criteria->addSelectColumn(LicenseTableMap::COL_DATE_GENERATED);
-            $criteria->addSelectColumn(LicenseTableMap::COL_AUTHORIZATION_LIMIT);
-            $criteria->addSelectColumn(LicenseTableMap::COL_BLACKLISTED);
-            $criteria->addSelectColumn(LicenseTableMap::COL_DELETED_FLAG);
-            $criteria->addSelectColumn(LicenseTableMap::COL_EXPIRES);
-            $criteria->addSelectColumn(LicenseTableMap::COL_USER_ID);
-            $criteria->addSelectColumn(LicenseTableMap::COL_USER_DATE_ADDED);
         } else {
-            $criteria->addSelectColumn($alias . '.license_serial_number');
-            $criteria->addSelectColumn($alias . '.serial_number');
+            $criteria->addSelectColumn($alias . '.id');
+            $criteria->addSelectColumn($alias . '.product_id');
             $criteria->addSelectColumn($alias . '.license_type_id');
-            $criteria->addSelectColumn($alias . '.date_generated');
-            $criteria->addSelectColumn($alias . '.authorization_limit');
-            $criteria->addSelectColumn($alias . '.blacklisted');
-            $criteria->addSelectColumn($alias . '.deleted_flag');
-            $criteria->addSelectColumn($alias . '.expires');
-            $criteria->addSelectColumn($alias . '.user_id');
-            $criteria->addSelectColumn($alias . '.user_date_added');
         }
     }
 
@@ -416,7 +347,7 @@ class LicenseTableMap extends TableMap
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
             $criteria = new Criteria(LicenseTableMap::DATABASE_NAME);
-            $criteria->add(LicenseTableMap::COL_LICENSE_SERIAL_NUMBER, (array) $values, Criteria::IN);
+            $criteria->add(LicenseTableMap::COL_ID, (array) $values, Criteria::IN);
         }
 
         $query = LicenseQuery::create()->mergeWith($criteria);

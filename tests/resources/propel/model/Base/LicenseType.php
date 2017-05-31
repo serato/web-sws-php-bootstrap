@@ -2,7 +2,6 @@
 
 namespace Serato\SwsApp\Test\Propel\Model\Base;
 
-use \DateTime;
 use \Exception;
 use \PDO;
 use Propel\Runtime\Propel;
@@ -16,12 +15,11 @@ use Propel\Runtime\Exception\LogicException;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
-use Propel\Runtime\Util\PropelDateTime;
 use Serato\SwsApp\Test\Propel\Model\LicenseTypeQuery as ChildLicenseTypeQuery;
 use Serato\SwsApp\Test\Propel\Model\Map\LicenseTypeTableMap;
 
 /**
- * Base class that represents a row from the 'product_serial_number_license_types' table.
+ * Base class that represents a row from the 'license_types' table.
  *
  *
  *
@@ -62,11 +60,11 @@ abstract class LicenseType implements ActiveRecordInterface
     protected $virtualColumns = array();
 
     /**
-     * The value for the license_type_id field.
+     * The value for the id field.
      *
      * @var        int
      */
-    protected $license_type_id;
+    protected $id;
 
     /**
      * The value for the name field.
@@ -74,86 +72,6 @@ abstract class LicenseType implements ActiveRecordInterface
      * @var        string
      */
     protected $name;
-
-    /**
-     * The value for the current field.
-     *
-     * Note: this column has a database default value of: 0
-     * @var        int
-     */
-    protected $current;
-
-    /**
-     * The value for the auth_type field.
-     *
-     * Note: this column has a database default value of: ''
-     * @var        string
-     */
-    protected $auth_type;
-
-    /**
-     * The value for the rlm_product_name field.
-     *
-     * Note: this column has a database default value of: ''
-     * @var        string
-     */
-    protected $rlm_product_name;
-
-    /**
-     * The value for the rlm_license_version field.
-     *
-     * Note: this column has a database default value of: ''
-     * @var        string
-     */
-    protected $rlm_license_version;
-
-    /**
-     * The value for the license_options field.
-     *
-     * Note: this column has a database default value of: ''
-     * @var        string
-     */
-    protected $license_options;
-
-    /**
-     * The value for the host_app_checksum field.
-     *
-     * Note: this column has a database default value of: '0'
-     * @var        string
-     */
-    protected $host_app_checksum;
-
-    /**
-     * The value for the serial_number_type field.
-     *
-     * Note: this column has a database default value of: 'seratodj'
-     * @var        string
-     */
-    protected $serial_number_type;
-
-    /**
-     * The value for the authorization_limit field.
-     *
-     * Note: this column has a database default value of: 2
-     * @var        int
-     */
-    protected $authorization_limit;
-
-    /**
-     * The value for the expires_days field.
-     *
-     * Note: this column has a database default value of: 0
-     * @var        int
-     */
-    protected $expires_days;
-
-    /**
-     * The value for the expires_date field.
-     *
-     * Note: this column has a database default value of: '-0001-11-30 00:00:00.000000'
-     * @var        DateTime
-     */
-    protected $expires_date;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -164,32 +82,10 @@ abstract class LicenseType implements ActiveRecordInterface
     protected $alreadyInSave = false;
 
     /**
-     * Applies default values to this object.
-     * This method should be called from the object's constructor (or
-     * equivalent initialization method).
-     * @see __construct()
-     */
-    public function applyDefaultValues()
-    {
-        $this->current = 0;
-        $this->auth_type = '';
-        $this->rlm_product_name = '';
-        $this->rlm_license_version = '';
-        $this->license_options = '';
-        $this->host_app_checksum = '0';
-        $this->serial_number_type = 'seratodj';
-        $this->authorization_limit = 2;
-        $this->expires_days = 0;
-        $this->expires_date = PropelDateTime::newInstance('-0001-11-30 00:00:00.000000', null, 'DateTime');
-    }
-
-    /**
      * Initializes internal state of Serato\SwsApp\Test\Propel\Model\Base\LicenseType object.
-     * @see applyDefaults()
      */
     public function __construct()
     {
-        $this->applyDefaultValues();
     }
 
     /**
@@ -411,13 +307,13 @@ abstract class LicenseType implements ActiveRecordInterface
     }
 
     /**
-     * Get the [license_type_id] column value.
+     * Get the [id] column value.
      *
      * @return int
      */
     public function getId()
     {
-        return $this->license_type_id;
+        return $this->id;
     }
 
     /**
@@ -431,117 +327,7 @@ abstract class LicenseType implements ActiveRecordInterface
     }
 
     /**
-     * Get the [current] column value.
-     *
-     * @return int
-     */
-    public function getCurrent()
-    {
-        return $this->current;
-    }
-
-    /**
-     * Get the [auth_type] column value.
-     *
-     * @return string
-     */
-    public function getAuthType()
-    {
-        return $this->auth_type;
-    }
-
-    /**
-     * Get the [rlm_product_name] column value.
-     *
-     * @return string
-     */
-    public function getRlmProductName()
-    {
-        return $this->rlm_product_name;
-    }
-
-    /**
-     * Get the [rlm_license_version] column value.
-     *
-     * @return string
-     */
-    public function getRlmLicenseVersion()
-    {
-        return $this->rlm_license_version;
-    }
-
-    /**
-     * Get the [license_options] column value.
-     *
-     * @return string
-     */
-    public function getOptions()
-    {
-        return $this->license_options;
-    }
-
-    /**
-     * Get the [host_app_checksum] column value.
-     *
-     * @return string
-     */
-    public function getClientApplicationChecksum()
-    {
-        return $this->host_app_checksum;
-    }
-
-    /**
-     * Get the [serial_number_type] column value.
-     *
-     * @return string
-     */
-    public function getSerialNumberType()
-    {
-        return $this->serial_number_type;
-    }
-
-    /**
-     * Get the [authorization_limit] column value.
-     *
-     * @return int
-     */
-    public function getAuthorizationLimit()
-    {
-        return $this->authorization_limit;
-    }
-
-    /**
-     * Get the [expires_days] column value.
-     *
-     * @return int
-     */
-    public function getExpiresDays()
-    {
-        return $this->expires_days;
-    }
-
-    /**
-     * Get the [optionally formatted] temporal [expires_date] column value.
-     *
-     *
-     * @param      string $format The date/time format string (either date()-style or strftime()-style).
-     *                            If format is NULL, then the raw DateTime object will be returned.
-     *
-     * @return string|DateTime Formatted date/time value as string or DateTime object (if format is NULL), NULL if column is NULL
-     *
-     * @throws PropelException - if unable to parse/validate the date/time value.
-     */
-    public function getExpiresDate($format = NULL)
-    {
-        if ($format === null) {
-            return $this->expires_date;
-        } else {
-            return $this->expires_date instanceof \DateTimeInterface ? $this->expires_date->format($format) : null;
-        }
-    }
-
-    /**
-     * Set the value of [license_type_id] column.
+     * Set the value of [id] column.
      *
      * @param int $v new value
      * @return $this|\Serato\SwsApp\Test\Propel\Model\LicenseType The current object (for fluent API support)
@@ -552,9 +338,9 @@ abstract class LicenseType implements ActiveRecordInterface
             $v = (int) $v;
         }
 
-        if ($this->license_type_id !== $v) {
-            $this->license_type_id = $v;
-            $this->modifiedColumns[LicenseTypeTableMap::COL_LICENSE_TYPE_ID] = true;
+        if ($this->id !== $v) {
+            $this->id = $v;
+            $this->modifiedColumns[LicenseTypeTableMap::COL_ID] = true;
         }
 
         return $this;
@@ -581,208 +367,6 @@ abstract class LicenseType implements ActiveRecordInterface
     } // setName()
 
     /**
-     * Set the value of [current] column.
-     *
-     * @param int $v new value
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\LicenseType The current object (for fluent API support)
-     */
-    public function setCurrent($v)
-    {
-        if ($v !== null) {
-            $v = (int) $v;
-        }
-
-        if ($this->current !== $v) {
-            $this->current = $v;
-            $this->modifiedColumns[LicenseTypeTableMap::COL_CURRENT] = true;
-        }
-
-        return $this;
-    } // setCurrent()
-
-    /**
-     * Set the value of [auth_type] column.
-     *
-     * @param string $v new value
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\LicenseType The current object (for fluent API support)
-     */
-    public function setAuthType($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->auth_type !== $v) {
-            $this->auth_type = $v;
-            $this->modifiedColumns[LicenseTypeTableMap::COL_AUTH_TYPE] = true;
-        }
-
-        return $this;
-    } // setAuthType()
-
-    /**
-     * Set the value of [rlm_product_name] column.
-     *
-     * @param string $v new value
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\LicenseType The current object (for fluent API support)
-     */
-    public function setRlmProductName($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->rlm_product_name !== $v) {
-            $this->rlm_product_name = $v;
-            $this->modifiedColumns[LicenseTypeTableMap::COL_RLM_PRODUCT_NAME] = true;
-        }
-
-        return $this;
-    } // setRlmProductName()
-
-    /**
-     * Set the value of [rlm_license_version] column.
-     *
-     * @param string $v new value
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\LicenseType The current object (for fluent API support)
-     */
-    public function setRlmLicenseVersion($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->rlm_license_version !== $v) {
-            $this->rlm_license_version = $v;
-            $this->modifiedColumns[LicenseTypeTableMap::COL_RLM_LICENSE_VERSION] = true;
-        }
-
-        return $this;
-    } // setRlmLicenseVersion()
-
-    /**
-     * Set the value of [license_options] column.
-     *
-     * @param string $v new value
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\LicenseType The current object (for fluent API support)
-     */
-    public function setOptions($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->license_options !== $v) {
-            $this->license_options = $v;
-            $this->modifiedColumns[LicenseTypeTableMap::COL_LICENSE_OPTIONS] = true;
-        }
-
-        return $this;
-    } // setOptions()
-
-    /**
-     * Set the value of [host_app_checksum] column.
-     *
-     * @param string $v new value
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\LicenseType The current object (for fluent API support)
-     */
-    public function setClientApplicationChecksum($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->host_app_checksum !== $v) {
-            $this->host_app_checksum = $v;
-            $this->modifiedColumns[LicenseTypeTableMap::COL_HOST_APP_CHECKSUM] = true;
-        }
-
-        return $this;
-    } // setClientApplicationChecksum()
-
-    /**
-     * Set the value of [serial_number_type] column.
-     *
-     * @param string $v new value
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\LicenseType The current object (for fluent API support)
-     */
-    public function setSerialNumberType($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->serial_number_type !== $v) {
-            $this->serial_number_type = $v;
-            $this->modifiedColumns[LicenseTypeTableMap::COL_SERIAL_NUMBER_TYPE] = true;
-        }
-
-        return $this;
-    } // setSerialNumberType()
-
-    /**
-     * Set the value of [authorization_limit] column.
-     *
-     * @param int $v new value
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\LicenseType The current object (for fluent API support)
-     */
-    public function setAuthorizationLimit($v)
-    {
-        if ($v !== null) {
-            $v = (int) $v;
-        }
-
-        if ($this->authorization_limit !== $v) {
-            $this->authorization_limit = $v;
-            $this->modifiedColumns[LicenseTypeTableMap::COL_AUTHORIZATION_LIMIT] = true;
-        }
-
-        return $this;
-    } // setAuthorizationLimit()
-
-    /**
-     * Set the value of [expires_days] column.
-     *
-     * @param int $v new value
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\LicenseType The current object (for fluent API support)
-     */
-    public function setExpiresDays($v)
-    {
-        if ($v !== null) {
-            $v = (int) $v;
-        }
-
-        if ($this->expires_days !== $v) {
-            $this->expires_days = $v;
-            $this->modifiedColumns[LicenseTypeTableMap::COL_EXPIRES_DAYS] = true;
-        }
-
-        return $this;
-    } // setExpiresDays()
-
-    /**
-     * Sets the value of [expires_date] column to a normalized version of the date/time value specified.
-     *
-     * @param  mixed $v string, integer (timestamp), or \DateTimeInterface value.
-     *               Empty strings are treated as NULL.
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\LicenseType The current object (for fluent API support)
-     */
-    public function setExpiresDate($v)
-    {
-        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
-        if ($this->expires_date !== null || $dt !== null) {
-            if ( ($dt != $this->expires_date) // normalized values don't match
-                || ($dt->format('Y-m-d H:i:s.u') === '-0001-11-30 00:00:00.000000') // or the entered value matches the default
-                 ) {
-                $this->expires_date = $dt === null ? null : clone $dt;
-                $this->modifiedColumns[LicenseTypeTableMap::COL_EXPIRES_DATE] = true;
-            }
-        } // if either are not null
-
-        return $this;
-    } // setExpiresDate()
-
-    /**
      * Indicates whether the columns in this object are only set to default values.
      *
      * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -792,46 +376,6 @@ abstract class LicenseType implements ActiveRecordInterface
      */
     public function hasOnlyDefaultValues()
     {
-            if ($this->current !== 0) {
-                return false;
-            }
-
-            if ($this->auth_type !== '') {
-                return false;
-            }
-
-            if ($this->rlm_product_name !== '') {
-                return false;
-            }
-
-            if ($this->rlm_license_version !== '') {
-                return false;
-            }
-
-            if ($this->license_options !== '') {
-                return false;
-            }
-
-            if ($this->host_app_checksum !== '0') {
-                return false;
-            }
-
-            if ($this->serial_number_type !== 'seratodj') {
-                return false;
-            }
-
-            if ($this->authorization_limit !== 2) {
-                return false;
-            }
-
-            if ($this->expires_days !== 0) {
-                return false;
-            }
-
-            if ($this->expires_date && $this->expires_date->format('Y-m-d H:i:s.u') !== '-0001-11-30 00:00:00.000000') {
-                return false;
-            }
-
         // otherwise, everything was equal, so return TRUE
         return true;
     } // hasOnlyDefaultValues()
@@ -859,40 +403,10 @@ abstract class LicenseType implements ActiveRecordInterface
         try {
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : LicenseTypeTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->license_type_id = (null !== $col) ? (int) $col : null;
+            $this->id = (null !== $col) ? (int) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : LicenseTypeTableMap::translateFieldName('Name', TableMap::TYPE_PHPNAME, $indexType)];
             $this->name = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : LicenseTypeTableMap::translateFieldName('Current', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->current = (null !== $col) ? (int) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : LicenseTypeTableMap::translateFieldName('AuthType', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->auth_type = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : LicenseTypeTableMap::translateFieldName('RlmProductName', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->rlm_product_name = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : LicenseTypeTableMap::translateFieldName('RlmLicenseVersion', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->rlm_license_version = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : LicenseTypeTableMap::translateFieldName('Options', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->license_options = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : LicenseTypeTableMap::translateFieldName('ClientApplicationChecksum', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->host_app_checksum = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : LicenseTypeTableMap::translateFieldName('SerialNumberType', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->serial_number_type = (null !== $col) ? (string) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : LicenseTypeTableMap::translateFieldName('AuthorizationLimit', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->authorization_limit = (null !== $col) ? (int) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 10 + $startcol : LicenseTypeTableMap::translateFieldName('ExpiresDays', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->expires_days = (null !== $col) ? (int) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 11 + $startcol : LicenseTypeTableMap::translateFieldName('ExpiresDate', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->expires_date = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -901,7 +415,7 @@ abstract class LicenseType implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 12; // 12 = LicenseTypeTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 2; // 2 = LicenseTypeTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Serato\\SwsApp\\Test\\Propel\\Model\\LicenseType'), 0, $e);
@@ -1096,48 +610,18 @@ abstract class LicenseType implements ActiveRecordInterface
         $modifiedColumns = array();
         $index = 0;
 
-        $this->modifiedColumns[LicenseTypeTableMap::COL_LICENSE_TYPE_ID] = true;
+        $this->modifiedColumns[LicenseTypeTableMap::COL_ID] = true;
 
          // check the columns in natural order for more readable SQL queries
-        if ($this->isColumnModified(LicenseTypeTableMap::COL_LICENSE_TYPE_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'license_type_id';
+        if ($this->isColumnModified(LicenseTypeTableMap::COL_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'id';
         }
         if ($this->isColumnModified(LicenseTypeTableMap::COL_NAME)) {
             $modifiedColumns[':p' . $index++]  = 'name';
         }
-        if ($this->isColumnModified(LicenseTypeTableMap::COL_CURRENT)) {
-            $modifiedColumns[':p' . $index++]  = 'current';
-        }
-        if ($this->isColumnModified(LicenseTypeTableMap::COL_AUTH_TYPE)) {
-            $modifiedColumns[':p' . $index++]  = 'auth_type';
-        }
-        if ($this->isColumnModified(LicenseTypeTableMap::COL_RLM_PRODUCT_NAME)) {
-            $modifiedColumns[':p' . $index++]  = 'rlm_product_name';
-        }
-        if ($this->isColumnModified(LicenseTypeTableMap::COL_RLM_LICENSE_VERSION)) {
-            $modifiedColumns[':p' . $index++]  = 'rlm_license_version';
-        }
-        if ($this->isColumnModified(LicenseTypeTableMap::COL_LICENSE_OPTIONS)) {
-            $modifiedColumns[':p' . $index++]  = 'license_options';
-        }
-        if ($this->isColumnModified(LicenseTypeTableMap::COL_HOST_APP_CHECKSUM)) {
-            $modifiedColumns[':p' . $index++]  = 'host_app_checksum';
-        }
-        if ($this->isColumnModified(LicenseTypeTableMap::COL_SERIAL_NUMBER_TYPE)) {
-            $modifiedColumns[':p' . $index++]  = 'serial_number_type';
-        }
-        if ($this->isColumnModified(LicenseTypeTableMap::COL_AUTHORIZATION_LIMIT)) {
-            $modifiedColumns[':p' . $index++]  = 'authorization_limit';
-        }
-        if ($this->isColumnModified(LicenseTypeTableMap::COL_EXPIRES_DAYS)) {
-            $modifiedColumns[':p' . $index++]  = 'expires_days';
-        }
-        if ($this->isColumnModified(LicenseTypeTableMap::COL_EXPIRES_DATE)) {
-            $modifiedColumns[':p' . $index++]  = 'expires_date';
-        }
 
         $sql = sprintf(
-            'INSERT INTO product_serial_number_license_types (%s) VALUES (%s)',
+            'INSERT INTO license_types (%s) VALUES (%s)',
             implode(', ', $modifiedColumns),
             implode(', ', array_keys($modifiedColumns))
         );
@@ -1146,41 +630,11 @@ abstract class LicenseType implements ActiveRecordInterface
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case 'license_type_id':
-                        $stmt->bindValue($identifier, $this->license_type_id, PDO::PARAM_INT);
+                    case 'id':
+                        $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
                     case 'name':
                         $stmt->bindValue($identifier, $this->name, PDO::PARAM_STR);
-                        break;
-                    case 'current':
-                        $stmt->bindValue($identifier, $this->current, PDO::PARAM_INT);
-                        break;
-                    case 'auth_type':
-                        $stmt->bindValue($identifier, $this->auth_type, PDO::PARAM_STR);
-                        break;
-                    case 'rlm_product_name':
-                        $stmt->bindValue($identifier, $this->rlm_product_name, PDO::PARAM_STR);
-                        break;
-                    case 'rlm_license_version':
-                        $stmt->bindValue($identifier, $this->rlm_license_version, PDO::PARAM_STR);
-                        break;
-                    case 'license_options':
-                        $stmt->bindValue($identifier, $this->license_options, PDO::PARAM_STR);
-                        break;
-                    case 'host_app_checksum':
-                        $stmt->bindValue($identifier, $this->host_app_checksum, PDO::PARAM_INT);
-                        break;
-                    case 'serial_number_type':
-                        $stmt->bindValue($identifier, $this->serial_number_type, PDO::PARAM_STR);
-                        break;
-                    case 'authorization_limit':
-                        $stmt->bindValue($identifier, $this->authorization_limit, PDO::PARAM_INT);
-                        break;
-                    case 'expires_days':
-                        $stmt->bindValue($identifier, $this->expires_days, PDO::PARAM_INT);
-                        break;
-                    case 'expires_date':
-                        $stmt->bindValue($identifier, $this->expires_date ? $this->expires_date->format("Y-m-d H:i:s.u") : null, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -1252,36 +706,6 @@ abstract class LicenseType implements ActiveRecordInterface
             case 1:
                 return $this->getName();
                 break;
-            case 2:
-                return $this->getCurrent();
-                break;
-            case 3:
-                return $this->getAuthType();
-                break;
-            case 4:
-                return $this->getRlmProductName();
-                break;
-            case 5:
-                return $this->getRlmLicenseVersion();
-                break;
-            case 6:
-                return $this->getOptions();
-                break;
-            case 7:
-                return $this->getClientApplicationChecksum();
-                break;
-            case 8:
-                return $this->getSerialNumberType();
-                break;
-            case 9:
-                return $this->getAuthorizationLimit();
-                break;
-            case 10:
-                return $this->getExpiresDays();
-                break;
-            case 11:
-                return $this->getExpiresDate();
-                break;
             default:
                 return null;
                 break;
@@ -1313,21 +737,7 @@ abstract class LicenseType implements ActiveRecordInterface
         $result = array(
             $keys[0] => $this->getId(),
             $keys[1] => $this->getName(),
-            $keys[2] => $this->getCurrent(),
-            $keys[3] => $this->getAuthType(),
-            $keys[4] => $this->getRlmProductName(),
-            $keys[5] => $this->getRlmLicenseVersion(),
-            $keys[6] => $this->getOptions(),
-            $keys[7] => $this->getClientApplicationChecksum(),
-            $keys[8] => $this->getSerialNumberType(),
-            $keys[9] => $this->getAuthorizationLimit(),
-            $keys[10] => $this->getExpiresDays(),
-            $keys[11] => $this->getExpiresDate(),
         );
-        if ($result[$keys[11]] instanceof \DateTime) {
-            $result[$keys[11]] = $result[$keys[11]]->format('c');
-        }
-
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
@@ -1372,36 +782,6 @@ abstract class LicenseType implements ActiveRecordInterface
             case 1:
                 $this->setName($value);
                 break;
-            case 2:
-                $this->setCurrent($value);
-                break;
-            case 3:
-                $this->setAuthType($value);
-                break;
-            case 4:
-                $this->setRlmProductName($value);
-                break;
-            case 5:
-                $this->setRlmLicenseVersion($value);
-                break;
-            case 6:
-                $this->setOptions($value);
-                break;
-            case 7:
-                $this->setClientApplicationChecksum($value);
-                break;
-            case 8:
-                $this->setSerialNumberType($value);
-                break;
-            case 9:
-                $this->setAuthorizationLimit($value);
-                break;
-            case 10:
-                $this->setExpiresDays($value);
-                break;
-            case 11:
-                $this->setExpiresDate($value);
-                break;
         } // switch()
 
         return $this;
@@ -1433,36 +813,6 @@ abstract class LicenseType implements ActiveRecordInterface
         }
         if (array_key_exists($keys[1], $arr)) {
             $this->setName($arr[$keys[1]]);
-        }
-        if (array_key_exists($keys[2], $arr)) {
-            $this->setCurrent($arr[$keys[2]]);
-        }
-        if (array_key_exists($keys[3], $arr)) {
-            $this->setAuthType($arr[$keys[3]]);
-        }
-        if (array_key_exists($keys[4], $arr)) {
-            $this->setRlmProductName($arr[$keys[4]]);
-        }
-        if (array_key_exists($keys[5], $arr)) {
-            $this->setRlmLicenseVersion($arr[$keys[5]]);
-        }
-        if (array_key_exists($keys[6], $arr)) {
-            $this->setOptions($arr[$keys[6]]);
-        }
-        if (array_key_exists($keys[7], $arr)) {
-            $this->setClientApplicationChecksum($arr[$keys[7]]);
-        }
-        if (array_key_exists($keys[8], $arr)) {
-            $this->setSerialNumberType($arr[$keys[8]]);
-        }
-        if (array_key_exists($keys[9], $arr)) {
-            $this->setAuthorizationLimit($arr[$keys[9]]);
-        }
-        if (array_key_exists($keys[10], $arr)) {
-            $this->setExpiresDays($arr[$keys[10]]);
-        }
-        if (array_key_exists($keys[11], $arr)) {
-            $this->setExpiresDate($arr[$keys[11]]);
         }
     }
 
@@ -1505,41 +855,11 @@ abstract class LicenseType implements ActiveRecordInterface
     {
         $criteria = new Criteria(LicenseTypeTableMap::DATABASE_NAME);
 
-        if ($this->isColumnModified(LicenseTypeTableMap::COL_LICENSE_TYPE_ID)) {
-            $criteria->add(LicenseTypeTableMap::COL_LICENSE_TYPE_ID, $this->license_type_id);
+        if ($this->isColumnModified(LicenseTypeTableMap::COL_ID)) {
+            $criteria->add(LicenseTypeTableMap::COL_ID, $this->id);
         }
         if ($this->isColumnModified(LicenseTypeTableMap::COL_NAME)) {
             $criteria->add(LicenseTypeTableMap::COL_NAME, $this->name);
-        }
-        if ($this->isColumnModified(LicenseTypeTableMap::COL_CURRENT)) {
-            $criteria->add(LicenseTypeTableMap::COL_CURRENT, $this->current);
-        }
-        if ($this->isColumnModified(LicenseTypeTableMap::COL_AUTH_TYPE)) {
-            $criteria->add(LicenseTypeTableMap::COL_AUTH_TYPE, $this->auth_type);
-        }
-        if ($this->isColumnModified(LicenseTypeTableMap::COL_RLM_PRODUCT_NAME)) {
-            $criteria->add(LicenseTypeTableMap::COL_RLM_PRODUCT_NAME, $this->rlm_product_name);
-        }
-        if ($this->isColumnModified(LicenseTypeTableMap::COL_RLM_LICENSE_VERSION)) {
-            $criteria->add(LicenseTypeTableMap::COL_RLM_LICENSE_VERSION, $this->rlm_license_version);
-        }
-        if ($this->isColumnModified(LicenseTypeTableMap::COL_LICENSE_OPTIONS)) {
-            $criteria->add(LicenseTypeTableMap::COL_LICENSE_OPTIONS, $this->license_options);
-        }
-        if ($this->isColumnModified(LicenseTypeTableMap::COL_HOST_APP_CHECKSUM)) {
-            $criteria->add(LicenseTypeTableMap::COL_HOST_APP_CHECKSUM, $this->host_app_checksum);
-        }
-        if ($this->isColumnModified(LicenseTypeTableMap::COL_SERIAL_NUMBER_TYPE)) {
-            $criteria->add(LicenseTypeTableMap::COL_SERIAL_NUMBER_TYPE, $this->serial_number_type);
-        }
-        if ($this->isColumnModified(LicenseTypeTableMap::COL_AUTHORIZATION_LIMIT)) {
-            $criteria->add(LicenseTypeTableMap::COL_AUTHORIZATION_LIMIT, $this->authorization_limit);
-        }
-        if ($this->isColumnModified(LicenseTypeTableMap::COL_EXPIRES_DAYS)) {
-            $criteria->add(LicenseTypeTableMap::COL_EXPIRES_DAYS, $this->expires_days);
-        }
-        if ($this->isColumnModified(LicenseTypeTableMap::COL_EXPIRES_DATE)) {
-            $criteria->add(LicenseTypeTableMap::COL_EXPIRES_DATE, $this->expires_date);
         }
 
         return $criteria;
@@ -1558,7 +878,7 @@ abstract class LicenseType implements ActiveRecordInterface
     public function buildPkeyCriteria()
     {
         $criteria = ChildLicenseTypeQuery::create();
-        $criteria->add(LicenseTypeTableMap::COL_LICENSE_TYPE_ID, $this->license_type_id);
+        $criteria->add(LicenseTypeTableMap::COL_ID, $this->id);
 
         return $criteria;
     }
@@ -1595,7 +915,7 @@ abstract class LicenseType implements ActiveRecordInterface
     }
 
     /**
-     * Generic method to set the primary key (license_type_id column).
+     * Generic method to set the primary key (id column).
      *
      * @param       int $key Primary key.
      * @return void
@@ -1628,16 +948,6 @@ abstract class LicenseType implements ActiveRecordInterface
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
         $copyObj->setName($this->getName());
-        $copyObj->setCurrent($this->getCurrent());
-        $copyObj->setAuthType($this->getAuthType());
-        $copyObj->setRlmProductName($this->getRlmProductName());
-        $copyObj->setRlmLicenseVersion($this->getRlmLicenseVersion());
-        $copyObj->setOptions($this->getOptions());
-        $copyObj->setClientApplicationChecksum($this->getClientApplicationChecksum());
-        $copyObj->setSerialNumberType($this->getSerialNumberType());
-        $copyObj->setAuthorizationLimit($this->getAuthorizationLimit());
-        $copyObj->setExpiresDays($this->getExpiresDays());
-        $copyObj->setExpiresDate($this->getExpiresDate());
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -1673,21 +983,10 @@ abstract class LicenseType implements ActiveRecordInterface
      */
     public function clear()
     {
-        $this->license_type_id = null;
+        $this->id = null;
         $this->name = null;
-        $this->current = null;
-        $this->auth_type = null;
-        $this->rlm_product_name = null;
-        $this->rlm_license_version = null;
-        $this->license_options = null;
-        $this->host_app_checksum = null;
-        $this->serial_number_type = null;
-        $this->authorization_limit = null;
-        $this->expires_days = null;
-        $this->expires_date = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
-        $this->applyDefaultValues();
         $this->resetModified();
         $this->setNew(true);
         $this->setDeleted(false);

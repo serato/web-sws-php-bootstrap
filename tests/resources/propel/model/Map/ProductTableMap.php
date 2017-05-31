@@ -59,7 +59,7 @@ class ProductTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 11;
+    const NUM_COLUMNS = 2;
 
     /**
      * The number of lazy-loaded columns
@@ -69,62 +69,17 @@ class ProductTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 11;
+    const NUM_HYDRATE_COLUMNS = 2;
 
     /**
-     * the column name for the serial_number field
+     * the column name for the id field
      */
-    const COL_SERIAL_NUMBER = 'product_serial_numbers.serial_number';
+    const COL_ID = 'product_serial_numbers.id';
 
     /**
      * the column name for the product_type_id field
      */
     const COL_PRODUCT_TYPE_ID = 'product_serial_numbers.product_type_id';
-
-    /**
-     * the column name for the counter field
-     */
-    const COL_COUNTER = 'product_serial_numbers.counter';
-
-    /**
-     * the column name for the nfr field
-     */
-    const COL_NFR = 'product_serial_numbers.nfr';
-
-    /**
-     * the column name for the deleted_flag field
-     */
-    const COL_DELETED_FLAG = 'product_serial_numbers.deleted_flag';
-
-    /**
-     * the column name for the date_generated field
-     */
-    const COL_DATE_GENERATED = 'product_serial_numbers.date_generated';
-
-    /**
-     * the column name for the user_id_generated field
-     */
-    const COL_USER_ID_GENERATED = 'product_serial_numbers.user_id_generated';
-
-    /**
-     * the column name for the user_id field
-     */
-    const COL_USER_ID = 'product_serial_numbers.user_id';
-
-    /**
-     * the column name for the user_date_added field
-     */
-    const COL_USER_DATE_ADDED = 'product_serial_numbers.user_date_added';
-
-    /**
-     * the column name for the licenses_created field
-     */
-    const COL_LICENSES_CREATED = 'product_serial_numbers.licenses_created';
-
-    /**
-     * the column name for the notes field
-     */
-    const COL_NOTES = 'product_serial_numbers.notes';
 
     /**
      * The default string format for model objects of the related table
@@ -138,11 +93,11 @@ class ProductTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'ProductTypeId', 'Counter', 'Nfr', 'DeletedFlag', 'CreatedAt', 'CreatedByUserId', 'UserId', 'UserAddedAt', 'LicensesCreatedAt', 'Notes', ),
-        self::TYPE_CAMELNAME     => array('id', 'productTypeId', 'counter', 'nfr', 'deletedFlag', 'createdAt', 'createdByUserId', 'userId', 'userAddedAt', 'licensesCreatedAt', 'notes', ),
-        self::TYPE_COLNAME       => array(ProductTableMap::COL_SERIAL_NUMBER, ProductTableMap::COL_PRODUCT_TYPE_ID, ProductTableMap::COL_COUNTER, ProductTableMap::COL_NFR, ProductTableMap::COL_DELETED_FLAG, ProductTableMap::COL_DATE_GENERATED, ProductTableMap::COL_USER_ID_GENERATED, ProductTableMap::COL_USER_ID, ProductTableMap::COL_USER_DATE_ADDED, ProductTableMap::COL_LICENSES_CREATED, ProductTableMap::COL_NOTES, ),
-        self::TYPE_FIELDNAME     => array('serial_number', 'product_type_id', 'counter', 'nfr', 'deleted_flag', 'date_generated', 'user_id_generated', 'user_id', 'user_date_added', 'licenses_created', 'notes', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, )
+        self::TYPE_PHPNAME       => array('Id', 'ProductTypeId', ),
+        self::TYPE_CAMELNAME     => array('id', 'productTypeId', ),
+        self::TYPE_COLNAME       => array(ProductTableMap::COL_ID, ProductTableMap::COL_PRODUCT_TYPE_ID, ),
+        self::TYPE_FIELDNAME     => array('id', 'product_type_id', ),
+        self::TYPE_NUM           => array(0, 1, )
     );
 
     /**
@@ -152,11 +107,11 @@ class ProductTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'ProductTypeId' => 1, 'Counter' => 2, 'Nfr' => 3, 'DeletedFlag' => 4, 'CreatedAt' => 5, 'CreatedByUserId' => 6, 'UserId' => 7, 'UserAddedAt' => 8, 'LicensesCreatedAt' => 9, 'Notes' => 10, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'productTypeId' => 1, 'counter' => 2, 'nfr' => 3, 'deletedFlag' => 4, 'createdAt' => 5, 'createdByUserId' => 6, 'userId' => 7, 'userAddedAt' => 8, 'licensesCreatedAt' => 9, 'notes' => 10, ),
-        self::TYPE_COLNAME       => array(ProductTableMap::COL_SERIAL_NUMBER => 0, ProductTableMap::COL_PRODUCT_TYPE_ID => 1, ProductTableMap::COL_COUNTER => 2, ProductTableMap::COL_NFR => 3, ProductTableMap::COL_DELETED_FLAG => 4, ProductTableMap::COL_DATE_GENERATED => 5, ProductTableMap::COL_USER_ID_GENERATED => 6, ProductTableMap::COL_USER_ID => 7, ProductTableMap::COL_USER_DATE_ADDED => 8, ProductTableMap::COL_LICENSES_CREATED => 9, ProductTableMap::COL_NOTES => 10, ),
-        self::TYPE_FIELDNAME     => array('serial_number' => 0, 'product_type_id' => 1, 'counter' => 2, 'nfr' => 3, 'deleted_flag' => 4, 'date_generated' => 5, 'user_id_generated' => 6, 'user_id' => 7, 'user_date_added' => 8, 'licenses_created' => 9, 'notes' => 10, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'ProductTypeId' => 1, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'productTypeId' => 1, ),
+        self::TYPE_COLNAME       => array(ProductTableMap::COL_ID => 0, ProductTableMap::COL_PRODUCT_TYPE_ID => 1, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'product_type_id' => 1, ),
+        self::TYPE_NUM           => array(0, 1, )
     );
 
     /**
@@ -176,17 +131,8 @@ class ProductTableMap extends TableMap
         $this->setPackage('');
         $this->setUseIdGenerator(false);
         // columns
-        $this->addPrimaryKey('serial_number', 'Id', 'VARCHAR', true, 50, '0');
+        $this->addPrimaryKey('id', 'Id', 'VARCHAR', true, 50, '0');
         $this->addColumn('product_type_id', 'ProductTypeId', 'TINYINT', true, 3, 0);
-        $this->addColumn('counter', 'Counter', 'INTEGER', true, 10, 0);
-        $this->addColumn('nfr', 'Nfr', 'TINYINT', true, 3, 0);
-        $this->addColumn('deleted_flag', 'DeletedFlag', 'BOOLEAN', true, 1, false);
-        $this->addColumn('date_generated', 'CreatedAt', 'TIMESTAMP', true, null, '0000-00-00 00:00:00');
-        $this->addColumn('user_id_generated', 'CreatedByUserId', 'INTEGER', true, 10, 0);
-        $this->addColumn('user_id', 'UserId', 'INTEGER', true, 10, 0);
-        $this->addColumn('user_date_added', 'UserAddedAt', 'TIMESTAMP', true, null, '0000-00-00 00:00:00');
-        $this->addColumn('licenses_created', 'LicensesCreatedAt', 'TIMESTAMP', true, null, '0000-00-00 00:00:00');
-        $this->addColumn('notes', 'Notes', 'LONGVARCHAR', true, null, '');
     } // initialize()
 
     /**
@@ -195,19 +141,6 @@ class ProductTableMap extends TableMap
     public function buildRelations()
     {
     } // buildRelations()
-
-    /**
-     *
-     * Gets the list of behaviors registered for this table
-     *
-     * @return array Associative array (name => parameters) of behaviors
-     */
-    public function getBehaviors()
-    {
-        return array(
-            'timestampable' => array('create_column' => 'date_generated', 'update_column' => 'updated_at', 'disable_created_at' => 'false', 'disable_updated_at' => 'true', ),
-        );
-    } // getBehaviors()
 
     /**
      * Retrieves a string version of the primary key from the DB resultset row that can be used to uniquely identify a row in this table.
@@ -350,29 +283,11 @@ class ProductTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(ProductTableMap::COL_SERIAL_NUMBER);
+            $criteria->addSelectColumn(ProductTableMap::COL_ID);
             $criteria->addSelectColumn(ProductTableMap::COL_PRODUCT_TYPE_ID);
-            $criteria->addSelectColumn(ProductTableMap::COL_COUNTER);
-            $criteria->addSelectColumn(ProductTableMap::COL_NFR);
-            $criteria->addSelectColumn(ProductTableMap::COL_DELETED_FLAG);
-            $criteria->addSelectColumn(ProductTableMap::COL_DATE_GENERATED);
-            $criteria->addSelectColumn(ProductTableMap::COL_USER_ID_GENERATED);
-            $criteria->addSelectColumn(ProductTableMap::COL_USER_ID);
-            $criteria->addSelectColumn(ProductTableMap::COL_USER_DATE_ADDED);
-            $criteria->addSelectColumn(ProductTableMap::COL_LICENSES_CREATED);
-            $criteria->addSelectColumn(ProductTableMap::COL_NOTES);
         } else {
-            $criteria->addSelectColumn($alias . '.serial_number');
+            $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.product_type_id');
-            $criteria->addSelectColumn($alias . '.counter');
-            $criteria->addSelectColumn($alias . '.nfr');
-            $criteria->addSelectColumn($alias . '.deleted_flag');
-            $criteria->addSelectColumn($alias . '.date_generated');
-            $criteria->addSelectColumn($alias . '.user_id_generated');
-            $criteria->addSelectColumn($alias . '.user_id');
-            $criteria->addSelectColumn($alias . '.user_date_added');
-            $criteria->addSelectColumn($alias . '.licenses_created');
-            $criteria->addSelectColumn($alias . '.notes');
         }
     }
 
@@ -424,7 +339,7 @@ class ProductTableMap extends TableMap
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
             $criteria = new Criteria(ProductTableMap::DATABASE_NAME);
-            $criteria->add(ProductTableMap::COL_SERIAL_NUMBER, (array) $values, Criteria::IN);
+            $criteria->add(ProductTableMap::COL_ID, (array) $values, Criteria::IN);
         }
 
         $query = ProductQuery::create()->mergeWith($criteria);

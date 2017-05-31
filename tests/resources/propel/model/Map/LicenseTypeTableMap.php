@@ -16,7 +16,7 @@ use Serato\SwsApp\Test\Propel\Model\LicenseTypeQuery;
 
 
 /**
- * This class defines the structure of the 'product_serial_number_license_types' table.
+ * This class defines the structure of the 'license_types' table.
  *
  *
  *
@@ -44,7 +44,7 @@ class LicenseTypeTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'product_serial_number_license_types';
+    const TABLE_NAME = 'license_types';
 
     /**
      * The related Propel class for this table
@@ -59,7 +59,7 @@ class LicenseTypeTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 12;
+    const NUM_COLUMNS = 2;
 
     /**
      * The number of lazy-loaded columns
@@ -69,67 +69,17 @@ class LicenseTypeTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 12;
+    const NUM_HYDRATE_COLUMNS = 2;
 
     /**
-     * the column name for the license_type_id field
+     * the column name for the id field
      */
-    const COL_LICENSE_TYPE_ID = 'product_serial_number_license_types.license_type_id';
+    const COL_ID = 'license_types.id';
 
     /**
      * the column name for the name field
      */
-    const COL_NAME = 'product_serial_number_license_types.name';
-
-    /**
-     * the column name for the current field
-     */
-    const COL_CURRENT = 'product_serial_number_license_types.current';
-
-    /**
-     * the column name for the auth_type field
-     */
-    const COL_AUTH_TYPE = 'product_serial_number_license_types.auth_type';
-
-    /**
-     * the column name for the rlm_product_name field
-     */
-    const COL_RLM_PRODUCT_NAME = 'product_serial_number_license_types.rlm_product_name';
-
-    /**
-     * the column name for the rlm_license_version field
-     */
-    const COL_RLM_LICENSE_VERSION = 'product_serial_number_license_types.rlm_license_version';
-
-    /**
-     * the column name for the license_options field
-     */
-    const COL_LICENSE_OPTIONS = 'product_serial_number_license_types.license_options';
-
-    /**
-     * the column name for the host_app_checksum field
-     */
-    const COL_HOST_APP_CHECKSUM = 'product_serial_number_license_types.host_app_checksum';
-
-    /**
-     * the column name for the serial_number_type field
-     */
-    const COL_SERIAL_NUMBER_TYPE = 'product_serial_number_license_types.serial_number_type';
-
-    /**
-     * the column name for the authorization_limit field
-     */
-    const COL_AUTHORIZATION_LIMIT = 'product_serial_number_license_types.authorization_limit';
-
-    /**
-     * the column name for the expires_days field
-     */
-    const COL_EXPIRES_DAYS = 'product_serial_number_license_types.expires_days';
-
-    /**
-     * the column name for the expires_date field
-     */
-    const COL_EXPIRES_DATE = 'product_serial_number_license_types.expires_date';
+    const COL_NAME = 'license_types.name';
 
     /**
      * The default string format for model objects of the related table
@@ -143,11 +93,11 @@ class LicenseTypeTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'Name', 'Current', 'AuthType', 'RlmProductName', 'RlmLicenseVersion', 'Options', 'ClientApplicationChecksum', 'SerialNumberType', 'AuthorizationLimit', 'ExpiresDays', 'ExpiresDate', ),
-        self::TYPE_CAMELNAME     => array('id', 'name', 'current', 'authType', 'rlmProductName', 'rlmLicenseVersion', 'options', 'clientApplicationChecksum', 'serialNumberType', 'authorizationLimit', 'expiresDays', 'expiresDate', ),
-        self::TYPE_COLNAME       => array(LicenseTypeTableMap::COL_LICENSE_TYPE_ID, LicenseTypeTableMap::COL_NAME, LicenseTypeTableMap::COL_CURRENT, LicenseTypeTableMap::COL_AUTH_TYPE, LicenseTypeTableMap::COL_RLM_PRODUCT_NAME, LicenseTypeTableMap::COL_RLM_LICENSE_VERSION, LicenseTypeTableMap::COL_LICENSE_OPTIONS, LicenseTypeTableMap::COL_HOST_APP_CHECKSUM, LicenseTypeTableMap::COL_SERIAL_NUMBER_TYPE, LicenseTypeTableMap::COL_AUTHORIZATION_LIMIT, LicenseTypeTableMap::COL_EXPIRES_DAYS, LicenseTypeTableMap::COL_EXPIRES_DATE, ),
-        self::TYPE_FIELDNAME     => array('license_type_id', 'name', 'current', 'auth_type', 'rlm_product_name', 'rlm_license_version', 'license_options', 'host_app_checksum', 'serial_number_type', 'authorization_limit', 'expires_days', 'expires_date', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, )
+        self::TYPE_PHPNAME       => array('Id', 'Name', ),
+        self::TYPE_CAMELNAME     => array('id', 'name', ),
+        self::TYPE_COLNAME       => array(LicenseTypeTableMap::COL_ID, LicenseTypeTableMap::COL_NAME, ),
+        self::TYPE_FIELDNAME     => array('id', 'name', ),
+        self::TYPE_NUM           => array(0, 1, )
     );
 
     /**
@@ -157,11 +107,11 @@ class LicenseTypeTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'Name' => 1, 'Current' => 2, 'AuthType' => 3, 'RlmProductName' => 4, 'RlmLicenseVersion' => 5, 'Options' => 6, 'ClientApplicationChecksum' => 7, 'SerialNumberType' => 8, 'AuthorizationLimit' => 9, 'ExpiresDays' => 10, 'ExpiresDate' => 11, ),
-        self::TYPE_CAMELNAME     => array('id' => 0, 'name' => 1, 'current' => 2, 'authType' => 3, 'rlmProductName' => 4, 'rlmLicenseVersion' => 5, 'options' => 6, 'clientApplicationChecksum' => 7, 'serialNumberType' => 8, 'authorizationLimit' => 9, 'expiresDays' => 10, 'expiresDate' => 11, ),
-        self::TYPE_COLNAME       => array(LicenseTypeTableMap::COL_LICENSE_TYPE_ID => 0, LicenseTypeTableMap::COL_NAME => 1, LicenseTypeTableMap::COL_CURRENT => 2, LicenseTypeTableMap::COL_AUTH_TYPE => 3, LicenseTypeTableMap::COL_RLM_PRODUCT_NAME => 4, LicenseTypeTableMap::COL_RLM_LICENSE_VERSION => 5, LicenseTypeTableMap::COL_LICENSE_OPTIONS => 6, LicenseTypeTableMap::COL_HOST_APP_CHECKSUM => 7, LicenseTypeTableMap::COL_SERIAL_NUMBER_TYPE => 8, LicenseTypeTableMap::COL_AUTHORIZATION_LIMIT => 9, LicenseTypeTableMap::COL_EXPIRES_DAYS => 10, LicenseTypeTableMap::COL_EXPIRES_DATE => 11, ),
-        self::TYPE_FIELDNAME     => array('license_type_id' => 0, 'name' => 1, 'current' => 2, 'auth_type' => 3, 'rlm_product_name' => 4, 'rlm_license_version' => 5, 'license_options' => 6, 'host_app_checksum' => 7, 'serial_number_type' => 8, 'authorization_limit' => 9, 'expires_days' => 10, 'expires_date' => 11, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'Name' => 1, ),
+        self::TYPE_CAMELNAME     => array('id' => 0, 'name' => 1, ),
+        self::TYPE_COLNAME       => array(LicenseTypeTableMap::COL_ID => 0, LicenseTypeTableMap::COL_NAME => 1, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'name' => 1, ),
+        self::TYPE_NUM           => array(0, 1, )
     );
 
     /**
@@ -174,25 +124,15 @@ class LicenseTypeTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('product_serial_number_license_types');
+        $this->setName('license_types');
         $this->setPhpName('LicenseType');
         $this->setIdentifierQuoting(false);
         $this->setClassName('\\Serato\\SwsApp\\Test\\Propel\\Model\\LicenseType');
         $this->setPackage('');
         $this->setUseIdGenerator(true);
         // columns
-        $this->addPrimaryKey('license_type_id', 'Id', 'TINYINT', true, 3, null);
+        $this->addPrimaryKey('id', 'Id', 'TINYINT', true, 3, null);
         $this->addColumn('name', 'Name', 'VARCHAR', true, 50, null);
-        $this->addColumn('current', 'Current', 'TINYINT', true, 3, 0);
-        $this->addColumn('auth_type', 'AuthType', 'CHAR', true, null, '');
-        $this->addColumn('rlm_product_name', 'RlmProductName', 'VARCHAR', true, 20, '');
-        $this->addColumn('rlm_license_version', 'RlmLicenseVersion', 'VARCHAR', true, 5, '');
-        $this->addColumn('license_options', 'Options', 'VARCHAR', true, 5, '');
-        $this->addColumn('host_app_checksum', 'ClientApplicationChecksum', 'BIGINT', true, null, 0);
-        $this->addColumn('serial_number_type', 'SerialNumberType', 'CHAR', true, null, 'seratodj');
-        $this->addColumn('authorization_limit', 'AuthorizationLimit', 'TINYINT', true, 1, 2);
-        $this->addColumn('expires_days', 'ExpiresDays', 'TINYINT', true, 3, 0);
-        $this->addColumn('expires_date', 'ExpiresDate', 'TIMESTAMP', true, null, '0000-00-00 00:00:00');
     } // initialize()
 
     /**
@@ -343,31 +283,11 @@ class LicenseTypeTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(LicenseTypeTableMap::COL_LICENSE_TYPE_ID);
+            $criteria->addSelectColumn(LicenseTypeTableMap::COL_ID);
             $criteria->addSelectColumn(LicenseTypeTableMap::COL_NAME);
-            $criteria->addSelectColumn(LicenseTypeTableMap::COL_CURRENT);
-            $criteria->addSelectColumn(LicenseTypeTableMap::COL_AUTH_TYPE);
-            $criteria->addSelectColumn(LicenseTypeTableMap::COL_RLM_PRODUCT_NAME);
-            $criteria->addSelectColumn(LicenseTypeTableMap::COL_RLM_LICENSE_VERSION);
-            $criteria->addSelectColumn(LicenseTypeTableMap::COL_LICENSE_OPTIONS);
-            $criteria->addSelectColumn(LicenseTypeTableMap::COL_HOST_APP_CHECKSUM);
-            $criteria->addSelectColumn(LicenseTypeTableMap::COL_SERIAL_NUMBER_TYPE);
-            $criteria->addSelectColumn(LicenseTypeTableMap::COL_AUTHORIZATION_LIMIT);
-            $criteria->addSelectColumn(LicenseTypeTableMap::COL_EXPIRES_DAYS);
-            $criteria->addSelectColumn(LicenseTypeTableMap::COL_EXPIRES_DATE);
         } else {
-            $criteria->addSelectColumn($alias . '.license_type_id');
+            $criteria->addSelectColumn($alias . '.id');
             $criteria->addSelectColumn($alias . '.name');
-            $criteria->addSelectColumn($alias . '.current');
-            $criteria->addSelectColumn($alias . '.auth_type');
-            $criteria->addSelectColumn($alias . '.rlm_product_name');
-            $criteria->addSelectColumn($alias . '.rlm_license_version');
-            $criteria->addSelectColumn($alias . '.license_options');
-            $criteria->addSelectColumn($alias . '.host_app_checksum');
-            $criteria->addSelectColumn($alias . '.serial_number_type');
-            $criteria->addSelectColumn($alias . '.authorization_limit');
-            $criteria->addSelectColumn($alias . '.expires_days');
-            $criteria->addSelectColumn($alias . '.expires_date');
         }
     }
 
@@ -419,7 +339,7 @@ class LicenseTypeTableMap extends TableMap
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
             $criteria = new Criteria(LicenseTypeTableMap::DATABASE_NAME);
-            $criteria->add(LicenseTypeTableMap::COL_LICENSE_TYPE_ID, (array) $values, Criteria::IN);
+            $criteria->add(LicenseTypeTableMap::COL_ID, (array) $values, Criteria::IN);
         }
 
         $query = LicenseTypeQuery::create()->mergeWith($criteria);
@@ -436,7 +356,7 @@ class LicenseTypeTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the product_serial_number_license_types table.
+     * Deletes all rows from the license_types table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).

@@ -2,7 +2,6 @@
 
 namespace Serato\SwsApp\Test\Propel\Model\Base;
 
-use \DateTime;
 use \Exception;
 use \PDO;
 use Propel\Runtime\Propel;
@@ -16,7 +15,6 @@ use Propel\Runtime\Exception\LogicException;
 use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
-use Propel\Runtime\Util\PropelDateTime;
 use Serato\SwsApp\Test\Propel\Model\ProductQuery as ChildProductQuery;
 use Serato\SwsApp\Test\Propel\Model\Map\ProductTableMap;
 
@@ -62,12 +60,12 @@ abstract class Product implements ActiveRecordInterface
     protected $virtualColumns = array();
 
     /**
-     * The value for the serial_number field.
+     * The value for the id field.
      *
      * Note: this column has a database default value of: '0'
      * @var        string
      */
-    protected $serial_number;
+    protected $id;
 
     /**
      * The value for the product_type_id field.
@@ -76,78 +74,6 @@ abstract class Product implements ActiveRecordInterface
      * @var        int
      */
     protected $product_type_id;
-
-    /**
-     * The value for the counter field.
-     *
-     * Note: this column has a database default value of: 0
-     * @var        int
-     */
-    protected $counter;
-
-    /**
-     * The value for the nfr field.
-     *
-     * Note: this column has a database default value of: 0
-     * @var        int
-     */
-    protected $nfr;
-
-    /**
-     * The value for the deleted_flag field.
-     *
-     * Note: this column has a database default value of: false
-     * @var        boolean
-     */
-    protected $deleted_flag;
-
-    /**
-     * The value for the date_generated field.
-     *
-     * Note: this column has a database default value of: '-0001-11-30 00:00:00.000000'
-     * @var        DateTime
-     */
-    protected $date_generated;
-
-    /**
-     * The value for the user_id_generated field.
-     *
-     * Note: this column has a database default value of: 0
-     * @var        int
-     */
-    protected $user_id_generated;
-
-    /**
-     * The value for the user_id field.
-     *
-     * Note: this column has a database default value of: 0
-     * @var        int
-     */
-    protected $user_id;
-
-    /**
-     * The value for the user_date_added field.
-     *
-     * Note: this column has a database default value of: '-0001-11-30 00:00:00.000000'
-     * @var        DateTime
-     */
-    protected $user_date_added;
-
-    /**
-     * The value for the licenses_created field.
-     *
-     * Note: this column has a database default value of: '-0001-11-30 00:00:00.000000'
-     * @var        DateTime
-     */
-    protected $licenses_created;
-
-    /**
-     * The value for the notes field.
-     *
-     * Note: this column has a database default value of: ''
-     * @var        string
-     */
-    protected $notes;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -165,17 +91,8 @@ abstract class Product implements ActiveRecordInterface
      */
     public function applyDefaultValues()
     {
-        $this->serial_number = '0';
+        $this->id = '0';
         $this->product_type_id = 0;
-        $this->counter = 0;
-        $this->nfr = 0;
-        $this->deleted_flag = false;
-        $this->date_generated = PropelDateTime::newInstance('-0001-11-30 00:00:00.000000', null, 'DateTime');
-        $this->user_id_generated = 0;
-        $this->user_id = 0;
-        $this->user_date_added = PropelDateTime::newInstance('-0001-11-30 00:00:00.000000', null, 'DateTime');
-        $this->licenses_created = PropelDateTime::newInstance('-0001-11-30 00:00:00.000000', null, 'DateTime');
-        $this->notes = '';
     }
 
     /**
@@ -406,13 +323,13 @@ abstract class Product implements ActiveRecordInterface
     }
 
     /**
-     * Get the [serial_number] column value.
+     * Get the [id] column value.
      *
      * @return string
      */
     public function getId()
     {
-        return $this->serial_number;
+        return $this->id;
     }
 
     /**
@@ -426,137 +343,7 @@ abstract class Product implements ActiveRecordInterface
     }
 
     /**
-     * Get the [counter] column value.
-     *
-     * @return int
-     */
-    public function getCounter()
-    {
-        return $this->counter;
-    }
-
-    /**
-     * Get the [nfr] column value.
-     *
-     * @return int
-     */
-    public function getNfr()
-    {
-        return $this->nfr;
-    }
-
-    /**
-     * Get the [deleted_flag] column value.
-     *
-     * @return boolean
-     */
-    public function getDeletedFlag()
-    {
-        return $this->deleted_flag;
-    }
-
-    /**
-     * Get the [deleted_flag] column value.
-     *
-     * @return boolean
-     */
-    public function isDeletedFlag()
-    {
-        return $this->getDeletedFlag();
-    }
-
-    /**
-     * Get the [optionally formatted] temporal [date_generated] column value.
-     *
-     *
-     * @param      string $format The date/time format string (either date()-style or strftime()-style).
-     *                            If format is NULL, then the raw DateTime object will be returned.
-     *
-     * @return string|DateTime Formatted date/time value as string or DateTime object (if format is NULL), NULL if column is NULL
-     *
-     * @throws PropelException - if unable to parse/validate the date/time value.
-     */
-    public function getCreatedAt($format = NULL)
-    {
-        if ($format === null) {
-            return $this->date_generated;
-        } else {
-            return $this->date_generated instanceof \DateTimeInterface ? $this->date_generated->format($format) : null;
-        }
-    }
-
-    /**
-     * Get the [user_id_generated] column value.
-     *
-     * @return int
-     */
-    public function getCreatedByUserId()
-    {
-        return $this->user_id_generated;
-    }
-
-    /**
-     * Get the [user_id] column value.
-     *
-     * @return int
-     */
-    public function getUserId()
-    {
-        return $this->user_id;
-    }
-
-    /**
-     * Get the [optionally formatted] temporal [user_date_added] column value.
-     *
-     *
-     * @param      string $format The date/time format string (either date()-style or strftime()-style).
-     *                            If format is NULL, then the raw DateTime object will be returned.
-     *
-     * @return string|DateTime Formatted date/time value as string or DateTime object (if format is NULL), NULL if column is NULL
-     *
-     * @throws PropelException - if unable to parse/validate the date/time value.
-     */
-    public function getUserAddedAt($format = NULL)
-    {
-        if ($format === null) {
-            return $this->user_date_added;
-        } else {
-            return $this->user_date_added instanceof \DateTimeInterface ? $this->user_date_added->format($format) : null;
-        }
-    }
-
-    /**
-     * Get the [optionally formatted] temporal [licenses_created] column value.
-     *
-     *
-     * @param      string $format The date/time format string (either date()-style or strftime()-style).
-     *                            If format is NULL, then the raw DateTime object will be returned.
-     *
-     * @return string|DateTime Formatted date/time value as string or DateTime object (if format is NULL), NULL if column is NULL
-     *
-     * @throws PropelException - if unable to parse/validate the date/time value.
-     */
-    public function getLicensesCreatedAt($format = NULL)
-    {
-        if ($format === null) {
-            return $this->licenses_created;
-        } else {
-            return $this->licenses_created instanceof \DateTimeInterface ? $this->licenses_created->format($format) : null;
-        }
-    }
-
-    /**
-     * Get the [notes] column value.
-     *
-     * @return string
-     */
-    public function getNotes()
-    {
-        return $this->notes;
-    }
-
-    /**
-     * Set the value of [serial_number] column.
+     * Set the value of [id] column.
      *
      * @param string $v new value
      * @return $this|\Serato\SwsApp\Test\Propel\Model\Product The current object (for fluent API support)
@@ -567,9 +354,9 @@ abstract class Product implements ActiveRecordInterface
             $v = (string) $v;
         }
 
-        if ($this->serial_number !== $v) {
-            $this->serial_number = $v;
-            $this->modifiedColumns[ProductTableMap::COL_SERIAL_NUMBER] = true;
+        if ($this->id !== $v) {
+            $this->id = $v;
+            $this->modifiedColumns[ProductTableMap::COL_ID] = true;
         }
 
         return $this;
@@ -596,200 +383,6 @@ abstract class Product implements ActiveRecordInterface
     } // setProductTypeId()
 
     /**
-     * Set the value of [counter] column.
-     *
-     * @param int $v new value
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\Product The current object (for fluent API support)
-     */
-    public function setCounter($v)
-    {
-        if ($v !== null) {
-            $v = (int) $v;
-        }
-
-        if ($this->counter !== $v) {
-            $this->counter = $v;
-            $this->modifiedColumns[ProductTableMap::COL_COUNTER] = true;
-        }
-
-        return $this;
-    } // setCounter()
-
-    /**
-     * Set the value of [nfr] column.
-     *
-     * @param int $v new value
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\Product The current object (for fluent API support)
-     */
-    public function setNfr($v)
-    {
-        if ($v !== null) {
-            $v = (int) $v;
-        }
-
-        if ($this->nfr !== $v) {
-            $this->nfr = $v;
-            $this->modifiedColumns[ProductTableMap::COL_NFR] = true;
-        }
-
-        return $this;
-    } // setNfr()
-
-    /**
-     * Sets the value of the [deleted_flag] column.
-     * Non-boolean arguments are converted using the following rules:
-     *   * 1, '1', 'true',  'on',  and 'yes' are converted to boolean true
-     *   * 0, '0', 'false', 'off', and 'no'  are converted to boolean false
-     * Check on string values is case insensitive (so 'FaLsE' is seen as 'false').
-     *
-     * @param  boolean|integer|string $v The new value
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\Product The current object (for fluent API support)
-     */
-    public function setDeletedFlag($v)
-    {
-        if ($v !== null) {
-            if (is_string($v)) {
-                $v = in_array(strtolower($v), array('false', 'off', '-', 'no', 'n', '0', '')) ? false : true;
-            } else {
-                $v = (boolean) $v;
-            }
-        }
-
-        if ($this->deleted_flag !== $v) {
-            $this->deleted_flag = $v;
-            $this->modifiedColumns[ProductTableMap::COL_DELETED_FLAG] = true;
-        }
-
-        return $this;
-    } // setDeletedFlag()
-
-    /**
-     * Sets the value of [date_generated] column to a normalized version of the date/time value specified.
-     *
-     * @param  mixed $v string, integer (timestamp), or \DateTimeInterface value.
-     *               Empty strings are treated as NULL.
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\Product The current object (for fluent API support)
-     */
-    public function setCreatedAt($v)
-    {
-        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
-        if ($this->date_generated !== null || $dt !== null) {
-            if ( ($dt != $this->date_generated) // normalized values don't match
-                || ($dt->format('Y-m-d H:i:s.u') === '-0001-11-30 00:00:00.000000') // or the entered value matches the default
-                 ) {
-                $this->date_generated = $dt === null ? null : clone $dt;
-                $this->modifiedColumns[ProductTableMap::COL_DATE_GENERATED] = true;
-            }
-        } // if either are not null
-
-        return $this;
-    } // setCreatedAt()
-
-    /**
-     * Set the value of [user_id_generated] column.
-     *
-     * @param int $v new value
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\Product The current object (for fluent API support)
-     */
-    public function setCreatedByUserId($v)
-    {
-        if ($v !== null) {
-            $v = (int) $v;
-        }
-
-        if ($this->user_id_generated !== $v) {
-            $this->user_id_generated = $v;
-            $this->modifiedColumns[ProductTableMap::COL_USER_ID_GENERATED] = true;
-        }
-
-        return $this;
-    } // setCreatedByUserId()
-
-    /**
-     * Set the value of [user_id] column.
-     *
-     * @param int $v new value
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\Product The current object (for fluent API support)
-     */
-    public function setUserId($v)
-    {
-        if ($v !== null) {
-            $v = (int) $v;
-        }
-
-        if ($this->user_id !== $v) {
-            $this->user_id = $v;
-            $this->modifiedColumns[ProductTableMap::COL_USER_ID] = true;
-        }
-
-        return $this;
-    } // setUserId()
-
-    /**
-     * Sets the value of [user_date_added] column to a normalized version of the date/time value specified.
-     *
-     * @param  mixed $v string, integer (timestamp), or \DateTimeInterface value.
-     *               Empty strings are treated as NULL.
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\Product The current object (for fluent API support)
-     */
-    public function setUserAddedAt($v)
-    {
-        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
-        if ($this->user_date_added !== null || $dt !== null) {
-            if ( ($dt != $this->user_date_added) // normalized values don't match
-                || ($dt->format('Y-m-d H:i:s.u') === '-0001-11-30 00:00:00.000000') // or the entered value matches the default
-                 ) {
-                $this->user_date_added = $dt === null ? null : clone $dt;
-                $this->modifiedColumns[ProductTableMap::COL_USER_DATE_ADDED] = true;
-            }
-        } // if either are not null
-
-        return $this;
-    } // setUserAddedAt()
-
-    /**
-     * Sets the value of [licenses_created] column to a normalized version of the date/time value specified.
-     *
-     * @param  mixed $v string, integer (timestamp), or \DateTimeInterface value.
-     *               Empty strings are treated as NULL.
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\Product The current object (for fluent API support)
-     */
-    public function setLicensesCreatedAt($v)
-    {
-        $dt = PropelDateTime::newInstance($v, null, 'DateTime');
-        if ($this->licenses_created !== null || $dt !== null) {
-            if ( ($dt != $this->licenses_created) // normalized values don't match
-                || ($dt->format('Y-m-d H:i:s.u') === '-0001-11-30 00:00:00.000000') // or the entered value matches the default
-                 ) {
-                $this->licenses_created = $dt === null ? null : clone $dt;
-                $this->modifiedColumns[ProductTableMap::COL_LICENSES_CREATED] = true;
-            }
-        } // if either are not null
-
-        return $this;
-    } // setLicensesCreatedAt()
-
-    /**
-     * Set the value of [notes] column.
-     *
-     * @param string $v new value
-     * @return $this|\Serato\SwsApp\Test\Propel\Model\Product The current object (for fluent API support)
-     */
-    public function setNotes($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->notes !== $v) {
-            $this->notes = $v;
-            $this->modifiedColumns[ProductTableMap::COL_NOTES] = true;
-        }
-
-        return $this;
-    } // setNotes()
-
-    /**
      * Indicates whether the columns in this object are only set to default values.
      *
      * This method can be used in conjunction with isModified() to indicate whether an object is both
@@ -799,47 +392,11 @@ abstract class Product implements ActiveRecordInterface
      */
     public function hasOnlyDefaultValues()
     {
-            if ($this->serial_number !== '0') {
+            if ($this->id !== '0') {
                 return false;
             }
 
             if ($this->product_type_id !== 0) {
-                return false;
-            }
-
-            if ($this->counter !== 0) {
-                return false;
-            }
-
-            if ($this->nfr !== 0) {
-                return false;
-            }
-
-            if ($this->deleted_flag !== false) {
-                return false;
-            }
-
-            if ($this->date_generated && $this->date_generated->format('Y-m-d H:i:s.u') !== '-0001-11-30 00:00:00.000000') {
-                return false;
-            }
-
-            if ($this->user_id_generated !== 0) {
-                return false;
-            }
-
-            if ($this->user_id !== 0) {
-                return false;
-            }
-
-            if ($this->user_date_added && $this->user_date_added->format('Y-m-d H:i:s.u') !== '-0001-11-30 00:00:00.000000') {
-                return false;
-            }
-
-            if ($this->licenses_created && $this->licenses_created->format('Y-m-d H:i:s.u') !== '-0001-11-30 00:00:00.000000') {
-                return false;
-            }
-
-            if ($this->notes !== '') {
                 return false;
             }
 
@@ -870,37 +427,10 @@ abstract class Product implements ActiveRecordInterface
         try {
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : ProductTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->serial_number = (null !== $col) ? (string) $col : null;
+            $this->id = (null !== $col) ? (string) $col : null;
 
             $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : ProductTableMap::translateFieldName('ProductTypeId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->product_type_id = (null !== $col) ? (int) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : ProductTableMap::translateFieldName('Counter', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->counter = (null !== $col) ? (int) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : ProductTableMap::translateFieldName('Nfr', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->nfr = (null !== $col) ? (int) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : ProductTableMap::translateFieldName('DeletedFlag', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->deleted_flag = (null !== $col) ? (boolean) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : ProductTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->date_generated = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : ProductTableMap::translateFieldName('CreatedByUserId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->user_id_generated = (null !== $col) ? (int) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : ProductTableMap::translateFieldName('UserId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->user_id = (null !== $col) ? (int) $col : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : ProductTableMap::translateFieldName('UserAddedAt', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->user_date_added = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 9 + $startcol : ProductTableMap::translateFieldName('LicensesCreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->licenses_created = (null !== $col) ? PropelDateTime::newInstance($col, null, 'DateTime') : null;
-
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 10 + $startcol : ProductTableMap::translateFieldName('Notes', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->notes = (null !== $col) ? (string) $col : null;
             $this->resetModified();
 
             $this->setNew(false);
@@ -909,7 +439,7 @@ abstract class Product implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 11; // 11 = ProductTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 2; // 2 = ProductTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException(sprintf('Error populating %s object', '\\Serato\\SwsApp\\Test\\Propel\\Model\\Product'), 0, $e);
@@ -1036,11 +566,6 @@ abstract class Product implements ActiveRecordInterface
             $isInsert = $this->isNew();
             if ($isInsert) {
                 $ret = $ret && $this->preInsert($con);
-                // timestampable behavior
-
-                if (!$this->isColumnModified(ProductTableMap::COL_DATE_GENERATED)) {
-                    $this->setCreatedAt(\Propel\Runtime\Util\PropelDateTime::createHighPrecision());
-                }
             } else {
                 $ret = $ret && $this->preUpdate($con);
             }
@@ -1111,38 +636,11 @@ abstract class Product implements ActiveRecordInterface
 
 
          // check the columns in natural order for more readable SQL queries
-        if ($this->isColumnModified(ProductTableMap::COL_SERIAL_NUMBER)) {
-            $modifiedColumns[':p' . $index++]  = 'serial_number';
+        if ($this->isColumnModified(ProductTableMap::COL_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'id';
         }
         if ($this->isColumnModified(ProductTableMap::COL_PRODUCT_TYPE_ID)) {
             $modifiedColumns[':p' . $index++]  = 'product_type_id';
-        }
-        if ($this->isColumnModified(ProductTableMap::COL_COUNTER)) {
-            $modifiedColumns[':p' . $index++]  = 'counter';
-        }
-        if ($this->isColumnModified(ProductTableMap::COL_NFR)) {
-            $modifiedColumns[':p' . $index++]  = 'nfr';
-        }
-        if ($this->isColumnModified(ProductTableMap::COL_DELETED_FLAG)) {
-            $modifiedColumns[':p' . $index++]  = 'deleted_flag';
-        }
-        if ($this->isColumnModified(ProductTableMap::COL_DATE_GENERATED)) {
-            $modifiedColumns[':p' . $index++]  = 'date_generated';
-        }
-        if ($this->isColumnModified(ProductTableMap::COL_USER_ID_GENERATED)) {
-            $modifiedColumns[':p' . $index++]  = 'user_id_generated';
-        }
-        if ($this->isColumnModified(ProductTableMap::COL_USER_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'user_id';
-        }
-        if ($this->isColumnModified(ProductTableMap::COL_USER_DATE_ADDED)) {
-            $modifiedColumns[':p' . $index++]  = 'user_date_added';
-        }
-        if ($this->isColumnModified(ProductTableMap::COL_LICENSES_CREATED)) {
-            $modifiedColumns[':p' . $index++]  = 'licenses_created';
-        }
-        if ($this->isColumnModified(ProductTableMap::COL_NOTES)) {
-            $modifiedColumns[':p' . $index++]  = 'notes';
         }
 
         $sql = sprintf(
@@ -1155,38 +653,11 @@ abstract class Product implements ActiveRecordInterface
             $stmt = $con->prepare($sql);
             foreach ($modifiedColumns as $identifier => $columnName) {
                 switch ($columnName) {
-                    case 'serial_number':
-                        $stmt->bindValue($identifier, $this->serial_number, PDO::PARAM_STR);
+                    case 'id':
+                        $stmt->bindValue($identifier, $this->id, PDO::PARAM_STR);
                         break;
                     case 'product_type_id':
                         $stmt->bindValue($identifier, $this->product_type_id, PDO::PARAM_INT);
-                        break;
-                    case 'counter':
-                        $stmt->bindValue($identifier, $this->counter, PDO::PARAM_INT);
-                        break;
-                    case 'nfr':
-                        $stmt->bindValue($identifier, $this->nfr, PDO::PARAM_INT);
-                        break;
-                    case 'deleted_flag':
-                        $stmt->bindValue($identifier, $this->deleted_flag, PDO::PARAM_BOOL);
-                        break;
-                    case 'date_generated':
-                        $stmt->bindValue($identifier, $this->date_generated ? $this->date_generated->format("Y-m-d H:i:s.u") : null, PDO::PARAM_STR);
-                        break;
-                    case 'user_id_generated':
-                        $stmt->bindValue($identifier, $this->user_id_generated, PDO::PARAM_INT);
-                        break;
-                    case 'user_id':
-                        $stmt->bindValue($identifier, $this->user_id, PDO::PARAM_INT);
-                        break;
-                    case 'user_date_added':
-                        $stmt->bindValue($identifier, $this->user_date_added ? $this->user_date_added->format("Y-m-d H:i:s.u") : null, PDO::PARAM_STR);
-                        break;
-                    case 'licenses_created':
-                        $stmt->bindValue($identifier, $this->licenses_created ? $this->licenses_created->format("Y-m-d H:i:s.u") : null, PDO::PARAM_STR);
-                        break;
-                    case 'notes':
-                        $stmt->bindValue($identifier, $this->notes, PDO::PARAM_STR);
                         break;
                 }
             }
@@ -1249,33 +720,6 @@ abstract class Product implements ActiveRecordInterface
             case 1:
                 return $this->getProductTypeId();
                 break;
-            case 2:
-                return $this->getCounter();
-                break;
-            case 3:
-                return $this->getNfr();
-                break;
-            case 4:
-                return $this->getDeletedFlag();
-                break;
-            case 5:
-                return $this->getCreatedAt();
-                break;
-            case 6:
-                return $this->getCreatedByUserId();
-                break;
-            case 7:
-                return $this->getUserId();
-                break;
-            case 8:
-                return $this->getUserAddedAt();
-                break;
-            case 9:
-                return $this->getLicensesCreatedAt();
-                break;
-            case 10:
-                return $this->getNotes();
-                break;
             default:
                 return null;
                 break;
@@ -1307,28 +751,7 @@ abstract class Product implements ActiveRecordInterface
         $result = array(
             $keys[0] => $this->getId(),
             $keys[1] => $this->getProductTypeId(),
-            $keys[2] => $this->getCounter(),
-            $keys[3] => $this->getNfr(),
-            $keys[4] => $this->getDeletedFlag(),
-            $keys[5] => $this->getCreatedAt(),
-            $keys[6] => $this->getCreatedByUserId(),
-            $keys[7] => $this->getUserId(),
-            $keys[8] => $this->getUserAddedAt(),
-            $keys[9] => $this->getLicensesCreatedAt(),
-            $keys[10] => $this->getNotes(),
         );
-        if ($result[$keys[5]] instanceof \DateTime) {
-            $result[$keys[5]] = $result[$keys[5]]->format('c');
-        }
-
-        if ($result[$keys[8]] instanceof \DateTime) {
-            $result[$keys[8]] = $result[$keys[8]]->format('c');
-        }
-
-        if ($result[$keys[9]] instanceof \DateTime) {
-            $result[$keys[9]] = $result[$keys[9]]->format('c');
-        }
-
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
             $result[$key] = $virtualColumn;
@@ -1373,33 +796,6 @@ abstract class Product implements ActiveRecordInterface
             case 1:
                 $this->setProductTypeId($value);
                 break;
-            case 2:
-                $this->setCounter($value);
-                break;
-            case 3:
-                $this->setNfr($value);
-                break;
-            case 4:
-                $this->setDeletedFlag($value);
-                break;
-            case 5:
-                $this->setCreatedAt($value);
-                break;
-            case 6:
-                $this->setCreatedByUserId($value);
-                break;
-            case 7:
-                $this->setUserId($value);
-                break;
-            case 8:
-                $this->setUserAddedAt($value);
-                break;
-            case 9:
-                $this->setLicensesCreatedAt($value);
-                break;
-            case 10:
-                $this->setNotes($value);
-                break;
         } // switch()
 
         return $this;
@@ -1431,33 +827,6 @@ abstract class Product implements ActiveRecordInterface
         }
         if (array_key_exists($keys[1], $arr)) {
             $this->setProductTypeId($arr[$keys[1]]);
-        }
-        if (array_key_exists($keys[2], $arr)) {
-            $this->setCounter($arr[$keys[2]]);
-        }
-        if (array_key_exists($keys[3], $arr)) {
-            $this->setNfr($arr[$keys[3]]);
-        }
-        if (array_key_exists($keys[4], $arr)) {
-            $this->setDeletedFlag($arr[$keys[4]]);
-        }
-        if (array_key_exists($keys[5], $arr)) {
-            $this->setCreatedAt($arr[$keys[5]]);
-        }
-        if (array_key_exists($keys[6], $arr)) {
-            $this->setCreatedByUserId($arr[$keys[6]]);
-        }
-        if (array_key_exists($keys[7], $arr)) {
-            $this->setUserId($arr[$keys[7]]);
-        }
-        if (array_key_exists($keys[8], $arr)) {
-            $this->setUserAddedAt($arr[$keys[8]]);
-        }
-        if (array_key_exists($keys[9], $arr)) {
-            $this->setLicensesCreatedAt($arr[$keys[9]]);
-        }
-        if (array_key_exists($keys[10], $arr)) {
-            $this->setNotes($arr[$keys[10]]);
         }
     }
 
@@ -1500,38 +869,11 @@ abstract class Product implements ActiveRecordInterface
     {
         $criteria = new Criteria(ProductTableMap::DATABASE_NAME);
 
-        if ($this->isColumnModified(ProductTableMap::COL_SERIAL_NUMBER)) {
-            $criteria->add(ProductTableMap::COL_SERIAL_NUMBER, $this->serial_number);
+        if ($this->isColumnModified(ProductTableMap::COL_ID)) {
+            $criteria->add(ProductTableMap::COL_ID, $this->id);
         }
         if ($this->isColumnModified(ProductTableMap::COL_PRODUCT_TYPE_ID)) {
             $criteria->add(ProductTableMap::COL_PRODUCT_TYPE_ID, $this->product_type_id);
-        }
-        if ($this->isColumnModified(ProductTableMap::COL_COUNTER)) {
-            $criteria->add(ProductTableMap::COL_COUNTER, $this->counter);
-        }
-        if ($this->isColumnModified(ProductTableMap::COL_NFR)) {
-            $criteria->add(ProductTableMap::COL_NFR, $this->nfr);
-        }
-        if ($this->isColumnModified(ProductTableMap::COL_DELETED_FLAG)) {
-            $criteria->add(ProductTableMap::COL_DELETED_FLAG, $this->deleted_flag);
-        }
-        if ($this->isColumnModified(ProductTableMap::COL_DATE_GENERATED)) {
-            $criteria->add(ProductTableMap::COL_DATE_GENERATED, $this->date_generated);
-        }
-        if ($this->isColumnModified(ProductTableMap::COL_USER_ID_GENERATED)) {
-            $criteria->add(ProductTableMap::COL_USER_ID_GENERATED, $this->user_id_generated);
-        }
-        if ($this->isColumnModified(ProductTableMap::COL_USER_ID)) {
-            $criteria->add(ProductTableMap::COL_USER_ID, $this->user_id);
-        }
-        if ($this->isColumnModified(ProductTableMap::COL_USER_DATE_ADDED)) {
-            $criteria->add(ProductTableMap::COL_USER_DATE_ADDED, $this->user_date_added);
-        }
-        if ($this->isColumnModified(ProductTableMap::COL_LICENSES_CREATED)) {
-            $criteria->add(ProductTableMap::COL_LICENSES_CREATED, $this->licenses_created);
-        }
-        if ($this->isColumnModified(ProductTableMap::COL_NOTES)) {
-            $criteria->add(ProductTableMap::COL_NOTES, $this->notes);
         }
 
         return $criteria;
@@ -1550,7 +892,7 @@ abstract class Product implements ActiveRecordInterface
     public function buildPkeyCriteria()
     {
         $criteria = ChildProductQuery::create();
-        $criteria->add(ProductTableMap::COL_SERIAL_NUMBER, $this->serial_number);
+        $criteria->add(ProductTableMap::COL_ID, $this->id);
 
         return $criteria;
     }
@@ -1587,7 +929,7 @@ abstract class Product implements ActiveRecordInterface
     }
 
     /**
-     * Generic method to set the primary key (serial_number column).
+     * Generic method to set the primary key (id column).
      *
      * @param       string $key Primary key.
      * @return void
@@ -1621,15 +963,6 @@ abstract class Product implements ActiveRecordInterface
     {
         $copyObj->setId($this->getId());
         $copyObj->setProductTypeId($this->getProductTypeId());
-        $copyObj->setCounter($this->getCounter());
-        $copyObj->setNfr($this->getNfr());
-        $copyObj->setDeletedFlag($this->getDeletedFlag());
-        $copyObj->setCreatedAt($this->getCreatedAt());
-        $copyObj->setCreatedByUserId($this->getCreatedByUserId());
-        $copyObj->setUserId($this->getUserId());
-        $copyObj->setUserAddedAt($this->getUserAddedAt());
-        $copyObj->setLicensesCreatedAt($this->getLicensesCreatedAt());
-        $copyObj->setNotes($this->getNotes());
         if ($makeNew) {
             $copyObj->setNew(true);
         }
@@ -1664,17 +997,8 @@ abstract class Product implements ActiveRecordInterface
      */
     public function clear()
     {
-        $this->serial_number = null;
+        $this->id = null;
         $this->product_type_id = null;
-        $this->counter = null;
-        $this->nfr = null;
-        $this->deleted_flag = null;
-        $this->date_generated = null;
-        $this->user_id_generated = null;
-        $this->user_id = null;
-        $this->user_date_added = null;
-        $this->licenses_created = null;
-        $this->notes = null;
         $this->alreadyInSave = false;
         $this->clearAllReferences();
         $this->applyDefaultValues();
