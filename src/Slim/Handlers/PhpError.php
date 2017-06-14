@@ -1,13 +1,13 @@
 <?php
 namespace Serato\SwsApp\Slim\Handlers;
 
-use Slim\Handlers\Error as SlimPhpError;
+use Slim\Handlers\PhpError as SlimPhpError;
 use Psr\Log\LoggerInterface as Logger;
  
 /**
  * Application PhpError Handler
  *
- * Extends the base Slim Error handler by using a provided logger interface to
+ * Extends the base Slim PhpError handler by using a provided logger interface to
  * write error messages to.
  */
 final class PhpError extends SlimPhpError
