@@ -1,10 +1,10 @@
 <?php
-namespace Serato\SwsApp\Slim\Middleware;
+namespace Serato\SwsApp\Slim\Middleware\AccessScopes;
 
 use Aws\Sdk;
 use Exception;
 use Psr\Log\LoggerInterface;
-use Slim\Handlers\AbstractHandler;
+use Serato\SwsApp\Slim\Middleware\AccessScopes\AbstractAccessScopesMiddleware;
 use Serato\Jwt\AccessToken as JwtAccessToken;
 use Serato\Jwt\Exception\TokenExpiredException;
 use Serato\SwsApp\Http\Rest\Exception\ExpiredAccessTokenException;
@@ -20,7 +20,7 @@ use Psr\Cache\CacheItemPoolInterface;
  * and extracting claims from the token.
  *
  */
-class AccessToken extends AbstractHandler
+class AccessToken extends AbstractAccessScopesMiddleware
 {
     /**
      * AWS Sdk
@@ -99,9 +99,20 @@ class AccessToken extends AbstractHandler
         try {
             $accessToken->parseTokenString((string)$tokenString, $this->cache);
             $accessToken->validate($this->webServiceName);
-            foreach ($this->getAccessTokenClaims($accessToken) as $k => $v) {
-                $request = $request->withAttribute($k, $v);
-            }
+
+            $scopes = $this->getAccessTokenScopes($accessToken);
+
+            $request = $this->setClientAppRequestAttributes(
+                $request,
+                $accessToken->getClaim('app_id'),
+                $accessToken->getClaim('app_name'),
+                $scopes
+            );
+
+            $request = $request
+                ->withAttribute('uid', $accessToken->getClaim('uid'))
+                ->withAttribute('email', $accessToken->getClaim('email'))
+                ->withAttribute('email_verified', $accessToken->getClaim('email_verified'));
         } catch (TokenExpiredException $e) {
             throw new ExpiredAccessTokenException;
         } catch (Exception $e) {
@@ -131,14 +142,14 @@ class AccessToken extends AbstractHandler
     }
 
     /**
-     * Get claims from JWT Access Token
+     * Get `scopes` claim from JWT Access Token
      *
      * @param JwtAccessToken $accessToken
      *
      * @return array
      *
      */
-    private function getAccessTokenClaims(JwtAccessToken $accessToken): array
+    private function getAccessTokenScopes(JwtAccessToken $accessToken): array
     {
         $scopes = [];
 
@@ -148,14 +159,7 @@ class AccessToken extends AbstractHandler
             $scopes = $accessToken->getClaim('scopes')[$this->webServiceName];
         }
 
-        return [
-            'app_id'            => $accessToken->getClaim('app_id'),
-            'app_name'          => $accessToken->getClaim('app_name'),
-            'uid'               => $accessToken->getClaim('uid'),
-            'email'             => $accessToken->getClaim('email'),
-            'email_verified'    => $accessToken->getClaim('email_verified'),
-            'scopes'            => $scopes
-        ];
+        return $scopes;
     }
 
     /**
