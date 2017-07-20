@@ -1,0 +1,32 @@
+{
+    "incomplete_mock_data" : {
+        "id" : "incomplete_mock_data_client",
+        "name" : "Test Client Incomplete Data"
+    },
+    "complete_mock_data" : {
+        "id" : "complete_mock_data_client",
+        "name" : "Test Client Complete Data",
+        "password_hash" : "InvalidPasswordHash",
+        "jwt" : {
+            "access" : {
+                "default_audience" : ["license.serato.io"],
+                "default_scopes" : {
+                    "license.serato.io" : ["test-scope"]
+                },
+                "expires" : 3600
+            },
+            "refresh" : {
+                "expires" : 31536000
+            },
+            "kms_key_id" : "6d905895-8456-47b5-a5c4-22346d4496c9"
+        }
+    },
+    "complete_mock_data_with_scopes": {
+        "id" : "complete_mock_data_with_scopes",
+        "name" : "Test Client Complete Data with Scopes",
+        "password_hash" : "InvalidPasswordHashToo",
+        "scopes": {
+            "license.serato.io": ["test-scope"]
+        }
+    }
+}

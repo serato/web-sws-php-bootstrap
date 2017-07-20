@@ -1,9 +1,9 @@
 <?php
-namespace Serato\SwsApp\Test\Slim\Middleware;
+namespace Serato\SwsApp\Test\Slim\Middleware\AccessScopes;
 
 use Serato\SwsApp\Test\TestCase;
-use Serato\SwsApp\Test\Slim\Middleware\AccessToken as MockAccessToken;
-use Serato\SwsApp\Slim\Middleware\AccessToken as AccessTokenMiddleware;
+use Serato\SwsApp\Test\Slim\Middleware\AccessScopes\AccessToken as MockAccessToken;
+use Serato\SwsApp\Slim\Middleware\AccessScopes\AccessToken as AccessTokenMiddleware;
 use Serato\SwsApp\Slim\Middleware\EmptyWare;
 use Serato\Slimulator\EnvironmentBuilder;
 use Serato\Slimulator\Request;
@@ -12,7 +12,7 @@ use Slim\Http\Response;
 use Aws\Sdk;
 
 /**
- * Unit tests for Serato\SwsApp\Slim\Middleware\AccessToken
+ * Unit tests for Serato\SwsApp\Slim\Middleware\AccessScopes\AccessToken
  */
 class AccessTokenTest extends TestCase
 {

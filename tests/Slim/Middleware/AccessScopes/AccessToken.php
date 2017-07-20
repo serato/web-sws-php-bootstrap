@@ -1,5 +1,5 @@
 <?php
-namespace Serato\SwsApp\Test\Slim\Middleware;
+namespace Serato\SwsApp\Test\Slim\Middleware\AccessScopes;
 
 use Serato\Jwt\AccessToken as JwtAccessToken;
 
