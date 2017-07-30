@@ -90,33 +90,30 @@ class AccessToken extends AbstractAccessScopesMiddleware
         // TODO in the future
         # Look for the token string in other places. eg a Cookie
 
-        if ($tokenString === null) {
-            throw new InvalidAccessTokenException;
-        }
+        if ($tokenString !== null) {
+            $accessToken = new JwtAccessToken($this->getAwsSdk());
+            try {
+                $accessToken->parseTokenString((string)$tokenString, $this->cache);
+                $accessToken->validate($this->webServiceName);
 
-        $accessToken = new JwtAccessToken($this->getAwsSdk());
+                $scopes = $this->getAccessTokenScopes($accessToken);
 
-        try {
-            $accessToken->parseTokenString((string)$tokenString, $this->cache);
-            $accessToken->validate($this->webServiceName);
+                $request = $this->setClientAppRequestAttributes(
+                    $request,
+                    $accessToken->getClaim('app_id'),
+                    $accessToken->getClaim('app_name'),
+                    $scopes
+                );
 
-            $scopes = $this->getAccessTokenScopes($accessToken);
-
-            $request = $this->setClientAppRequestAttributes(
-                $request,
-                $accessToken->getClaim('app_id'),
-                $accessToken->getClaim('app_name'),
-                $scopes
-            );
-
-            $request = $request
-                ->withAttribute('uid', $accessToken->getClaim('uid'))
-                ->withAttribute('email', $accessToken->getClaim('email'))
-                ->withAttribute('email_verified', $accessToken->getClaim('email_verified'));
-        } catch (TokenExpiredException $e) {
-            throw new ExpiredAccessTokenException;
-        } catch (Exception $e) {
-            throw new InvalidAccessTokenException;
+                $request = $request
+                    ->withAttribute('uid', $accessToken->getClaim('uid'))
+                    ->withAttribute('email', $accessToken->getClaim('email'))
+                    ->withAttribute('email_verified', $accessToken->getClaim('email_verified'));
+            } catch (TokenExpiredException $e) {
+                throw new ExpiredAccessTokenException;
+            } catch (Exception $e) {
+                throw new InvalidAccessTokenException;
+            }
         }
         return $next($request, $response);
     }
