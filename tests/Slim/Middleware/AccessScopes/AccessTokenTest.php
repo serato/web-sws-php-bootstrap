@@ -20,7 +20,10 @@ class AccessTokenTest extends TestCase
     const WEBSERVICE_NAME = 'my.webservice.me';
 
     /**
-     * @expectedException \Serato\SwsApp\Http\Rest\Exception\InvalidAccessTokenException
+     * Call the middleware without a token at all.
+     *
+     * This is allowed and should work ok. But, obviously, there should be no
+     * `scopes` added the $request object
      */
     public function testAccessToken()
     {
@@ -30,11 +33,14 @@ class AccessTokenTest extends TestCase
             $this->getFileSystemCachePool(),
             self::WEBSERVICE_NAME
         );
+        $nextMiddleware = new EmptyWare;
         $response = $middleware(
             Request::createFromEnvironmentBuilder(EnvironmentBuilder::create()),
             new Response,
-            new EmptyWare
+            $nextMiddleware
         );
+
+        $this->assertEquals(null, $nextMiddleware->getRequestInterface()->getAttribute('scopes'));
     }
 
     /**
