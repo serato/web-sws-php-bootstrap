@@ -37,7 +37,7 @@ final class StatusController extends AbstractController
     /**
      * {@inheritdoc}
      */
-    protected function execute(Request $request, Response $response, array $args)
+    protected function execute(Request $request, Response $response, array $args): Response
     {
         $negotiator = new Negotiator();
         $contentTypePriorities = ['application/json', 'text/html'];
@@ -93,7 +93,7 @@ final class StatusController extends AbstractController
                 JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
             );
         }
-        $response
+        return $response
             ->withStatus(200)
             ->withHeader('Content-type', $contentType)
             ->write($content);

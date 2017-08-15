@@ -54,6 +54,10 @@ class AbstractControllerTest extends TestCase
     {
         $logger = $this->getDebugLogger();
         $controller = $this->getMockForAbstractClass(AbstractController::class, [$logger]);
+        $controller->expects($this->any())
+            ->method('execute')
+            ->willReturn(new Response);
+        
         $response = $controller->mockInvoke(
             Request::createFromEnvironmentBuilder(EnvironmentBuilder::create())
         );
