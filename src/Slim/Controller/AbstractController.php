@@ -61,8 +61,7 @@ abstract class AbstractController
      */
     public function __invoke(Request $request, Response $response, array $args) : Response
     {
-        $this->execute($request, $response, $args);
-        return $response;
+        return $this->execute($request, $response, $args);
     }
 
     /**
@@ -125,7 +124,11 @@ abstract class AbstractController
      * @param  Response    $response           Response interface
      * @param  array       $args               Request URI args
      *
-     * @return void
+     * @return Response
      */
-    abstract protected function execute(Request $request, Response $response, array $args);
+    abstract protected function execute(
+        Request $request,
+        Response $response,
+        array $args
+    ) : Response;
 }
