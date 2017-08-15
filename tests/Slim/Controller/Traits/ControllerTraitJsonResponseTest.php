@@ -28,7 +28,8 @@ class ControllerTraitJsonResponseTest extends TestCase
         $writeJsonBodyMethod->setAccessible(true);
         $response = $writeJsonBodyMethod->invokeArgs($mock, [new Response]);
         $this->assertTrue(is_a($response, 'Slim\Http\Response'));
-        $response = $writeJsonBodyMethod->invokeArgs($mock, [new Response, 401]);
+        $this->assertEquals(200, $response->getStatusCode());
+        $response = $writeJsonBodyMethod->invokeArgs($mock, [new Response(401)]);
         $this->assertEquals(401, $response->getStatusCode());
     }
 }

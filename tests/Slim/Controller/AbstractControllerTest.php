@@ -40,16 +40,6 @@ class AbstractControllerTest extends TestCase
         );
     }
 
-    public function testSetGetHttpResponseCode()
-    {
-        $logger = $this->getDebugLogger();
-        $controller = $this->getMockForAbstractClass(AbstractController::class, [$logger]);
-
-        $controller->setHttpResponseCode(400);
-
-        $this->assertEquals(400, $controller->getHttpResponseCode());
-    }
-
     public function testMockInvoke()
     {
         $logger = $this->getDebugLogger();

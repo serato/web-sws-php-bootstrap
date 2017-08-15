@@ -23,13 +23,6 @@ abstract class AbstractController
     protected $logger;
 
     /**
-     * HTTP response code
-     *
-     * @var int
-     */
-    private $httpResponseCode = 200;
-
-    /**
      * Construct the controller
      *
      * @param LoggerInterface   $logger   A PSR-3 logger interface
@@ -91,28 +84,6 @@ abstract class AbstractController
         } else {
             return $this->__invoke($request, $response, $uriArgs);
         }
-    }
-
-    /**
-     * Set the HTTP response code
-     *
-     * @param int $httpResponseCode     HTTP response code
-     *
-     * @return void
-     */
-    public function setHttpResponseCode(int $httpResponseCode)
-    {
-        $this->httpResponseCode = $httpResponseCode;
-    }
-
-    /**
-     * Get the HTTP response code
-     *
-     * @return int
-     */
-    public function getHttpResponseCode(): int
-    {
-        return $this->httpResponseCode;
     }
 
     /**

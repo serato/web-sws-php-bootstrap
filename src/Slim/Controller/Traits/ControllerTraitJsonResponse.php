@@ -39,13 +39,11 @@ trait ControllerTraitJsonResponse
      * sets a `Content-type application/json` response header.
      *
      * @param  Response    $response           Response interface
-     * @param  int         $httpResponseCode   HTTP response code
      * @return Response
      */
-    protected function writeJsonBody(Response $response, int $httpResponseCode = 200) : Response
+    protected function writeJsonBody(Response $response) : Response
     {
         return $response
-                ->withStatus($httpResponseCode)
                 ->withHeader('Content-type', 'application/json')
                 ->write(json_encode(
                     $this->jsonResponseBody,
