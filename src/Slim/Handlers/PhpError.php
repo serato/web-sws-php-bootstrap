@@ -81,24 +81,40 @@ final class PhpError extends SlimPhpError
      */
     protected function writeToErrorLog($throwable)
     {
-        $message = 'Slim Application Error:' . PHP_EOL;
-        $message .= $this->renderThrowableAsText($throwable);
+        $error = $this->renderThrowableAsArray($throwable);
         while ($throwable = $throwable->getPrevious()) {
-            $message .= PHP_EOL . 'Previous error:' . PHP_EOL;
-            $message .= $this->renderThrowableAsText($throwable);
+            if (isset($error['previous'])) {
+                $error['previous'] = [];
+            }
+            $error['previous'][] = $this->renderThrowableAsArray($throwable);
         }
-        $this->logError($message);
+        $this->logger->critical('Slim Application Unhandled Throwable', $error);
     }
 
     /**
-     * Wraps the error_log function so that this can be easily tested
+     * @param \Exception|\Throwable $throwable
      *
-     * @todo Specify void return type in PHP 7.1
-     *
-     * @param $message
+     * @return array
      */
-    protected function logError($message)
+    private function renderThrowableAsArray($throwable): array
     {
-        $this->logger->critical($message);
+        $error = [];
+        $error['type'] = get_class($throwable);
+        if ($code = $throwable->getCode()) {
+            $error['code'] = $code;
+        }
+        if ($message = $throwable->getMessage()) {
+            $error['message'] = htmlentities($message);
+        }
+        if ($file = $throwable->getFile()) {
+            $error['file'] = $file;
+        }
+        if ($line = $throwable->getLine()) {
+            $error['line'] = $line;
+        }
+        if ($trace = $throwable->getTraceAsString()) {
+            $error['trace'] = explode("\n", $throwable->getTraceAsString());
+        }
+        return $error;
     }
 }
