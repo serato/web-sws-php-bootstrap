@@ -215,22 +215,16 @@ final class Error extends SlimError
      */
     protected function writeToErrorLog($throwable)
     {
-        // $message = 'Slim Application Error:' . PHP_EOL;
-        // $message .= $this->renderThrowableAsText($throwable);
-        // while ($throwable = $throwable->getPrevious()) {
-        //     $message .= PHP_EOL . 'Previous error:' . PHP_EOL;
-        //     $message .= $this->renderThrowableAsText($throwable);
-        // }
         $error = $this->renderThrowableAsArray($throwable);
         while ($throwable = $throwable->getPrevious()) {
             if (isset($error['previous'])) {
                 $error['previous'] = [];
             }
-            $error['previous'][] .= $this->renderThrowableAsArray($throwable);
+            $error['previous'][] = $this->renderThrowableAsArray($throwable);
         }
         
         $this->logger->critical(
-            'Slim Application Error',
+            'Slim Application Unhandled Exception',
             array_merge(
                 $error,
                 [
