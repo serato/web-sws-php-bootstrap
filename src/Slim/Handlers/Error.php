@@ -18,7 +18,7 @@ use UnexpectedValueException;
  * 2. Better handle Client Exceptions (ie. format the response in a specific way
  *    and don't log these errors)
  */
-final class Error extends SlimError
+class Error extends SlimError
 {
     const HTTP_REST_EXCEPTION_BASE_CLASS = '\Serato\SwsApp\Http\Rest\Exception\AbstractException';
 

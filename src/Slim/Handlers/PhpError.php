@@ -10,7 +10,7 @@ use Psr\Log\LoggerInterface as Logger;
  * Extends the base Slim PhpError handler by using a provided logger interface to
  * write error messages to.
  */
-final class PhpError extends SlimPhpError
+class PhpError extends SlimPhpError
 {
     /**
      * Application name
