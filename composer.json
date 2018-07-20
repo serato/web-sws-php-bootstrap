@@ -10,12 +10,11 @@
 		"aws/aws-sdk-php": "^3.0",
 		"propel/propel": "2.0.0-alpha7",
 		"willdurand/negotiation": "~2.2.0",
-		"symfony/cache": "v3.3.0-RC1"
+		"symfony/cache": "^3.0"
 	},
 	"require-dev": {
 		"phpunit/phpunit": "~6.0",
 		"squizlabs/php_codesniffer": "~2.0",
-		"symfony/cache": "v3.3.0-RC1",
 		"monolog/monolog": "^1.21.0",
 		"serato/slimulator": "^1.0.0"
 	},
