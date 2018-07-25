@@ -9,3 +9,4 @@ composer.lock
 /tests/reports
 debug.log
 error.log
+GeoLite2-City.mmdb
