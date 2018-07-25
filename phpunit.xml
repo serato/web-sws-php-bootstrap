@@ -12,6 +12,12 @@
     </whitelist>
   </filter>
 
+	<groups>
+		<exclude>
+			<group>geoip-database</group>
+		</exclude>
+	</groups>
+
   <!--
   <logging>
       <log type="coverage-clover" target="tests/reports/logs/clover.xml"/>
