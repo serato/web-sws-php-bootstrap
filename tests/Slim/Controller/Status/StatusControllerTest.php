@@ -4,11 +4,13 @@ namespace Serato\SwsApp\Test\Slim\Controller\Status;
 use Serato\SwsApp\Test\TestCase;
 use Serato\SwsApp\Slim\Controller\AbstractController;
 use Serato\SwsApp\Slim\Controller\Status\StatusController;
+use Serato\SwsApp\Slim\Middleware\GeoIpLookup;
 use Serato\Slimulator\EnvironmentBuilder;
 use Serato\Slimulator\Request;
 use Slim\Http\Response;
 use Serato\SwsApp\Slim\Handlers\Error as ErrorHandler;
 use Serato\SwsApp\Http\Rest\Exception\AbstractException as ClientException;
+use GeoIp2\Model\City;
 
 /**
  * Unit tests for Serato\SwsApp\Slim\Controller\StatusController
@@ -61,6 +63,39 @@ class StatusControllerTest extends TestCase
     }
 
     /**
+     * As above but now also include IP address and GeoLiteDB data added to the request
+     *
+     * @group controller
+     */
+    public function testJsonContentTypeGitCommitFileAndGeoIp()
+    {
+        $ip_address = '192.168.4.1';
+
+        $request = Request::createFromEnvironmentBuilder(
+            EnvironmentBuilder::create()->addHeader('Accept', 'application/json')
+        );
+
+        // FYI, these attributes can be added via the `Serato\SwsApp\Slim\Middleware\GeoIpLookup` middleware
+        $request = $request
+            ->withAttribute(GeoIpLookup::IP_ADDRESS, $ip_address)
+            ->withAttribute(GeoIpLookup::GEOIP_RECORD, new City([]));
+
+        $response = $this->executeControllerTest(
+            new StatusController($this->getDebugLogger(), __DIR__ . '/../../../resources/git_commit.txt'),
+            $request
+        );
+
+        $this->assertEquals($response->getStatusCode(), 200);
+        $obj = json_decode((string)$response->getBody(), true);
+        $this->assertTrue(isset($obj['current_time']));
+        $this->assertTrue(isset($obj['host']));
+        $this->assertTrue(isset($obj['web_app_commit']));
+        $this->assertEquals($obj['web_app_commit'], 'abc123456789def');
+        $this->assertEquals($obj['remote_address'], $ip_address);
+        $this->assertTrue(is_array($obj['remote_location']));
+    }
+
+    /**
      * Test the controller HTML output with a git commit file path value that
      * evaluates to a file in the 'resources' directory
      *
@@ -85,6 +120,42 @@ class StatusControllerTest extends TestCase
         $this->assertRegExp('/Application Status/', $html);
     }
 
+
+    /**
+     * As above but now also include IP address and GeoLiteDB data added to the request
+     *
+     * @group controller
+     */
+    public function testHtmlContentTypeGitCommitFileAndGeoIp()
+    {
+        $ip_address = '192.168.4.1';
+
+        $request = Request::createFromEnvironmentBuilder(
+            EnvironmentBuilder::create()->addHeader('Accept', 'text/html')
+        );
+
+        // FYI, these attributes can be added via the `Serato\SwsApp\Slim\Middleware\GeoIpLookup` middleware
+        $request = $request
+            ->withAttribute(GeoIpLookup::IP_ADDRESS, $ip_address)
+            ->withAttribute(GeoIpLookup::GEOIP_RECORD, new City([]));
+
+        $response = $this->executeControllerTest(
+            new StatusController($this->getDebugLogger(), __DIR__ . '/../../../resources/git_commit.txt'),
+            $request
+        );
+
+        $this->assertEquals($response->getStatusCode(), 200);
+        $html = (string)$response->getBody();
+
+        $this->assertRegExp('/\<html\>/', $html);
+        $this->assertRegExp('/\<\/html\>/', $html);
+        $this->assertRegExp('/\<body\>/', $html);
+        $this->assertRegExp('/\<\/body\>/', $html);
+        $this->assertRegExp('/Application Status/', $html);
+        $this->assertRegExp('/Remote IP address/', $html);
+        $this->assertRegExp('/' . $ip_address .'/', $html);
+        $this->assertRegExp('/Location:/', $html);
+    }
 
     /**
      * Test the controller output with a header that specifies a content type

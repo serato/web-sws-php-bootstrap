@@ -6,6 +6,8 @@ use Serato\SwsApp\Slim\Controller\AbstractController;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Negotiation\Negotiator;
+use Serato\SwsApp\Slim\Middleware\GeoIpLookup;
+use GeoIp2\Model\City;
 use Datetime;
 
 /**
@@ -81,17 +83,25 @@ final class StatusController extends AbstractController
                 'Application Status',
                 $vars['current_time'],
                 $vars['host'],
-                $vars['web_app_commit']
+                $vars['web_app_commit'],
+                str_replace('()', '', $this->getGeoIpHtml($request))
             );
         } else {
-            $content = json_encode(
-                [
-                    'current_time' => $date->format(DateTime::ATOM),
-                    'host' => $request->getHeaderLine('Host'),
-                    'web_app_commit' => $this->getGitCommitHash()
-                ],
-                JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
-            );
+            $data = [
+                'current_time' => $date->format(DateTime::ATOM),
+                'host' => $request->getHeaderLine('Host'),
+                'web_app_commit' => $this->getGitCommitHash()
+            ];
+
+            if ($request->getAttribute(GeoIpLookup::IP_ADDRESS) !== null) {
+                $data['remote_address'] = $request->getAttribute(GeoIpLookup::IP_ADDRESS);
+            }
+
+            if ($request->getAttribute(GeoIpLookup::GEOIP_RECORD) !== null) {
+                $data['remote_location'] = $this->getGeoIpArray($request->getAttribute(GeoIpLookup::GEOIP_RECORD));
+            }
+
+            $content = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
         }
         return $response
             ->withStatus(200)
@@ -113,6 +123,21 @@ final class StatusController extends AbstractController
         }
     }
 
+    private function getGeoIpHtml(Request $request): string
+    {
+        $str = '';
+        if ($request->getAttribute(GeoIpLookup::IP_ADDRESS) !== null) {
+            $str .= '<div><strong>Remote IP address:</strong> ' .
+                    $request->getAttribute(GeoIpLookup::IP_ADDRESS) . '</div>';
+        }
+        if ($request->getAttribute(GeoIpLookup::GEOIP_RECORD) !== null) {
+            $str .= '<div><strong>Location:</strong><br>' .
+                    implode('<br>', $this->getGeoIpArray($request->getAttribute(GeoIpLookup::GEOIP_RECORD))) .
+                    '</div>';
+        }
+        return $str;
+    }
+
     private function getHtmlTemplate(): string
     {
         return <<<EOT
@@ -132,9 +157,25 @@ final class StatusController extends AbstractController
                 <div><strong>System time:</strong> %s</div>
                 <div><strong>Host:</strong> %s</div>
                 <div><strong>Web application commit:</strong> %s</div>
+                %s
             </p>
         </body>
     </html>
 EOT;
+    }
+
+    private function getGeoIpArray(City $record): array
+    {
+        return array_filter(
+            [
+                $record->city->name,
+                (isset($record->subdivisions[0]) ? $record->subdivisions[0]->name . ' ' : '') . $record->postal->code,
+                $record->country->name . ' (' . $record->country->isoCode . ')',
+                $record->continent->name
+            ],
+            function ($val) {
+                return $val !== null && $val !== '';
+            }
+        );
     }
 }
