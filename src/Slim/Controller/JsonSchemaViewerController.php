@@ -83,7 +83,7 @@ class JsonSchemaViewerController extends AbstractController
                 $content = json_encode([
                     'description' => $this->appName . ' - REST API JSON Schemas',
                     'baseUri' => $request->getUri()->getScheme() . '://' .
-                                    $request->getUri()->getHost() . $baseUri .'/' . self::JSONLIST_VIEW,
+                                    $request->getUri()->getHost() . $baseUri .'/' . self::JSON_VIEW,
                     'items' => $this->getJsonFileList()
                 ]);
             } else {
