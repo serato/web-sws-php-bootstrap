@@ -7,6 +7,7 @@ use Serato\SwsApp\Slim\Controller\Scopes;
 use Serato\Slimulator\EnvironmentBuilder;
 use Serato\Slimulator\Request;
 use Slim\Http\Response;
+use Serato\SwsApp\Slim\Middleware\AbstractRequestWithAttributeMiddleware as RequestMiddleware;
 
 /**
  * Unit tests for Serato\SwsApp\Slim\Controller\AbstractController
@@ -47,7 +48,7 @@ class AbstractScopesControllerTest extends TestCase
         $controller(
             Request::createFromEnvironmentBuilder(
                 EnvironmentBuilder::create()
-            )->withAttributes(['scopes' => $requestScopes]),
+            )->withAttributes([RequestMiddleware::SCOPES => $requestScopes]),
             new Response(),
             []
         );

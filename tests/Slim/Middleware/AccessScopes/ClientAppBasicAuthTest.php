@@ -8,6 +8,7 @@ use Serato\Slimulator\EnvironmentBuilder;
 use Serato\Slimulator\Authorization\BasicAuthorization;
 use Serato\Slimulator\Request;
 use Slim\Http\Response;
+use Serato\SwsApp\Slim\Middleware\AbstractRequestWithAttributeMiddleware as RequestMiddleware;
 
 /**
  * Unit tests for Serato\SwsApp\Slim\Middleware\AccessScopes\ClientAppBasicAuth
@@ -45,7 +46,7 @@ class ClientAppBasicAuthTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode(), $assertMessage);
         $this->assertEquals(
             $requestScopes,
-            $nextMiddleware->getRequestInterface()->getAttribute('scopes', []),
+            $nextMiddleware->getRequestInterface()->getAttribute(RequestMiddleware::SCOPES, []),
             $assertMessage
         );
     }

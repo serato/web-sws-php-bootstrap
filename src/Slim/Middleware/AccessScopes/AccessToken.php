@@ -106,9 +106,9 @@ class AccessToken extends AbstractAccessScopesMiddleware
                 );
 
                 $request = $request
-                    ->withAttribute('uid', $accessToken->getClaim('uid'))
-                    ->withAttribute('email', $accessToken->getClaim('email'))
-                    ->withAttribute('email_verified', $accessToken->getClaim('email_verified'));
+                    ->withAttribute(self::USER_ID, $accessToken->getClaim('uid'))
+                    ->withAttribute(self::USER_EMAIL, $accessToken->getClaim('email'))
+                    ->withAttribute(self::USER_EMAIL_VERIFIED, $accessToken->getClaim('email_verified'));
             } catch (TokenExpiredException $e) {
                 throw new ExpiredAccessTokenException;
             } catch (Exception $e) {
