@@ -5,6 +5,7 @@ use Serato\SwsApp\Slim\Controller\AbstractController;
 use Serato\SwsApp\Slim\Controller\Scopes;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use Serato\SwsApp\Slim\Middleware\AbstractRequestWithAttributeMiddleware as RequestMiddleware;
 
 /**
  * Abstract Scopes Controller
@@ -16,7 +17,7 @@ use Psr\Http\Message\ResponseInterface as Response;
  * provided all-or-nothing access to functionality contained within the controller.
  *
  * End-user scopes are provided into this controller via a `Psr\Http\Message\ServerRequestInterface`
- * instance and exposed with an attribute named `scopes`. eg.
+ * instance and exposed with an attribute named `scopes`. ie.
  *
  *      $userScopes = $request->getAttribute('scopes');
  *
@@ -28,8 +29,6 @@ use Psr\Http\Message\ResponseInterface as Response;
  */
 abstract class AbstractScopesController extends AbstractController
 {
-    const REQUEST_ATTRIBUTE_SCOPES = 'scopes';
-
     /**
      * Callable implementation. Controllers are registered to routes as
      * callables which dictates the method signature.
@@ -84,7 +83,7 @@ abstract class AbstractScopesController extends AbstractController
      */
     protected function checkScopes(Request $request, Response $response)
     {
-        $requestScopes      = $request->getAttribute(self::REQUEST_ATTRIBUTE_SCOPES, []);
+        $requestScopes      = $request->getAttribute(RequestMiddleware::SCOPES, []);
         $controllerScopes   = $this->getControllerScopes();
 
         if (count($controllerScopes->getScopes()) === 0) {

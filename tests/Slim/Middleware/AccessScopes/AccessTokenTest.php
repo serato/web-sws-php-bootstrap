@@ -40,7 +40,7 @@ class AccessTokenTest extends TestCase
             $nextMiddleware
         );
 
-        $this->assertEquals(null, $nextMiddleware->getRequestInterface()->getAttribute('scopes'));
+        $this->assertEquals(null, $nextMiddleware->getRequestInterface()->getAttribute(AccessTokenMiddleware::SCOPES));
     }
 
     /**
@@ -77,7 +77,7 @@ class AccessTokenTest extends TestCase
         );
 
         foreach ($this->getAccessTokenCustomClaims() as $name => $value) {
-            if ($name == 'scopes') {
+            if ($name === AccessTokenMiddleware::SCOPES) {
                 $scopes = $nextMiddleware->getRequestInterface()->getAttribute($name);
                 $this->assertEquals(
                     $value[self::WEBSERVICE_NAME],
@@ -183,12 +183,12 @@ class AccessTokenTest extends TestCase
     private function getAccessTokenCustomClaims()
     {
         return [
-            'app_id'            => 'my_app_id',
-            'app_name'          => 'my_app_name',
-            'uid'               => 'my_uid',
-            'email'             => 'my_email@test.com',
-            'email_verified'    => true,
-            'scopes'            => [self::WEBSERVICE_NAME => ['scope1', 'scope2']]
+            AccessTokenMiddleware::APP_ID               => 'my_app_id',
+            AccessTokenMiddleware::APP_NAME             => 'my_app_name',
+            AccessTokenMiddleware::USER_ID              => 'my_uid',
+            AccessTokenMiddleware::USER_EMAIL           => 'my_email@test.com',
+            AccessTokenMiddleware::USER_EMAIL_VERIFIED  => true,
+            AccessTokenMiddleware::SCOPES               => [self::WEBSERVICE_NAME => ['scope1', 'scope2']]
         ];
     }
 }

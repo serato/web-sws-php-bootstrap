@@ -1,15 +1,12 @@
 <?php
 namespace Serato\SwsApp\Slim\Middleware\AccessScopes;
 
+use Serato\SwsApp\Slim\Middleware\AbstractRequestWithAttributeMiddleware;
 use Slim\Handlers\AbstractHandler;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-abstract class AbstractAccessScopesMiddleware extends AbstractHandler
+abstract class AbstractAccessScopesMiddleware extends AbstractRequestWithAttributeMiddleware
 {
-    const REQUEST_ATTRIBUTE_APP_ID = 'app_id';
-    const REQUEST_ATTRIBUTE_APP_NAME = 'app_name';
-    const REQUEST_ATTRIBUTE_SCOPES = 'scopes';
-
     /**
      * Set `request` attributes pertaining to scopes of access
      *
@@ -27,8 +24,8 @@ abstract class AbstractAccessScopesMiddleware extends AbstractHandler
         array $scopes
     ): Request {
         return $request
-            ->withAttribute(self::REQUEST_ATTRIBUTE_APP_ID, $appId)
-            ->withAttribute(self::REQUEST_ATTRIBUTE_APP_NAME, $appName)
-            ->withAttribute(self::REQUEST_ATTRIBUTE_SCOPES, $scopes);
+            ->withAttribute(self::APP_ID, $appId)
+            ->withAttribute(self::APP_NAME, $appName)
+            ->withAttribute(self::SCOPES, $scopes);
     }
 }
