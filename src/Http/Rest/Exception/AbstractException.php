@@ -2,7 +2,7 @@
 
 namespace Serato\SwsApp\Http\Rest\Exception;
 
-use RuntimeException;
+use Serato\SwsApp\Exception\AbstractException as SwsAppException;
 
 /**
  * Abstract Exception
@@ -13,22 +13,6 @@ use RuntimeException;
  * values formatted and returned to the client.
  */
 
-abstract class AbstractException extends RuntimeException
+abstract class AbstractException extends SwsAppException
 {
-    /**
-     * The HTTP response code associated with the client error.
-     *
-     * @var int
-     */
-    protected $http_response_code = 400;
-
-    /**
-     * Get the HTTP response code associated with the client error.
-     *
-     * @return int The HTTP response code.
-     */
-    public function getHttpResponseCode() : int
-    {
-        return $this->http_response_code;
-    }
 }

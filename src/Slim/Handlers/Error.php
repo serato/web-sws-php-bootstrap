@@ -120,6 +120,7 @@ class Error extends SlimError
         return $response
                 ->withStatus($http_response_code)
                 ->withHeader('Content-type', $contentType)
+                ->withHeader('X-Serato-ErrorCode', $exception->getCode())
                 ->withBody($body);
     }
 
