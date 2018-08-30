@@ -27,5 +27,4 @@ abstract class AbstractRequestWithAttributeMiddleware extends AbstractHandler
     const USER_ID               = 'uid';
     const USER_EMAIL            = 'email';
     const USER_EMAIL_VERIFIED   = 'email_verified';
-    const LANGUAGE              = 'language';
 }
