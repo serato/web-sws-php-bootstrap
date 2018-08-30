@@ -20,7 +20,7 @@ use UnexpectedValueException;
  */
 class Error extends SlimError
 {
-    const HTTP_REST_EXCEPTION_BASE_CLASS = '\Serato\SwsApp\Http\Rest\Exception\AbstractException';
+    const BASE_CLASS = '\Serato\SwsApp\Exception\AbstractException';
 
     /**
      * Application name
@@ -88,7 +88,7 @@ class Error extends SlimError
         $this->requestQueryString   = $request->getUri()->getQuery();
 
         $http_response_code = 500;
-        if (is_a($exception, self::HTTP_REST_EXCEPTION_BASE_CLASS)) {
+        if (is_a($exception, self::BASE_CLASS)) {
             $http_response_code = $exception->getHttpResponseCode();
         }
 
@@ -109,7 +109,7 @@ class Error extends SlimError
                 throw new UnexpectedValueException('Cannot render unknown content type ' . $contentType);
         }
 
-        if (!is_a($exception, self::HTTP_REST_EXCEPTION_BASE_CLASS)) {
+        if (!is_a($exception, self::BASE_CLASS)) {
             $this->writeToErrorLog($exception);
         }
 
@@ -136,7 +136,7 @@ class Error extends SlimError
         $title = $this->applicationName;
         $html = '';
 
-        if (is_a($exception, self::HTTP_REST_EXCEPTION_BASE_CLASS)) {
+        if (is_a($exception, self::BASE_CLASS)) {
             switch ($exception->getHttpResponseCode()) {
                 case 403:
                     $html = '<h2>403 Forbidden</h2>';
@@ -191,7 +191,7 @@ class Error extends SlimError
         
         $error = ['message' => $msg];
 
-        if (is_a($exception, self::HTTP_REST_EXCEPTION_BASE_CLASS)) {
+        if (is_a($exception, self::BASE_CLASS)) {
             $error = [
                 'error' => $exception->getMessage(),
                 'code' => $exception->getCode(),
