@@ -3,7 +3,7 @@ namespace Serato\SwsApp\Slim\Controller;
 
 use Serato\SwsApp\Slim\Handlers\Error as ErrorHandler;
 use Slim\Http\Response as SlimResponse;
-use Serato\SwsApp\Http\Rest\Exception\AbstractException as ClientException;
+use Serato\SwsApp\Exception\AbstractException as ClientException;
 use Psr\Log\LoggerInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -54,7 +54,40 @@ abstract class AbstractController
      */
     public function __invoke(Request $request, Response $response, array $args) : Response
     {
+        // Require a client to specify a `Content-Type` header with a supported value for POST and PUT requests
+        if (in_array(strtolower($request->getMethod()), ['post', 'put'])) {
+            // Supported content types are limited by the specific implementation of the Request object
+            // In this instance we use the Request object from the Slim framework.
+            $supportContentTypes = [
+                'application/json',
+                'application/xml',
+                'text/xml',
+                'application/x-www-form-urlencoded'
+            ];
+            $contentType = $this->getRequestContentType($request);
+            if ($contentType === null || !in_array($contentType, $supportContentTypes)) {
+                // Error
+            }
+        }
         return $this->execute($request, $response, $args);
+    }
+
+    /**
+     * Get request content type, if known.
+     *
+     * @todo Specify nullable string return type in PHP 7.1
+     *
+     * @param  Request     $request            Request interface
+     * @return string|null The request media type, minus content-type params
+     */
+    public function getRequestContentType(Request $request)
+    {
+        $contentType = $request->getContentType();
+        if ($contentType) {
+            $contentTypeParts = preg_split('/\s*[;,]\s*/', $contentType);
+            return strtolower($contentTypeParts[0]);
+        }
+        return null;
     }
 
     /**
