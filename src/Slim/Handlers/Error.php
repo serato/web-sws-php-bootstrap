@@ -8,6 +8,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface as Logger;
 use Exception;
 use UnexpectedValueException;
+use Serato\SwsApp\Slim\Middleware\AbstractRequestWithAttributeMiddleware as RequestMiddleware;
 
 /**
  * Application Error Handler
@@ -58,6 +59,13 @@ class Error extends SlimError
     protected $requestQueryString;
 
     /**
+     * Language preference as specified by the request
+     *
+     * @var string
+     */
+    protected $language = 'en';
+
+    /**
      * Construct the error handler
      *
      * @param string    $applicationName        Human readable name of application
@@ -86,6 +94,7 @@ class Error extends SlimError
         $this->requestMethod        = $request->getMethod();
         $this->requestPath          = $request->getUri()->getPath();
         $this->requestQueryString   = $request->getUri()->getQuery();
+        $this->language             = $request->getAttribute(RequestMiddleware::LANGUAGE, $this->language);
 
         $http_response_code = 500;
         if (is_a($exception, self::BASE_CLASS)) {
