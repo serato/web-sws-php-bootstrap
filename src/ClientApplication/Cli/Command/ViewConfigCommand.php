@@ -55,7 +55,7 @@ class ViewConfigCommand extends AbstractCommand
                 $data = $data[$appName];
             }
         }
-        $this->writeInfoHeader($output, $headerInfo);
+        $this->writeInfoHeader($output, 'App Configuration', $headerInfo);
         $output->writeln("\n" . json_encode($data, JSON_PRETTY_PRINT) . "\n");
     }
 }
