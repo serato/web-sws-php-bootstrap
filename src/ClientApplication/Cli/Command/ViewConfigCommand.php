@@ -1,6 +1,7 @@
 <?php
 namespace Serato\SwsApp\ClientApplication\Cli\Command;
 
+use Exception;
 use Serato\SwsApp\ClientApplication\Cli\Command\AbstractCommand;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,20 +16,19 @@ class ViewConfigCommand extends AbstractCommand
     {
         parent::configure();
         $this
-            ->setName('view-config')
+            ->setName('show-config')
             ->addOption(
                 self::OPTION_APP_NAME,
                 null,
                 InputOption::VALUE_REQUIRED,
                 "Application name."
             )
-            ->setDescription('Views a complete configuration for an environment')
+            ->setDescription('Display app configuration for an environment')
             ->setHelp(
-                "Views a complete configuration for an environment.\n\n" .
+                "Display app configuration for an environment.\n\n" .
                 "Defaults to displaying all applications in the environment. Can display\n" .
-                "configuration for a single application by using the --" . self::OPTION_APP_NAME . " option.\n\n" .
-                "Defaults to using the current runtime environment. This can be overridden with\n" .
-                "the --" . self::OPTION_ENVIRONMENT . " option.\n"
+                "configuration for a single application by using the --" . self::OPTION_APP_NAME . " option.\n" .
+                $this->getCommonHelpText()
             );
     }
 
@@ -37,6 +37,22 @@ class ViewConfigCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        //
+        parent::execute($input, $output);
+
+        $headerInfo = [];
+
+        $data = $this->getDataLoader()->getApp($this->getEnv(), $this->getUseCache());
+
+        if ($input->getOption(self::OPTION_APP_NAME)) {
+            $appName = $input->getOption(self::OPTION_APP_NAME);
+            $headerInfo['App name'] = $appName;
+            if (!isset($data[$appName])) {
+                throw new Exception("Invalid app name `$appName` for `" . $this->getEnv() . "` environment.");
+            } else {
+                $data = $data[$appName];
+            }
+        }
+        $this->writeInfoHeader($output, $headerInfo);
+        $output->writeln("\n" . json_encode($data, JSON_PRETTY_PRINT) . "\n");
     }
 }

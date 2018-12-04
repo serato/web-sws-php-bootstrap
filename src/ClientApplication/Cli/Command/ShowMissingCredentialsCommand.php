@@ -21,9 +21,8 @@ class ShowMissingCredentialsCommand extends AbstractCommand
                 "Shows missing credentials.\n\n" .
                 "Defaults to displaying missing credentials for all applications in the.\n" .
                 "environment Can display missing credentials for a single application by\n" .
-                "using the --" . self::OPTION_APP_NAME . " option.\n\n" .
-                "Defaults to using the current runtime environment. This can be overridden with\n" .
-                "the --" . self::OPTION_ENVIRONMENT . " argument.\n"
+                "using the --" . self::OPTION_APP_NAME . " option.\n" .
+                $this->getCommonHelpText()
             );
     }
 
@@ -32,6 +31,6 @@ class ShowMissingCredentialsCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        //
+        parent::execute($input, $output);
     }
 }

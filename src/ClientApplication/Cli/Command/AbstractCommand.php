@@ -5,6 +5,9 @@ use Aws\Sdk as AwsSdk;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Serato\SwsApp\ClientApplication\DataLoader;
 
 abstract class AbstractCommand extends Command
 {
@@ -12,15 +15,16 @@ abstract class AbstractCommand extends Command
     public const ARG_PASSWORD = 'password';
     public const OPTION_APP_NAME = 'app-name';
     public const OPTION_ENVIRONMENT = 'env';
+    public const OPTION_IGNORE_CACHE = 'ignore-cache';
 
     /** @var string */
     private $env;
 
-    /** @var AwsSdk */
-    private $awsSdk;
+    /** @var boolean */
+    private $useCache = true;
 
-    /** @var CacheItemPoolInterface */
-    private $psrCache;
+    /** @var DataLoader */
+    private $dataLoader;
 
     /**
      * Constructs the command
@@ -33,10 +37,9 @@ abstract class AbstractCommand extends Command
      */
     public function __construct(string $env, AwsSdk $awsSdk, CacheItemPoolInterface $psrCache)
     {
-        $this->env = $env;
-        $this->awsSdk = $awsSdk;
-        $this->psrCache = $psrCache;
         parent::__construct();
+        $this->env = $env;
+        $this->dataLoader = new DataLoader($env, $awsSdk, $psrCache);
     }
 
     /**
@@ -44,12 +47,86 @@ abstract class AbstractCommand extends Command
      */
     protected function configure()
     {
-        $this->addOption(
-            self::OPTION_ENVIRONMENT,
-            null,
-            InputOption::VALUE_REQUIRED,
-            "Application environment. One of `dev`, `test` or `production`.\n\n" .
-            "Overrides the value extracted from the runtime environment itself."
+        $this
+            ->addOption(
+                self::OPTION_ENVIRONMENT,
+                null,
+                InputOption::VALUE_REQUIRED,
+                "Application environment. One of `dev`, `test` or `production`.\n\n" .
+                "Overrides the value extracted from the runtime environment itself."
+            )
+            ->addOption(
+                self::OPTION_IGNORE_CACHE,
+                null,
+                InputOption::VALUE_NONE,
+                "Ignores cached configuration data and always uses data fetched from S3."
+            );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        if ($input->getOption(self::OPTION_IGNORE_CACHE)) {
+            $this->useCache = false;
+        }
+        if ($input->getOption(self::OPTION_ENVIRONMENT)) {
+            $this->env = $input->getOption(self::OPTION_ENVIRONMENT);
+        }
+    }
+
+    /**
+     * Writes meaningful output about the command to the console
+     *
+     * @param OutputInterface $output
+     * @param array $headerInfo
+     * @return void
+     */
+    protected function writeInfoHeader(OutputInterface $output, array $headerInfo = []): void
+    {
+        $maxLen = ['k' => 0, 'v' => 0];
+        $rows = array_merge(
+            [
+                "Environment" => $this->getEnv(),
+                "Use cache?" => ($this->getUseCache() ? "Yes" : "No")
+            ],
+            $headerInfo
         );
+        $output->writeln("");
+        foreach ($rows as $k => $v) {
+            if (strlen($k) > $maxLen['k']) {
+                $maxLen['k'] = strlen($k);
+            }
+            if (strlen($v) > $maxLen['v']) {
+                $maxLen['v'] = strlen($v);
+            }
+        }
+        foreach ($rows as $k => $v) {
+            $output->writeln(
+                "<question> " . str_pad($k, $maxLen['k'], ' ') . " : " . str_pad($v, $maxLen['v'], ' ') . " </question>"
+            );
+        }
+    }
+
+    protected function getCommonHelpText(): string
+    {
+        return "\nDefaults to using the current runtime environment. This can be overridden with\n" .
+                "the --" . self::OPTION_ENVIRONMENT . " argument.\n";
+    }
+
+    protected function getEnv(): string
+    {
+        return $this->env;
+    }
+
+    protected function getUseCache(): bool
+    {
+        return $this->useCache;
+    }
+
+    protected function getDataLoader(): DataLoader
+    {
+        return $this->dataLoader;
     }
 }
