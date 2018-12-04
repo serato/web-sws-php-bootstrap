@@ -23,9 +23,8 @@ class ConfirmPasswordCommand extends AbstractCommand
                 "Confirms a password for an applicaton.\n\n" .
                 "Uses the provided <" . self::ARG_APP_ID . "> and <" . self::ARG_PASSWORD .
                 "> arguments to confirm the the client\n" .
-                "application data contains the correct password hash.\n\n" .
-                "Defaults to using the current runtime environment. This can be overridden with\n" .
-                "the --" . self::OPTION_ENVIRONMENT . " argument.\n"
+                "application data contains the correct password hash.\n" .
+                $this->getCommonHelpText()
             );
     }
 
@@ -34,6 +33,6 @@ class ConfirmPasswordCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        //
+        parent::execute($input, $output);
     }
 }
