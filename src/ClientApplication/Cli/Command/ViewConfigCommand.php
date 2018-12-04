@@ -26,6 +26,9 @@ class ViewConfigCommand extends AbstractCommand
             ->setDescription('Display app configuration for an environment')
             ->setHelp(
                 "Display app configuration for an environment.\n\n" .
+                "Displays complete configuration data that is a merged combination of common\n" .
+                "application data and environment-specific credentials data.\n\n" .
+                "This is the same data provided into a SWS web application.\n\n" .
                 "Defaults to displaying all applications in the environment. Can display\n" .
                 "configuration for a single application by using the --" . self::OPTION_APP_NAME . " option.\n" .
                 $this->getCommonHelpText()
