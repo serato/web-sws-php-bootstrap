@@ -7,6 +7,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Serato\SwsApp\ClientApplication\DataLoader;
 
 abstract class AbstractCommand extends Command
@@ -80,11 +81,17 @@ abstract class AbstractCommand extends Command
      * Writes meaningful output about the command to the console
      *
      * @param OutputInterface $output
+     * @param string $title
      * @param array $headerInfo
      * @return void
      */
-    protected function writeInfoHeader(OutputInterface $output, array $headerInfo = []): void
+    protected function writeInfoHeader(OutputInterface $output, string $title, array $headerInfo = []): void
     {
+        $output->getFormatter()->setStyle(
+            'header',
+            new OutputFormatterStyle('black', 'yellow', ['bold'])
+        );
+
         $maxLen = ['k' => 0, 'v' => 0];
         $rows = array_merge(
             [
@@ -102,11 +109,23 @@ abstract class AbstractCommand extends Command
                 $maxLen['v'] = strlen($v);
             }
         }
+        $output->writeln(
+            "<header> " . str_pad('', $maxLen['k'] + $maxLen['v'] + 3, '-') . " </header>"
+        );
+        $output->writeln(
+            "<header> " . str_pad($title, $maxLen['k'] + $maxLen['v'] + 3, ' ') . " </header>"
+        );
+        $output->writeln(
+            "<header> " . str_pad('', $maxLen['k'] + $maxLen['v'] + 3, '-') . " </header>"
+        );
         foreach ($rows as $k => $v) {
             $output->writeln(
-                "<question> " . str_pad($k, $maxLen['k'], ' ') . " : " . str_pad($v, $maxLen['v'], ' ') . " </question>"
+                "<header> " . str_pad($k, $maxLen['k'], ' ') . " : " . str_pad($v, $maxLen['v'], ' ') . " </header>"
             );
         }
+        $output->writeln(
+            "<header> " . str_pad('', $maxLen['k'] + $maxLen['v'] + 3, '-') . " </header>"
+        );
     }
 
     protected function getCommonHelpText(): string

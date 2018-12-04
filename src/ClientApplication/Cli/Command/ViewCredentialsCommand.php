@@ -27,7 +27,7 @@ class ViewCredentialsCommand extends AbstractCommand
             ->setHelp(
                 "Display environment-specific credentials.\n\n" .
                 "Defaults to displaying all applications in the environment. Can display\n" .
-                "configuration for a single application by using the --" . self::OPTION_APP_NAME . " option.\n" .
+                "credentials for a single application by using the --" . self::OPTION_APP_NAME . " option.\n" .
                 $this->getCommonHelpText()
             );
     }
@@ -39,10 +39,10 @@ class ViewCredentialsCommand extends AbstractCommand
     {
         parent::execute($input, $output);
 
-        $headerInfo = [];
-
+        $credsFile = $this->getDataLoader()->getCredentialsObjectName($this->getEnv());
+        $headerInfo = ['Credentials file' => $credsFile];
         $data = $this->getDataLoader()->getItem(
-            $this->getDataLoader()->getCredentialsObjectName($this->getEnv()),
+            $credsFile,
             $this->getUseCache()
         );
 
@@ -55,7 +55,7 @@ class ViewCredentialsCommand extends AbstractCommand
                 $data = $data[$appName];
             }
         }
-        $this->writeInfoHeader($output, $headerInfo);
+        $this->writeInfoHeader($output, 'Credentials', $headerInfo);
         $output->writeln("\n" . json_encode($data, JSON_PRETTY_PRINT) . "\n");
     }
 }
