@@ -8,6 +8,7 @@ use Psr\Cache\CacheItemPoolInterface;
 use Serato\SwsApp\ClientApplication\Cli\Command\ConfirmPasswordCommand;
 use Serato\SwsApp\ClientApplication\Cli\Command\ShowMissingCredentialsCommand;
 use Serato\SwsApp\ClientApplication\Cli\Command\ViewConfigCommand;
+use Serato\SwsApp\ClientApplication\Cli\Command\ViewCredentialsCommand;
 
 class Application extends BaseApplication
 {
@@ -66,11 +67,6 @@ class Application extends BaseApplication
         $this->add(new ConfirmPasswordCommand($this->env, $this->awsSdk, $this->psrCache));
         $this->add(new ShowMissingCredentialsCommand($this->env, $this->awsSdk, $this->psrCache));
         $this->add(new ViewConfigCommand($this->env, $this->awsSdk, $this->psrCache));
-            
-        # Show missing params
-        #  - For default env
-        #  - For all apps
-        #  - (option) env
-        #  - (option) app (name or ID??)
+        $this->add(new ViewCredentialsCommand($this->env, $this->awsSdk, $this->psrCache));
     }
 }

@@ -76,11 +76,7 @@ class DataLoader
             $env = $this->env;
         }
 
-        $credentialsObject = str_replace(
-            self::CREDENTIALS_ENV_PLACEHOLDER,
-            $env,
-            self::S3_ENV_CREDENTIALS_NAME_PATTERN
-        );
+        $credentialsObject = $this->getCredentialsObjectName($env);
 
         return $this->mergeCredentials(
             $this->getItem(self::S3_COMMON_APP_DATA_NAME, $useCache),
@@ -120,6 +116,21 @@ class DataLoader
         $this->psrCache->save($item);
         
         return $s3Data;
+    }
+
+    /**
+     * Returns the name of an environment-specific credentials object
+     *
+     * @param string $env
+     * @return string
+     */
+    public function getCredentialsObjectName(string $env): string
+    {
+        return str_replace(
+            self::CREDENTIALS_ENV_PLACEHOLDER,
+            $env,
+            self::S3_ENV_CREDENTIALS_NAME_PATTERN
+        );
     }
 
     /**
@@ -190,7 +201,7 @@ class DataLoader
                     if (!isset($data[$appName]['jwt']['access'])) {
                         $data[$appName]['jwt']['access'] = [];
                     }
-                    $data[$appName]['jwt']['kms_key_id']['access'] = $credentialsData[$appName]['restricted_to'];
+                    $data[$appName]['jwt']['access']['restricted_to'] = $credentialsData[$appName]['restricted_to'];
                 }
             }
         }
