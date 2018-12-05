@@ -5,21 +5,6 @@ use Aws\Sdk;
 use Serato\SwsApp\ClientApplication\Cli\Application;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter as FileSystemCachePool;
 
-// use Dotenv\Dotenv;
-// use Monolog\Logger;
-// use Monolog\Handler\StreamHandler;
-// use Monolog\Formatter\LineFormatter;
-// use AskNicely\Client as AskNicelyClient;
-// use AskNicely\Sdk as AskNicelySdk;
-// use App\SqsQueue\AskNicely as AskNicelyQueue;
-// use App\Console\UserProfileApp;
-// use App\SqsQueue\MailchimpBatchStatus;
-// use App\SqsQueue\UserProfileEvents;
-// use App\SqsQueue\UserProfilesUpdated;
-// use App\MailChimp\MailChimpList;
-// use Symfony\Component\Cache\Adapter\FilesystemAdapter as FileSystemCachePool;
-// use Psr\Log\LoggerInterface;
-
 // Setup autoloading of everything under /vendor
 require(__DIR__ . '/../../../vendor/autoload.php');
 
@@ -30,5 +15,3 @@ $app = Application::create(
 );
 
 $app->run();
-
-echo "boo\n";
