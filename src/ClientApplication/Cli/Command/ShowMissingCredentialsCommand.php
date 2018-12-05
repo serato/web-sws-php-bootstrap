@@ -23,7 +23,8 @@ class ShowMissingCredentialsCommand extends AbstractCommand
                 "environment Can display missing credentials for a single application by\n" .
                 "using the --" . self::OPTION_APP_NAME . " option.\n" .
                 $this->getCommonHelpText()
-            );
+            )
+            ->setHidden(true); # Command currently not implemented
     }
 
     /**
