@@ -6,6 +6,10 @@ use Exception;
 use DateTime;
 use Aws\Sdk as AwsSdk;
 use Psr\Cache\CacheItemPoolInterface;
+use Serato\SwsApp\ClientApplication\Exception\InvalidEnvironmentNameException;
+use Serato\SwsApp\ClientApplication\Exception\InvalidFileContentsException;
+use Serato\SwsApp\ClientApplication\Exception\MissingApplicationIdException;
+use Serato\SwsApp\ClientApplication\Exception\MissingApplicationPasswordHash;
 
 /**
  * Client Application Data Loader
@@ -45,7 +49,7 @@ class DataLoader
     public function __construct(string $env, AwsSdk $awsSdk, CacheItemPoolInterface $psrCache)
     {
         if (!in_array($env, self::ENVIRONMENTS)) {
-            throw new Exception(
+            throw new InvalidEnvironmentNameException(
                 'Invalid environment name `' . $env . '`. Must be one of `' .
                 implode('`, `', self::ENVIRONMENTS) . '`.'
             );
@@ -137,6 +141,7 @@ class DataLoader
      * Load application data from S3
      *
      * @return array
+     * @throws InvalidFileContentsException
      */
     private function loadFromS3(string $s3ObjectName): array
     {
@@ -145,7 +150,7 @@ class DataLoader
         );
         $data = json_decode((string)$result['Body'], true);
         if ($data === null || !is_array($data)) {
-            throw new Exception(
+            throw new InvalidFileContentsException(
                 'Invalid file contents for S3 object `s3://' .
                 self::S3_BUCKET_NAME . '/' . $s3ObjectName . '`. ' .
                 'File does not contain valid JSON string.'
@@ -160,6 +165,9 @@ class DataLoader
      * @param array $commonData
      * @param array $credentialsData
      * @return array
+     *
+     * @throws MissingApplicationIdException
+     * @throws MissingApplicationPasswordHash
      */
     private function mergeCredentials(array $commonData, array $credentialsData, string $credentialsObjectPath): array
     {
@@ -168,13 +176,13 @@ class DataLoader
             if (isset($credentialsData[$appName])) {
                 // All apps MUST have `id` and `password_hash` keys defined
                 if (!isset($credentialsData[$appName]['id'])) {
-                    throw new Exception(
+                    throw new MissingApplicationIdException(
                         'Invalid configuration for application `' . $appName . '` in credentials file `' .
                         $credentialsObjectPath. '`. Missing required key `id`.'
                     );
                 }
                 if (!isset($credentialsData[$appName]['password_hash'])) {
-                    throw new Exception(
+                    throw new MissingApplicationPasswordHash(
                         'Invalid configuration for application `' . $appName . '` in credentials file `' .
                         $credentialsObjectPath. '`. Missing required key `password_hash`.'
                     );
