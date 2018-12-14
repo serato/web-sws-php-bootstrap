@@ -35,42 +35,44 @@ class AccessLogWriter
      *
      * @return void
      */
-    public function log(Request $request, Response $response): void
+    public function log(?Request $request, Response $response): void
     {
-        $geo = [];
-        if ($request->getAttribute(GeoIpLookup::GEOIP_RECORD) !== null) {
-            $record = $request->getAttribute(GeoIpLookup::GEOIP_RECORD);
-            $geo = [
-                'city'          => $record->city->name,
-                'postcode'      => $record->postal->code,
-                'country_name'  => $record->country->name,
-                'country_iso'   => $record->country->isoCode,
-                'continent_iso' => $record->continent->code
+        if ($request !== null) {
+            $geo = [];
+            if ($request->getAttribute(GeoIpLookup::GEOIP_RECORD) !== null) {
+                $record = $request->getAttribute(GeoIpLookup::GEOIP_RECORD);
+                $geo = [
+                    'city'          => $record->city->name,
+                    'postcode'      => $record->postal->code,
+                    'country_name'  => $record->country->name,
+                    'country_iso'   => $record->country->isoCode,
+                    'continent_iso' => $record->continent->code
+                ];
+            }
+
+            $app = [];
+            if ($request->getAttribute(RequestMiddleware::APP_ID) !== null) {
+                $app = [
+                    'id'    => $request->getAttribute(RequestMiddleware::APP_ID),
+                    'name'  => $request->getAttribute(RequestMiddleware::APP_NAME, '')
+                ];
+            }
+
+            $data = [
+                'http_status_code'  => $response->getStatusCode(),
+                'query_params'      => $request->getQueryParams(),
+                'remote_ip_address' => $request->getAttribute(GeoIpLookup::IP_ADDRESS, ''),
+                'geo_ip_info'       => $geo,
+                'client_app'        => $app,
+                'request_scopes'    => $request->getAttribute(RequestMiddleware::SCOPES, []),
+                'request_user_id'   => $request->getAttribute(RequestMiddleware::USER_ID, '')
             ];
+
+            $this->logger->log(
+                $this->logLevel,
+                $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                $data
+            );
         }
-
-        $app = [];
-        if ($request->getAttribute(RequestMiddleware::APP_ID) !== null) {
-            $app = [
-                'id'    => $request->getAttribute(RequestMiddleware::APP_ID),
-                'name'  => $request->getAttribute(RequestMiddleware::APP_NAME, '')
-            ];
-        }
-
-        $data = [
-            'http_status_code'  => $response->getStatusCode(),
-            'query_params'      => $request->getQueryParams(),
-            'remote_ip_address' => $request->getAttribute(GeoIpLookup::IP_ADDRESS, ''),
-            'geo_ip_info'       => $geo,
-            'client_app'        => $app,
-            'request_scopes'    => $request->getAttribute(RequestMiddleware::SCOPES, []),
-            'request_user_id'   => $request->getAttribute(RequestMiddleware::USER_ID, '')
-        ];
-
-        $this->logger->log(
-            $this->logLevel,
-            $request->getMethod() . ' ' . $request->getUri()->getPath(),
-            $data
-        );
     }
 }

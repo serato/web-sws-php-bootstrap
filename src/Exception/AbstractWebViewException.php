@@ -2,6 +2,8 @@
 
 namespace Serato\SwsApp\Exception;
 
+use Psr\Http\Message\RequestInterface as Request;
+
 /**
  * AbstractWebViewException
  *
@@ -19,10 +21,10 @@ abstract class AbstractWebViewException extends AbstractException
     /* @var string */
     private $lang;
 
-    public function __construct($lang = 'en')
+    public function __construct(?string $lang = 'en', Request $request = null)
     {
         $this->lang = $lang;
-        parent::__construct();
+        parent::__construct('', $request);
     }
 
     /**
@@ -39,7 +41,7 @@ abstract class AbstractWebViewException extends AbstractException
         if (isset($this->errorMessages[$this->lang])) {
             return $this->errorMessages[$this->lang];
         } else {
-            $this->errorMessages['en'];
+            return $this->errorMessages['en'];
         }
     }
 }
