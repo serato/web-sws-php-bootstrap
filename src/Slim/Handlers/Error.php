@@ -136,7 +136,7 @@ class Error extends SlimError
                 ->withBody($body);
 
         if (is_a($exception, self::BASE_CLASS)) {
-            $this->accessLogWriter->log($request, $response);
+            $this->accessLogWriter->log($exception->getRequest(), $response);
         }
 
         return $response;
