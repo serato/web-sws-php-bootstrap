@@ -1,6 +1,7 @@
 <?php
 namespace Serato\SwsApp\Slim\Handlers;
 
+use Serato\SwsApp\AccessLogWriter;
 use Slim\Http\Body;
 use Slim\Handlers\Error as SlimError;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -64,6 +65,9 @@ class Error extends SlimError
      */
     protected $language = 'en';
 
+    /* @var AccessLogWriter */
+    private $accessLogWriter;
+
     /**
      * Construct the error handler
      *
@@ -76,6 +80,7 @@ class Error extends SlimError
         parent::__construct($displayErrorDetails);
         $this->logger = $logger;
         $this->applicationName = $applicationName;
+        $this->accessLogWriter = new AccessLogWriter($logger);
     }
 
     /**
@@ -124,11 +129,17 @@ class Error extends SlimError
 
         $body->write($output);
 
-        return $response
+        $response = $response
                 ->withStatus($http_response_code)
                 ->withHeader('Content-type', $contentType)
                 ->withHeader('X-Serato-ErrorCode', $exception->getCode())
                 ->withBody($body);
+
+        if (is_a($exception, self::BASE_CLASS)) {
+            $this->accessLogWriter->log($request, $response);
+        }
+
+        return $response;
     }
 
     /**
