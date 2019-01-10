@@ -89,7 +89,8 @@ class CspHeaders extends AbstractHandler
                 'https://m.cdn.sera.to',
                 'https://u.cdn.sera.to',
                 'https://www.google-analytics.com',
-                'data:'
+                'data:',
+                'https://www.facebook.com'
             ],
             'font-src' => [
                 'https://static.serato.com',
@@ -112,7 +113,8 @@ class CspHeaders extends AbstractHandler
                 'https://maxcdn.bootstrapcdn.com/font-awesome/'
             ],
             'frame-src' => [
-                'https://www.google.com/recaptcha/'
+                'https://www.google.com/recaptcha/',
+                'https://vars.hotjar.com/'
             ]
         ];
     }
