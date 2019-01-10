@@ -102,8 +102,8 @@ class CspHeaders extends AbstractHandler
             'script-src' => [
                 "'self'",
                 'https://static.serato.com',
-                'https://www.google.com/js',
-                'https://www.gstatic.com/recaptcha',
+                'https://www.google.com',
+                'https://www.gstatic.com',
                 'https://www.googletagmanager.com/gtm.js',
                 'https://www.google-analytics.com/analytics.js'
             ],
