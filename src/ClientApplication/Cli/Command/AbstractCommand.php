@@ -84,9 +84,12 @@ abstract class AbstractCommand extends Command
     }
 
     /**
-     * {@inheritdoc}
+     * Reads common CLI options into class properties
+     *
+     * @param InputInterface $input
+     * @return void
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function getCommonOptions(InputInterface $input): void
     {
         if ($input->getOption(self::OPTION_IGNORE_CACHE)) {
             $this->useCache = false;

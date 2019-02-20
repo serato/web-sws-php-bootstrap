@@ -34,7 +34,7 @@ class ConfirmPasswordCommand extends AbstractCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        parent::execute($input, $output);
+        $this->getCommonOptions($input);
 
         $appId = $input->getArgument(self::ARG_APP_ID);
 
