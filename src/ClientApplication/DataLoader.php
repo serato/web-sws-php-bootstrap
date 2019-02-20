@@ -23,8 +23,8 @@ class DataLoader
     private const ENVIRONMENTS = ['dev', 'test', 'production'];
     private const S3_BUCKET_NAME = 'sws.clientapps';
     private const S3_BASE_PATH = 'v2';
-    private const S3_COMMON_APP_DATA_NAME = 'apps.json';
-    private const S3_ENV_CREDENTIALS_NAME_PATTERN = 'credentials.__env__.json';
+    private const COMMON_APP_DATA_NAME = 'apps.json';
+    private const ENV_CREDENTIALS_NAME_PATTERN = 'credentials.__env__.json';
     private const CREDENTIALS_ENV_PLACEHOLDER = '__env__';
 
     /** @var string */
@@ -39,15 +39,24 @@ class DataLoader
     /** @var CacheItemPoolInterface */
     private $psrCache;
 
+    /** @var string */
+    private $localDirPath;
+
     /**
      * Constructs the object
      *
-     * @param string                    $env        Application environment
-     * @param AwsSdk                    $awsSdk     AWS SDK
-     * @param CacheItemPoolInterface    $psrCache   PSR-6 cache item pool
+     * @param string                    $env            Application environment
+     * @param AwsSdk                    $awsSdk         AWS SDK
+     * @param CacheItemPoolInterface    $psrCache       PSR-6 cache item pool
+     * @param string                    $localDirPath   Path to a directory where configuration files can be found.
+     *                                                  Overrides `$awsSdk` and `$psrCache` parameters.
      */
-    public function __construct(string $env, AwsSdk $awsSdk, CacheItemPoolInterface $psrCache)
-    {
+    public function __construct(
+        string $env,
+        AwsSdk $awsSdk,
+        CacheItemPoolInterface $psrCache,
+        string $localDirPath = null
+    ) {
         if (!in_array($env, self::ENVIRONMENTS)) {
             throw new InvalidEnvironmentNameException(
                 'Invalid environment name `' . $env . '`. Must be one of `' .
@@ -58,6 +67,16 @@ class DataLoader
         $this->env = $env;
         $this->awsSdk = $awsSdk;
         $this->psrCache = $psrCache;
+
+        if ($localDirPath !== null) {
+            $this->localDirPath = realpath($localDirPath);
+            if ($this->localDirPath === false) {
+                throw new Exception("Invalid directory path '" . $this->localDirPath . "'. Path does not exist.");
+            }
+            if (!is_dir($this->localDirPath)) {
+                throw new Exception("Invalid directory path '" . $this->localDirPath . "'. Path is not a directory.");
+            }
+        }
 
         // Load all environment data in `dev` environment
         if ($this->env === 'dev') {
@@ -83,7 +102,7 @@ class DataLoader
         $credentialsObject = $this->getCredentialsObjectName($env);
 
         return $this->mergeCredentials(
-            $this->getItem(self::S3_COMMON_APP_DATA_NAME, $useCache),
+            $this->getItem(self::COMMON_APP_DATA_NAME, $useCache),
             $this->getItem($credentialsObject, $useCache),
             $credentialsObject
         );
@@ -95,6 +114,56 @@ class DataLoader
      * @return array
      */
     public function getItem(string $name, bool $useCache = true): array
+    {
+        if ($this->localDirPath !== null) {
+            return $this->loadFromLocalDirectory($name);
+        } else {
+            return $this->loadFromCache($name, $useCache);
+        }
+    }
+
+    /**
+     * Returns the name of an environment-specific credentials object
+     *
+     * @param string $env
+     * @return string
+     */
+    public function getCredentialsObjectName(string $env): string
+    {
+        return str_replace(
+            self::CREDENTIALS_ENV_PLACEHOLDER,
+            $env,
+            self::ENV_CREDENTIALS_NAME_PATTERN
+        );
+    }
+
+    /**
+     * Load application data from a file in a local directory.
+     *
+     * @return array
+     */
+    private function loadFromLocalDirectory(string $name): array
+    {
+        $filePath = rtrim($this->localDirPath, '/') . '/' . $name;
+        if (file_exists($filePath)) {
+            $data = json_decode((string)file_get_contents($filePath), true);
+            if ($data === null) {
+                throw new Exception("Invalid file path '$filePath'. File does not contain valid JSON.");
+            } else {
+                return $data;
+            }
+        } else {
+            throw new Exception("Invalid file path '$filePath'. File does not exist.");
+        }
+    }
+
+    /**
+     * Load application data from cache if available.
+     * If not, fetch from S3 and save to cache.
+     *
+     * @return array
+     */
+    private function loadFromCache(string $name, bool $useCache = true): array
     {
         $s3ObjectName = self::S3_BASE_PATH . '/' . $name;
 
@@ -118,23 +187,8 @@ class DataLoader
         $item->set($s3Data);
         $item->expiresAt($expiryTime);
         $this->psrCache->save($item);
-        
-        return $s3Data;
-    }
 
-    /**
-     * Returns the name of an environment-specific credentials object
-     *
-     * @param string $env
-     * @return string
-     */
-    public function getCredentialsObjectName(string $env): string
-    {
-        return str_replace(
-            self::CREDENTIALS_ENV_PLACEHOLDER,
-            $env,
-            self::S3_ENV_CREDENTIALS_NAME_PATTERN
-        );
+        return $s3Data;
     }
 
     /**

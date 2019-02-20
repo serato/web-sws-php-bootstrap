@@ -17,15 +17,25 @@ abstract class AbstractCommand extends Command
     public const OPTION_APP_NAME = 'app-name';
     public const OPTION_ENVIRONMENT = 'env';
     public const OPTION_IGNORE_CACHE = 'ignore-cache';
+    public const OPTION_LOCAL_DIRECTORY_PATH = 'local-dir-path';
 
     /** @var string */
     private $env;
+
+    /** @var AwsSdk */
+    private $awsSdk;
+
+    /** @var CacheItemPoolInterface */
+    private $psrCache;
 
     /** @var boolean */
     private $useCache = true;
 
     /** @var DataLoader */
     private $dataLoader;
+
+    /** @var string */
+    private $localDirPath;
 
     /**
      * Constructs the command
@@ -40,7 +50,8 @@ abstract class AbstractCommand extends Command
     {
         parent::__construct();
         $this->env = $env;
-        $this->dataLoader = new DataLoader($env, $awsSdk, $psrCache);
+        $this->awsSdk = $awsSdk;
+        $this->psrCache = $psrCache;
     }
 
     /**
@@ -53,7 +64,7 @@ abstract class AbstractCommand extends Command
                 self::OPTION_ENVIRONMENT,
                 null,
                 InputOption::VALUE_REQUIRED,
-                "Application environment. One of `dev`, `test` or `production`.\n\n" .
+                "Application environment. One of `dev`, `test` or `production`. " .
                 "Overrides the value extracted from the runtime environment itself."
             )
             ->addOption(
@@ -61,19 +72,33 @@ abstract class AbstractCommand extends Command
                 null,
                 InputOption::VALUE_NONE,
                 "Ignores cached configuration data and always uses data fetched from S3."
+            )
+            ->addOption(
+                self::OPTION_LOCAL_DIRECTORY_PATH,
+                null,
+                InputOption::VALUE_REQUIRED,
+                "Read application data files from a local directory. " .
+                "Intended for testing purposes only. " .
+                "Overrides the `--" . self::OPTION_IGNORE_CACHE . "` option."
             );
     }
 
     /**
-     * {@inheritdoc}
+     * Reads common CLI options into class properties
+     *
+     * @param InputInterface $input
+     * @return void
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function getCommonOptions(InputInterface $input): void
     {
         if ($input->getOption(self::OPTION_IGNORE_CACHE)) {
             $this->useCache = false;
         }
         if ($input->getOption(self::OPTION_ENVIRONMENT)) {
             $this->env = $input->getOption(self::OPTION_ENVIRONMENT);
+        }
+        if ($input->getOption(self::OPTION_LOCAL_DIRECTORY_PATH)) {
+            $this->localDirPath = $input->getOption(self::OPTION_LOCAL_DIRECTORY_PATH);
         }
     }
 
@@ -92,15 +117,18 @@ abstract class AbstractCommand extends Command
             new OutputFormatterStyle('black', 'yellow', ['bold'])
         );
 
+        $commonHeaderInfo = ['Environment' => $this->getEnv()];
+        if ($this->localDirPath === null) {
+            $commonHeaderInfo['Use cache?'] = ($this->getUseCache() ? "Yes" : "No");
+        } else {
+            $commonHeaderInfo['Local path'] = $this->localDirPath;
+            $commonHeaderInfo['Local path expanded'] = realpath($this->localDirPath);
+        }
+
+        $rows = array_merge($commonHeaderInfo, $headerInfo);
+
         $maxLen = ['k' => 0, 'v' => 0];
-        $rows = array_merge(
-            [
-                "Environment" => $this->getEnv(),
-                "Use cache?" => ($this->getUseCache() ? "Yes" : "No")
-            ],
-            $headerInfo
-        );
-        $output->writeln("");
+
         foreach ($rows as $k => $v) {
             if (strlen($k) > $maxLen['k']) {
                 $maxLen['k'] = strlen($k);
@@ -109,6 +137,8 @@ abstract class AbstractCommand extends Command
                 $maxLen['v'] = strlen($v);
             }
         }
+
+        $output->writeln("");
         $output->writeln(
             "<header> " . str_pad('', $maxLen['k'] + $maxLen['v'] + 3, '-') . " </header>"
         );
@@ -131,7 +161,13 @@ abstract class AbstractCommand extends Command
     protected function getCommonHelpText(): string
     {
         return "\nDefaults to using the current runtime environment. This can be overridden with\n" .
-                "the --" . self::OPTION_ENVIRONMENT . " argument.\n";
+                "the --" . self::OPTION_ENVIRONMENT . " argument.\n\n" .
+                "Defaults to using application data sourced from Amazon S3, and will use cached\n" .
+                "data (if it exists) unless the `" . self::OPTION_IGNORE_CACHE . "` option is set.\n\n" .
+                "This behaviour can be overriden by using the `" . self::OPTION_LOCAL_DIRECTORY_PATH .
+                "` option. This will\n" .
+                "look for application data in the provided local directory path (use this for testing\n" .
+                "purposes only - always use Amazon S3 sourced data for live web applications).\n";
     }
 
     protected function getEnv(): string
@@ -146,6 +182,6 @@ abstract class AbstractCommand extends Command
 
     protected function getDataLoader(): DataLoader
     {
-        return $this->dataLoader;
+        return new DataLoader($this->getEnv(), $this->awsSdk, $this->psrCache, $this->localDirPath);
     }
 }
