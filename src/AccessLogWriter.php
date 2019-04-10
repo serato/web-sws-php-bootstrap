@@ -4,8 +4,7 @@ namespace Serato\SwsApp;
 use Psr\Log\LoggerInterface as Logger;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use Monolog\Processor\IntrospectionProcessor;
-use Monolog\Logger as MonoLogger;
+use Monolog\Formatter\JsonFormatter;
 use Serato\SwsApp\Slim\Middleware\GeoIpLookup;
 use Serato\SwsApp\Slim\Middleware\AbstractRequestWithAttributeMiddleware as RequestMiddleware;
 
@@ -27,6 +26,10 @@ class AccessLogWriter
     {
         $this->logger = $logger;
         $this->logLevel = $logLevel;
+        // Set the formatter to JSON
+        foreach ($this->logger->getHandlers() as $handler) {
+            $handler->setFormatter(new JsonFormatter());
+        }
     }
 
     /**
@@ -74,10 +77,9 @@ class AccessLogWriter
 
             if ($response !== null) {
                 $date['http_status_code'] = $response->getStatusCode();
-                if ($response->getHeaderLine('X-Serato-ErrorCode') !== null) {
-                    $data['serato_error_code'] = $response->getHeaderLine('X-Serato-ErrorCode');
-                    // Lets have back trace
-                    // $processor = new IntrospectionProcessor();
+                $seratoErrorCode = $response->getHeaderLine('X-Serato-ErrorCode');
+                if ($seratoErrorCode !== null && $seratoErrorCode !== '') {
+                    $data['serato_error_code'] = $seratoErrorCode;
                 }
             }
 
