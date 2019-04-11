@@ -76,7 +76,7 @@ class AccessLogWriter
             ];
 
             if ($response !== null) {
-                $date['http_status_code'] = $response->getStatusCode();
+                $data['http_status_code'] = $response->getStatusCode();
                 $seratoErrorCode = $response->getHeaderLine('X-Serato-ErrorCode');
                 if ($seratoErrorCode !== null && $seratoErrorCode !== '') {
                     $data['serato_error_code'] = $seratoErrorCode;
