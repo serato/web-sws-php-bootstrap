@@ -4,6 +4,7 @@ namespace Serato\SwsApp;
 use Psr\Log\LoggerInterface as Logger;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use Monolog\Formatter\JsonFormatter;
 use Serato\SwsApp\Slim\Middleware\GeoIpLookup;
 use Serato\SwsApp\Slim\Middleware\AbstractRequestWithAttributeMiddleware as RequestMiddleware;
 
@@ -25,6 +26,10 @@ class AccessLogWriter
     {
         $this->logger = $logger;
         $this->logLevel = $logLevel;
+        // Set the formatter to JSON
+        foreach ($this->logger->getHandlers() as $handler) {
+            $handler->setFormatter(new JsonFormatter());
+        }
     }
 
     /**
@@ -32,10 +37,11 @@ class AccessLogWriter
      *
      * @param Request           $request   The most recent Request object
      * @param Response          $response  The most recent Response object
+     * @param Array             $extra     Extra information to log
      *
      * @return void
      */
-    public function log(?Request $request, Response $response): void
+    public function log(?Request $request, Response $response = null, array $extra = []): void
     {
         if ($request !== null) {
             $geo = [];
@@ -57,20 +63,29 @@ class AccessLogWriter
                     'name'  => $request->getAttribute(RequestMiddleware::APP_NAME, '')
                 ];
             }
-
             $data = [
-                'http_status_code'  => $response->getStatusCode(),
+                'request_method'    => $request->getMethod(),
+                'request_uri'       => $request->getUri()->getPath(),
                 'query_params'      => $request->getQueryParams(),
                 'remote_ip_address' => $request->getAttribute(GeoIpLookup::IP_ADDRESS, ''),
                 'geo_ip_info'       => $geo,
                 'client_app'        => $app,
                 'request_scopes'    => $request->getAttribute(RequestMiddleware::SCOPES, []),
-                'request_user_id'   => $request->getAttribute(RequestMiddleware::USER_ID, '')
+                'request_user_id'   => $request->getAttribute(RequestMiddleware::USER_ID, ''),
+                'extra'             => $extra
             ];
+
+            if ($response !== null) {
+                $data['http_status_code'] = $response->getStatusCode();
+                $seratoErrorCode = $response->getHeaderLine('X-Serato-ErrorCode');
+                if ($seratoErrorCode !== null && $seratoErrorCode !== '') {
+                    $data['serato_error_code'] = $seratoErrorCode;
+                }
+            }
 
             $this->logger->log(
                 $this->logLevel,
-                $request->getMethod() . ' ' . $request->getUri()->getPath(),
+                '',
                 $data
             );
         }
