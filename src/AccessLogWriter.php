@@ -4,7 +4,7 @@ namespace Serato\SwsApp;
 use Psr\Log\LoggerInterface as Logger;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use Monolog\Formatter\JsonFormatter;
+use Serato\SwsApp\Utils\MonologJsonFormatter;
 use Serato\SwsApp\Slim\Middleware\GeoIpLookup;
 use Serato\SwsApp\Slim\Middleware\AbstractRequestWithAttributeMiddleware as RequestMiddleware;
 
@@ -28,7 +28,7 @@ class AccessLogWriter
         $this->logLevel = $logLevel;
         // Set the formatter to JSON
         foreach ($this->logger->getHandlers() as $handler) {
-            $handler->setFormatter(new JsonFormatter());
+            $handler->setFormatter(new MonologJsonFormatter());
         }
     }
 
