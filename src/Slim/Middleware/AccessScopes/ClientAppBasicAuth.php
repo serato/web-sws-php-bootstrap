@@ -52,25 +52,31 @@ class ClientAppBasicAuth extends AbstractAccessScopesMiddleware
     public function __invoke(Request $request, Response $response, callable $next)
     {
         $server_params = $request->getServerParams();
-        // If there's no auth user or the auth user doesn't exist in the list
-        // of client app data it doesn't matter. It simply means that no scopes
-        // are assigned to the request object
         if (isset($server_params['PHP_AUTH_USER']) && isset($server_params['PHP_AUTH_PW'])) {
             foreach ($this->clientAppData as $k => $appData) {
                 if ($appData['id'] == $server_params['PHP_AUTH_USER'] &&
                     password_verify($server_params['PHP_AUTH_PW'], $appData['password_hash'])
                 ) {
-                    if (isset($appData['name']) && isset($appData['scopes']) && is_array($appData['scopes'])) {
-                        if (isset($appData['scopes'][$this->webServiceName]) &&
+                    if (isset($appData['name'])) {
+                        # There may be no per-service scopes defined for a given application (that's valid and
+                        # allowed).
+                        # If there are no scopes, we'll only have an app ID and name added to the request object.
+                        # But if there are, we're only interested in the scopes defined for a specific web service.
+                        # This will (usually? always?) correlate with the web service that is implementing this
+                        # middleware.
+                        $scopes = [];
+                        if (isset($appData['scopes']) && is_array($appData['scopes']) &&
+                            isset($appData['scopes'][$this->webServiceName]) &&
                             is_array($appData['scopes'][$this->webServiceName])
                         ) {
-                            $request = $this->setClientAppRequestAttributes(
-                                $request,
-                                $appData['id'],
-                                $appData['name'],
-                                $appData['scopes'][$this->webServiceName]
-                            );
+                            $scopes = $appData['scopes'][$this->webServiceName];
                         }
+                        $request = $this->setClientAppRequestAttributes(
+                            $request,
+                            $appData['id'],
+                            $appData['name'],
+                            $scopes
+                        );
                     }
                 }
             }

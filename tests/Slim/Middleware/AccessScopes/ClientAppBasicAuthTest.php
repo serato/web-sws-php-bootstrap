@@ -23,6 +23,8 @@ class ClientAppBasicAuthTest extends TestCase
         string $basicAuthPass,
         string $webServiceName,
         array $clientAppList,
+        string $requestAppId,
+        string $requestAppName,
         array $requestScopes,
         string $assertMessage
     ) {
@@ -44,6 +46,22 @@ class ClientAppBasicAuthTest extends TestCase
         );
 
         $this->assertEquals(200, $response->getStatusCode(), $assertMessage);
+
+        // Assert that app ID exists in the request as expected
+        $this->assertEquals(
+            $requestAppId,
+            $nextMiddleware->getRequestInterface()->getAttribute(RequestMiddleware::APP_ID, ''),
+            $assertMessage
+        );
+
+        // Assert that app name exists in the request as expected
+        $this->assertEquals(
+            $requestAppName,
+            $nextMiddleware->getRequestInterface()->getAttribute(RequestMiddleware::APP_NAME, ''),
+            $assertMessage
+        );
+
+        // Assert that scopes exist in the request as expected
         $this->assertEquals(
             $requestScopes,
             $nextMiddleware->getRequestInterface()->getAttribute(RequestMiddleware::SCOPES, []),
@@ -54,12 +72,23 @@ class ClientAppBasicAuthTest extends TestCase
     public function clientAppBasicAuthProvider()
     {
         return [
-            ['', '', 'my_web_service', [], [], 'No Basic auth user'],
+            [
+                '',                     # Client app ID passed in basic auth `Authorization` header
+                '',                     # Client app secret passed in basic auth `Authorization` header
+                'my_web_service',       # Name of web service running the middleware
+                [],                     # Client app data
+                '',                     # Client app ID added to request object
+                '',                     # Client app name added to request object
+                [],                     # Client app scopes added to request object
+                'No Basic auth user'    # Assert message
+            ],
             [
                 'app_xx',
                 'app_xx_password',
                 'my_web_service_1',
                 $this->getClientAppData(),
+                '',
+                '',
                 [],
                 'No matching app in client list'
             ],
@@ -68,6 +97,8 @@ class ClientAppBasicAuthTest extends TestCase
                 'app_2_password',
                 'my_web_service_1',
                 $this->getClientAppData(),
+                '',
+                '',
                 [],
                 'No `name` key for app in client list'
             ],
@@ -76,6 +107,8 @@ class ClientAppBasicAuthTest extends TestCase
                 'app_3_password',
                 'my_web_service_1',
                 $this->getClientAppData(),
+                'app_3',
+                'Test App 3',
                 [],
                 'No `scopes` key for app in client list'
             ],
@@ -84,6 +117,8 @@ class ClientAppBasicAuthTest extends TestCase
                 'app_1_password',
                 'my_web_service_XX',
                 $this->getClientAppData(),
+                'app_1',
+                'Test App 1',
                 [],
                 'No scopes found for given web service name'
             ],
@@ -92,6 +127,8 @@ class ClientAppBasicAuthTest extends TestCase
                 'app_1_password_wrong',
                 'my_web_service_1',
                 $this->getClientAppData(),
+                '',
+                '',
                 [],
                 'Invalid basic auth password'
             ],
@@ -100,6 +137,8 @@ class ClientAppBasicAuthTest extends TestCase
                 'app_1_password',
                 'my_web_service_1',
                 $this->getClientAppData(),
+                'app_1',
+                'Test App 1',
                 ['test-scope1'],
                 'Valid auth user, check scopes web_service_1'
             ],
@@ -108,6 +147,8 @@ class ClientAppBasicAuthTest extends TestCase
                 'app_1_password',
                 'my_web_service_2',
                 $this->getClientAppData(),
+                'app_1',
+                'Test App 1',
                 ['test-scope2', 'test-scope3'],
                 'Valid auth user, check scopes web_service_2'
             ]
