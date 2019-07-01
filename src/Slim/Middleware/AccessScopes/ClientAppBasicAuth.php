@@ -8,12 +8,15 @@ use Psr\Http\Message\ResponseInterface as Response;
 /**
  * Client App Basic Auth Middleware
  *
- * Exposes scopes of access for a client application that has authenticated using
- * HTTP Basic authentication.
+ * Exposes client application ID, client application name and, optionally, scopes of access for a client application
+ * that has authenticated using HTTP Basic authentication.
  *
- * The authenticating client application is matched against a provided list of valid
- * client applications that also includes the scopes of access for a given
- * SWS web service
+ * The authenticating client application is matched against a provided list of valid client applications.
+ * If a match is found, the client application ID and name are exposed to the web application via custom atttributes
+ * of a `Psr\Http\Message\RequestInterface` instance.
+ *
+ * If the web application also defines scopes of access for the authenticating client application these too are exposed
+ * via a custom attribute of the `Psr\Http\Message\RequestInterface` instance.
  */
 class ClientAppBasicAuth extends AbstractAccessScopesMiddleware
 {
