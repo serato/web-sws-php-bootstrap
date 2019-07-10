@@ -86,7 +86,7 @@ class AccessToken extends AbstractAccessScopesMiddleware
 
         // Look the token string in the `Authorization` header
         $tokenString = $this->getTokenStringFromAuthHeader($request);
-        
+
         // TODO in the future
         # Look for the token string in other places. eg a Cookie
 
@@ -108,7 +108,9 @@ class AccessToken extends AbstractAccessScopesMiddleware
                 $request = $request
                     ->withAttribute(self::USER_ID, $accessToken->getClaim('uid'))
                     ->withAttribute(self::USER_EMAIL, $accessToken->getClaim('email'))
-                    ->withAttribute(self::USER_EMAIL_VERIFIED, $accessToken->getClaim('email_verified'));
+                    ->withAttribute(self::USER_EMAIL_VERIFIED, $accessToken->getClaim('email_verified'))
+                    ->withAttribute(self::REFRESH_TOKEN_ID, $accessToken->getClaim('rtid'));
+
             } catch (TokenExpiredException $e) {
                 throw new ExpiredAccessTokenException;
             } catch (Exception $e) {

@@ -188,7 +188,9 @@ class AccessTokenTest extends TestCase
             AccessTokenMiddleware::USER_ID              => 'my_uid',
             AccessTokenMiddleware::USER_EMAIL           => 'my_email@test.com',
             AccessTokenMiddleware::USER_EMAIL_VERIFIED  => true,
-            AccessTokenMiddleware::SCOPES               => [self::WEBSERVICE_NAME => ['scope1', 'scope2']]
+            AccessTokenMiddleware::SCOPES               => [self::WEBSERVICE_NAME => ['scope1', 'scope2']],
+            AccessTokenMiddleware::REFRESH_TOKEN_ID     => 'my_refresh_token_id',
+
         ];
     }
 }
