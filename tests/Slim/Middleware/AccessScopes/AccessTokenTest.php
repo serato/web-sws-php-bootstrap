@@ -95,6 +95,72 @@ class AccessTokenTest extends TestCase
     }
 
     /**
+     * Create an Access Token that does NOT have ab 'rtid' claim and ensure that that Request
+     * object contains an empty string value for the 'rtid' custom attribute.
+     *
+     * We need to do this because the 'rtid' claim was added to the Access Token at a later date
+     * and some in-flight tokens won't have this claim.
+     */
+    public function testMiddlewareWithValidateTokenInAuthHeaderNoRefreshTokenId()
+    {
+        $awsSdk = $this->getAwsSdkWithKmsResults();
+
+        $claims = $this->getAccessTokenCustomClaims();
+
+        # Remove the 'rtid' claim from the data added into the Access Token
+        unset($claims[AccessTokenMiddleware::REFRESH_TOKEN_ID]);
+
+        $token = $this->getAccessToken(
+            $awsSdk,
+            time() + 300,
+            [self::WEBSERVICE_NAME],
+            $claims
+        );
+
+        $middleware = new AccessTokenMiddleware(
+            $awsSdk,
+            $this->getLogger(),
+            $this->getFileSystemCachePool(),
+            self::WEBSERVICE_NAME
+        );
+
+        $nextMiddleware = new EmptyWare;
+
+        $response = $middleware(
+            Request::createFromEnvironmentBuilder(
+                EnvironmentBuilder::create()
+                    ->setAuthorization(BearerToken::create((string)$token))
+            ),
+            new Response,
+            $nextMiddleware
+        );
+
+        # Add the expected empty value back into the data used to check against the custom
+        # attributes of the Request object
+        $claims[AccessTokenMiddleware::REFRESH_TOKEN_ID] = '';
+
+        foreach ($claims as $name => $value) {
+            if ($name === AccessTokenMiddleware::SCOPES) {
+                $scopes = $nextMiddleware->getRequestInterface()->getAttribute($name);
+                $this->assertEquals(
+                    $value[self::WEBSERVICE_NAME],
+                    $scopes,
+                    "Assert value of '$name' from request attributes"
+                );
+            } else {
+                $this->assertEquals(
+                    $value,
+                    $nextMiddleware->getRequestInterface()->getAttribute($name),
+                    "Assert value of '$name' from request attributes"
+                );
+            }
+        }
+    }
+
+
+
+
+    /**
      * Force a token validation error by checking the `aud` claim against a value
      * that doesn't exist in the token
      *
@@ -157,13 +223,14 @@ class AccessTokenTest extends TestCase
         );
     }
 
-    private function getAccessToken(Sdk $awsSdk, int $expiry, array $audience)
+    private function getAccessToken(Sdk $awsSdk, int $expiry, array $audience, ?array $claims = null)
     {
+        $tokenClaims = $claims ?? $this->getAccessTokenCustomClaims();
         $token = new MockAccessToken($awsSdk);
         return $token->create(
             $audience,
             $expiry,
-            $this->getAccessTokenCustomClaims()
+            $tokenClaims
         );
     }
 

@@ -3,6 +3,7 @@ namespace Serato\SwsApp\Slim\Middleware\AccessScopes;
 
 use Aws\Sdk;
 use Exception;
+use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Serato\SwsApp\Slim\Middleware\AccessScopes\AbstractAccessScopesMiddleware;
 use Serato\Jwt\AccessToken as JwtAccessToken;
@@ -105,12 +106,22 @@ class AccessToken extends AbstractAccessScopesMiddleware
                     $scopes
                 );
 
+
+                $refreshTokenId = '';
+
+                # Need to gracefully handle tokens that don't have the 'rtid' claim because there will
+                # in-flight tokens that don't have this claim prior to when this functionality was added.
+                try {
+                    $refreshTokenId = $accessToken->getClaim('rtid');
+                } catch (InvalidArgumentException $e) {
+                    // Ignore for this claim
+                }
+
                 $request = $request
                     ->withAttribute(self::USER_ID, $accessToken->getClaim('uid'))
                     ->withAttribute(self::USER_EMAIL, $accessToken->getClaim('email'))
                     ->withAttribute(self::USER_EMAIL_VERIFIED, $accessToken->getClaim('email_verified'))
-                    ->withAttribute(self::REFRESH_TOKEN_ID, $accessToken->getClaim('rtid'));
-
+                    ->withAttribute(self::REFRESH_TOKEN_ID, $refreshTokenId);
             } catch (TokenExpiredException $e) {
                 throw new ExpiredAccessTokenException;
             } catch (Exception $e) {
