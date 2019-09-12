@@ -21,6 +21,8 @@ use UnexpectedValueException;
  */
 class Error extends SlimError
 {
+    public const ERROR_CODE_HTTP_HEADER = 'X-Serato-ErrorCode';
+    public const ERROR_MESSAGE_HTTP_HEADER = 'X-Serato-ErrorMessage';
     const BASE_CLASS = '\Serato\SwsApp\Exception\AbstractException';
 
     /**
@@ -132,7 +134,8 @@ class Error extends SlimError
         $response = $response
                 ->withStatus($http_response_code)
                 ->withHeader('Content-type', $contentType)
-                ->withHeader('X-Serato-ErrorCode', $exception->getCode())
+                ->withHeader(self::ERROR_CODE_HTTP_HEADER, $exception->getCode())
+                ->withHeader(self::ERROR_MESSAGE_HTTP_HEADER, $exception->getMessage())
                 ->withBody($body);
 
         if (is_a($exception, self::BASE_CLASS)) {

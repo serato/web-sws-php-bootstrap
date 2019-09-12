@@ -84,6 +84,15 @@ class ErrorTest extends TestCase
             // sent to the client
             $this->assertEquals($exception->getMessage(), $json['error']);
             $this->assertEquals($exception->getCode(), $json['code']);
+            // They also have custom HTTP headers with the error code and messages
+            $this->assertEquals(
+                $exception->getMessage(),
+                $response->getHeaderLine(ErrorHandler::ERROR_MESSAGE_HTTP_HEADER)
+            );
+            $this->assertEquals(
+                $exception->getCode(),
+                $response->getHeaderLine(ErrorHandler::ERROR_CODE_HTTP_HEADER)
+            );
         }
     }
 
