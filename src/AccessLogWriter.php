@@ -7,6 +7,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Serato\SwsApp\Utils\MonologJsonFormatter;
 use Serato\SwsApp\Slim\Middleware\GeoIpLookup;
 use Serato\SwsApp\Slim\Middleware\AbstractRequestWithAttributeMiddleware as RequestMiddleware;
+use Serato\SwsApp\Slim\Handlers\Error as ErrorHandler;
 
 class AccessLogWriter
 {
@@ -77,9 +78,13 @@ class AccessLogWriter
 
             if ($response !== null) {
                 $data['http_status_code'] = $response->getStatusCode();
-                $seratoErrorCode = $response->getHeaderLine('X-Serato-ErrorCode');
+                $seratoErrorCode = $response->getHeaderLine(ErrorHandler::ERROR_CODE_HTTP_HEADER);
                 if ($seratoErrorCode !== null && $seratoErrorCode !== '') {
                     $data['serato_error_code'] = $seratoErrorCode;
+                }
+                $seratoErrorMessage = $response->getHeaderLine(ErrorHandler::ERROR_MESSAGE_HTTP_HEADER);
+                if ($seratoErrorMessage !== null && $seratoErrorMessage !== '') {
+                    $data['serato_error_message'] = $seratoErrorMessage;
                 }
             }
 
