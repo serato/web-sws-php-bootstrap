@@ -22,6 +22,9 @@ abstract class AbstractController
      */
     protected $logger;
 
+    /** @var string */
+    private $etag;
+
     /**
      * Construct the controller
      *
@@ -69,7 +72,11 @@ abstract class AbstractController
                 // Error
             }
         }
-        return $this->execute($request, $response, $args);
+        $response = $this->execute($request, $response, $args);
+        if ($this->getEtag() !== null) {
+            $response = $response->withHeader('Etag', $this->getEtag());
+        }
+        return $response;
     }
 
     /**
@@ -88,6 +95,60 @@ abstract class AbstractController
             return strtolower($contentTypeParts[0]);
         }
         return null;
+    }
+
+    /**
+     * Returns an array of Etags contained within an `If-None-Match` HTTP
+     * request header.
+     *
+     * @param Request $request
+     * @return array
+     */
+    public static function getIfNoneMatchEtags(Request $request): array
+    {
+        return self::getRequestEtags($request->getHeader('If-None-Match'));
+    }
+
+    /**
+     * Returns an array of Etags contained within an `If-Match` HTTP
+     * request header.
+     *
+     * @param Request $request
+     * @return array
+     */
+    public static function getIfMatchEtags(Request $request): array
+    {
+        return self::getRequestEtags($request->getHeader('If-Match'));
+    }
+
+    private static function getRequestEtags(array $rawHeaderValue): array
+    {
+        if (count($rawHeaderValue) > 0) {
+            return array_map('trim', explode(',', $rawHeaderValue[0]));
+        }
+        return [];
+    }
+
+    /**
+     * Sets an etag value. When provided, the value will returned in the HTTP
+     * response within the `Etag` header.
+     *
+     * @param string $etag
+     * @return void
+     */
+    public function setEtag(string $etag, bool $weakValidation = true): void
+    {
+        $this->etag = ($weakValidation ? 'W/' : '') . '"' . trim($etag, '"') . '"';
+    }
+
+    /**
+     * Returns the etag value.
+     *
+     * @return string|null
+     */
+    public function getEtag(): ?string
+    {
+        return $this->etag;
     }
 
     /**
