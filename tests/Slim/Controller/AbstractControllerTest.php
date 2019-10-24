@@ -52,6 +52,26 @@ class AbstractControllerTest extends TestCase
             Request::createFromEnvironmentBuilder(EnvironmentBuilder::create())
         );
 
+        # Assert that we've received a Response object back
         $this->assertTrue(is_a($response, '\Slim\Http\Response'));
+        # Assert that no etag header is set
+        $this->assertEquals($response->getHeader('Etag'), []);
+    }
+
+    public function testSetEtag()
+    {
+        $logger = $this->getDebugLogger();
+        $controller = $this->getMockForAbstractClass(AbstractController::class, [$logger]);
+        $controller->setEtag(md5('test-value'));
+        $etag = $controller->getEtag();
+        $controller->expects($this->any())
+            ->method('execute')
+            ->willReturn(new Response);
+        
+        $response = $controller->mockInvoke(
+            Request::createFromEnvironmentBuilder(EnvironmentBuilder::create())
+        );
+
+        $this->assertEquals($response->getHeader('Etag')[0], $etag);
     }
 }
