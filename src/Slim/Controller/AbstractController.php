@@ -15,6 +15,8 @@ use Psr\Http\Message\ResponseInterface as Response;
  */
 abstract class AbstractController
 {
+    private const DEFAULT_CACHE_CONTROL = 'no-store';
+
     /**
      * PSR-3 Logger interface
      *
@@ -76,7 +78,13 @@ abstract class AbstractController
         if ($this->getEtag() !== null) {
             $response = $response->withHeader('Etag', $this->getEtag());
         }
-        return $response;
+        # Return the response with a default `Cache-Control` header value if there's no other value set
+        return $response->withHeader(
+            'Cache-Control',
+            $response->getHeaderLine('Cache-Control') === '' ?
+                self::DEFAULT_CACHE_CONTROL :
+                $response->getHeaderLine('Cache-Control')
+        );
     }
 
     /**
