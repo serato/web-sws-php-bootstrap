@@ -135,7 +135,7 @@ class Error extends SlimError
                 ->withStatus($http_response_code)
                 ->withHeader('Content-type', $contentType)
                 ->withHeader(self::ERROR_CODE_HTTP_HEADER, $exception->getCode())
-                ->withHeader(self::ERROR_MESSAGE_HTTP_HEADER, $exception->getMessage())
+                ->withHeader(self::ERROR_MESSAGE_HTTP_HEADER, str_replace("\n", ' ', $exception->getMessage()))
                 ->withBody($body);
 
         if (is_a($exception, self::BASE_CLASS)) {
