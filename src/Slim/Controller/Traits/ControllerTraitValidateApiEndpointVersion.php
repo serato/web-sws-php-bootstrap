@@ -5,8 +5,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
 /**
- * Adds functionality to a controller to allow it to validate the version fragment
- * of a URI against a list of accepted versions.
+ * Adds functionality to a `Serato\SwsApp\Slim\Controller\AbstractController` instance
+ * to allow it to validate the version fragment of a URI against a list of accepted versions.
  *
  * Version fragments are typically used in REST APIs and identified by their placement
  * in the URI. eg.
