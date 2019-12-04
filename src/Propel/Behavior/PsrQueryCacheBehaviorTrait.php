@@ -2,7 +2,6 @@
 
 namespace Serato\SwsApp\Propel\Behavior;
 
-use Symfony\Component\Cache\CacheItem;
 use Psr\Cache\CacheItemPoolInterface;
 
 /**
