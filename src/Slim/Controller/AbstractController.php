@@ -15,6 +15,8 @@ use Psr\Http\Message\ResponseInterface as Response;
  */
 abstract class AbstractController
 {
+    private const DEFAULT_CACHE_CONTROL = 'no-cache';
+
     /**
      * PSR-3 Logger interface
      *
@@ -22,9 +24,11 @@ abstract class AbstractController
      */
     protected $logger;
 
-    /** @var string */
-    private $etag;
+    /** @var array */
+    private $ifNoneMatchRequestEtags = [];
 
+    /** @var array */
+    private $ifMatchRequestEtags = [];
     /**
      * Construct the controller
      *
@@ -57,10 +61,10 @@ abstract class AbstractController
      */
     public function __invoke(Request $request, Response $response, array $args) : Response
     {
-        // Require a client to specify a `Content-Type` header with a supported value for POST and PUT requests
+        # Require a client to specify a `Content-Type` header with a supported value for POST and PUT requests
         if (in_array(strtolower($request->getMethod()), ['post', 'put'])) {
-            // Supported content types are limited by the specific implementation of the Request object
-            // In this instance we use the Request object from the Slim framework.
+            # Supported content types are limited by the specific implementation of the Request object
+            # In this instance we use the Request object from the Slim framework.
             $supportContentTypes = [
                 'application/json',
                 'application/xml',
@@ -72,11 +76,20 @@ abstract class AbstractController
                 // Error
             }
         }
+
+        # Capture Etag values from Request headers
+        $this->setIfNoneMatchEtags($request);
+        $this->setIfMatchEtags($request);
+
         $response = $this->execute($request, $response, $args);
-        if ($this->getEtag() !== null) {
-            $response = $response->withHeader('Etag', $this->getEtag());
-        }
-        return $response;
+
+        # Return the response with a default `Cache-Control` header value if there's no other value set
+        return $response->withHeader(
+            'Cache-Control',
+            $response->getHeaderLine('Cache-Control') === '' ?
+                self::DEFAULT_CACHE_CONTROL :
+                $response->getHeaderLine('Cache-Control')
+        );
     }
 
     /**
@@ -101,54 +114,62 @@ abstract class AbstractController
      * Returns an array of Etags contained within an `If-None-Match` HTTP
      * request header.
      *
-     * @param Request $request
      * @return array
      */
-    public static function getIfNoneMatchEtags(Request $request): array
+    protected function getIfNoneMatchEtags(): array
     {
-        return self::getRequestEtags($request->getHeader('If-None-Match'));
+        return $this->ifNoneMatchRequestEtags;
     }
 
     /**
      * Returns an array of Etags contained within an `If-Match` HTTP
      * request header.
      *
-     * @param Request $request
      * @return array
      */
-    public static function getIfMatchEtags(Request $request): array
+    protected function getIfMatchEtags(Request $request): array
     {
-        return self::getRequestEtags($request->getHeader('If-Match'));
+        return $this->ifMatchRequestEtags;
     }
 
-    private static function getRequestEtags(array $rawHeaderValue): array
+    private function setIfNoneMatchEtags(Request $request): void
     {
-        if (count($rawHeaderValue) > 0) {
-            return array_map('trim', explode(',', $rawHeaderValue[0]));
+        $this->ifNoneMatchRequestEtags = self::getRequestEtags($request, 'If-None-Match');
+    }
+
+    private function setIfMatchEtags(Request $request): void
+    {
+        $this->ifMatchRequestEtags = self::getRequestEtags($request, 'If-Match');
+    }
+
+    private static function getRequestEtags(Request $request, string $headerName): array
+    {
+        # This is actually a nasty hack that works around limitations of some other controller
+        # behaviour. Currently we only want downstream functionality to match etag values for
+        # GET and HEAD requests. In some cases that logic where this comparison happens does
+        # not have a means to determine the HTTP method. So we can hack it here by only reading
+        # out the header values for GET and HEAD requests.
+        # For now this is OK. But we'll need to rethink the logic if we ever want this access these
+        # header values for other HTTP methods.
+        if (in_array(strtolower($request->getMethod()), ['get', 'head'])) {
+            $rawHeaderValue = $request->getHeader($headerName);
+            if (count($rawHeaderValue) > 0) {
+                return array_map('trim', explode(',', $rawHeaderValue[0]));
+            }
         }
         return [];
     }
 
     /**
-     * Sets an etag value. When provided, the value will returned in the HTTP
-     * response within the `Etag` header.
+     * Formats a string into a value suitible for use in an HTTP ETag header.
      *
-     * @param string $etag
-     * @return void
+     * @param string $val
+     * @param boolean $weakValidation
+     * @return string
      */
-    public function setEtag(string $etag, bool $weakValidation = true): void
+    protected static function formatEtagValue(string $val, bool $weakValidation = true): string
     {
-        $this->etag = ($weakValidation ? 'W/' : '') . '"' . trim($etag, '"') . '"';
-    }
-
-    /**
-     * Returns the etag value.
-     *
-     * @return string|null
-     */
-    public function getEtag(): ?string
-    {
-        return $this->etag;
+        return ($weakValidation ? 'W/' : '') . '"' . trim($val, '"') . '"';
     }
 
     /**

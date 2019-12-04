@@ -4,8 +4,8 @@ namespace Serato\SwsApp\Slim\Controller\Traits;
 use Psr\Http\Message\ResponseInterface as Response;
 
 /**
- * Adds functionality to a controller to allow for the constructing and outputting
- * of a JSON response.
+ * Adds functionality to a `Serato\SwsApp\Slim\Controller\AbstractController` instance
+ * to allow for the constructing and outputting of a JSON response.
  */
 trait ControllerTraitJsonResponse
 {
@@ -43,11 +43,25 @@ trait ControllerTraitJsonResponse
      */
     protected function writeJsonBody(Response $response) : Response
     {
-        return $response
-                ->withHeader('Content-type', 'application/json')
-                ->write(json_encode(
-                    $this->jsonResponseBody,
-                    JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
-                ));
+        $response = $response->withHeader('Content-type', 'application/json');
+
+        $content = json_encode(
+            $this->jsonResponseBody,
+            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
+        );
+
+        $etag = self::formatEtagValue(md5($content));
+
+        if (in_array($etag, $this->getIfNoneMatchEtags())) {
+            $response = $response
+                ->withStatus(304)
+                ->withHeader('Etag', $etag);
+        } else {
+            $response = $response
+                ->withHeader('Etag', $etag)
+                ->write($content);
+        }
+
+        return $response;
     }
 }

@@ -66,8 +66,6 @@ class JsonSchemaViewerController extends AbstractController
      */
     public function execute(Request $request, Response $response, array $args): Response
     {
-        $requestEtags = self::getIfNoneMatchEtags($request);
-
         $baseUri = $this->router->pathFor(self::SCHEMAS_LIST_NAMED_ROUTE);
 
         $contentType = 'text/html';
@@ -109,12 +107,20 @@ class JsonSchemaViewerController extends AbstractController
         } else {
             $content = $this->makeHtmlDoc($this->makeFileListHtml($baseUri));
         }
-        $this->setEtag(md5($content));
+
         $response = $response->withHeader('Content-type', $contentType);
-        if (in_array($this->getEtag(), $requestEtags)) {
-            $response = $response->withStatus(304);
+
+        $etag = self::formatEtagValue(md5($content));
+
+        if (in_array($etag, $this->getIfNoneMatchEtags())) {
+            $response = $response
+                ->withStatus(304)
+                ->withHeader('Etag', $etag);
         } else {
-            $response = $response->withStatus(200)->write($content);
+            $response = $response
+                ->withStatus(200)
+                ->withHeader('Etag', $etag)
+                ->write($content);
         }
         return $response;
     }
