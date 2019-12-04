@@ -45,6 +45,22 @@ class AbstractScopesControllerTest extends TestCase
                 })
             );
 
+        $controller
+            ->expects($this->once())
+            ->method('execute')
+            ->with(
+                $this->callback(function ($arg) {
+                    return is_a($arg, '\Serato\Slimulator\Request');
+                }),
+                $this->callback(function ($arg) {
+                    return is_a($arg, '\Slim\Http\Response');
+                }),
+                $this->callback(function ($arg) {
+                    return is_array($arg);
+                })
+            )
+            ->willReturn(new Response);
+
         $controller(
             Request::createFromEnvironmentBuilder(
                 EnvironmentBuilder::create()

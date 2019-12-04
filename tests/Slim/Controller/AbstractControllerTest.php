@@ -6,6 +6,7 @@ use Serato\SwsApp\Slim\Controller\AbstractController;
 use Serato\Slimulator\EnvironmentBuilder;
 use Serato\Slimulator\Request;
 use Slim\Http\Response;
+use ReflectionClass;
 
 /**
  * Unit tests for Serato\SwsApp\Slim\Controller\AbstractController
@@ -31,7 +32,8 @@ class AbstractControllerTest extends TestCase
                 $this->callback(function ($arg) {
                     return is_array($arg);
                 })
-            );
+            )
+            ->willReturn(new Response);
 
         $controller(
             Request::createFromEnvironmentBuilder(EnvironmentBuilder::create()),
@@ -56,22 +58,5 @@ class AbstractControllerTest extends TestCase
         $this->assertTrue(is_a($response, '\Slim\Http\Response'));
         # Assert that no etag header is set
         $this->assertEquals($response->getHeader('Etag'), []);
-    }
-
-    public function testSetEtag()
-    {
-        $logger = $this->getDebugLogger();
-        $controller = $this->getMockForAbstractClass(AbstractController::class, [$logger]);
-        $controller->setEtag(md5('test-value'));
-        $etag = $controller->getEtag();
-        $controller->expects($this->any())
-            ->method('execute')
-            ->willReturn(new Response);
-        
-        $response = $controller->mockInvoke(
-            Request::createFromEnvironmentBuilder(EnvironmentBuilder::create())
-        );
-
-        $this->assertEquals($response->getHeader('Etag')[0], $etag);
     }
 }
