@@ -16,7 +16,7 @@
 		"ramsey/uuid": "^3.0.0"
 	},
 	"require-dev": {
-		"phpunit/phpunit": "~6.0",
+		"phpunit/phpunit": "~7.0",
 		"squizlabs/php_codesniffer": "~2.0",
 		"monolog/monolog": "^1.21.0",
 		"serato/slimulator": "^1.0.0",
