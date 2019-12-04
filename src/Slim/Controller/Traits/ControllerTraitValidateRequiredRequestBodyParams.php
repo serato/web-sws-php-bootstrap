@@ -5,8 +5,8 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
 /**
- * Adds functionality to a controller to allow it validate the presence of required
- * parameters in the message body of `PUT` and `POST` requests
+ * Adds functionality to a `Serato\SwsApp\Slim\Controller\AbstractController` instance to allow
+ * it validate the presence of required parameters in the message body of `PUT` and `POST` requests
  */
 trait ControllerTraitValidateRequiredRequestBodyParams
 {
