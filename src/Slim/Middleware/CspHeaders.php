@@ -91,7 +91,8 @@ class CspHeaders extends AbstractHandler
                 'https://www.google-analytics.com',
                 'data:',
                 'https://www.facebook.com',
-                'https://stats.g.doubleclick.net'
+                'https://stats.g.doubleclick.net',
+                'https://optimize.google.com'
             ],
             'font-src' => [
                 'https://static.serato.com',
@@ -105,17 +106,21 @@ class CspHeaders extends AbstractHandler
                 'https://www.google.com',
                 'https://www.gstatic.com',
                 'https://www.googletagmanager.com/gtm.js',
-                'https://www.google-analytics.com/analytics.js'
+                'https://www.google-analytics.com/analytics.js',
+                'https://optimize.google.com'
             ],
             'style-src' => [
                 "'self'",
                 'https://static.serato.com',
                 'https://www.gstatic.com',
-                'https://maxcdn.bootstrapcdn.com/font-awesome/'
+                'https://maxcdn.bootstrapcdn.com/font-awesome/',
+                'https://optimize.google.com',
+                'https://fonts.googleapis.com'
             ],
             'frame-src' => [
                 'https://www.google.com/recaptcha/',
-                'https://vars.hotjar.com/'
+                'https://vars.hotjar.com/',
+                'https://optimize.google.com'
             ]
         ];
     }
