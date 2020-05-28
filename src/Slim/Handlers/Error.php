@@ -1,7 +1,7 @@
 <?php
 namespace Serato\SwsApp\Slim\Handlers;
 
-use Aws\Exception\AwsException;
+use Aws\Exception\CredentialsException;
 use Serato\SwsApp\AccessLogWriter;
 use Slim\Http\Body;
 use Slim\Handlers\Error as SlimError;
@@ -25,6 +25,7 @@ class Error extends SlimError
     public const ERROR_CODE_HTTP_HEADER = 'X-Serato-ErrorCode';
     public const ERROR_MESSAGE_HTTP_HEADER = 'X-Serato-ErrorMessage';
     const BASE_CLASS = '\Serato\SwsApp\Exception\AbstractException';
+    public const GENERIC_ERROR_MESSAGE = 'Oops, something went wrong. Please try again later.';
 
     /**
      * Application name
@@ -106,11 +107,11 @@ class Error extends SlimError
         $contentType = $this->determineContentType($request);
 
         # Handle AWS related exceptions here.
-        if ($exception instanceof AwsException) {
+        if ($exception instanceof CredentialsException) {
             # Write exception to error log.
             $this->writeToErrorLog($exception, 'AWS Exception');
             # RETURN pretty error back to client.
-            return $this->renderAWSErrorMessage($response, $contentType);
+            return $this->renderAWSErrorMessage($response, $exception, $contentType);
         }
 
         if (is_a($exception, self::BASE_CLASS)) {
@@ -297,30 +298,29 @@ class Error extends SlimError
     /**
      * This method handles rendering of AWS related exceptions.
      * @param Response $response
-     * @param $contentType
+     * @param string $contentType
      * @return Response
      */
-    private function renderAWSErrorMessage(Response $response, $contentType) : Response
+    private function renderAWSErrorMessage(Response $response, \Exception $exception, string $contentType) : Response
     {
-        $errorMsg = 'Oops, something went wrong. Please try again later.';
         switch ($contentType) {
             case 'application/json':
-                $output = json_encode(['message' => $errorMsg], JSON_PRETTY_PRINT);
+                $output = json_encode(['message' => self::GENERIC_ERROR_MESSAGE], JSON_PRETTY_PRINT);
                 break;
             case 'text/xml':
             case 'application/xml':
                 $output = '<exception>\n';
-                $output .= '  <message>' . $errorMsg . '</message>\n';
+                $output .= '  <message>' . self::GENERIC_ERROR_MESSAGE . '</message>\n';
                 $output .= '</exception>\n';
                 break;
             case 'text/html':
-                $output = $errorMsg;
+                $output = $this->renderHtmlErrorMessage($exception);
                 break;
             default:
                 throw new UnexpectedValueException('Cannot render unknown content type ' . $contentType);
         }
         return $response
-            ->withStatus(500)
+            ->withStatus(503)
             ->withHeader('Content-Type', $contentType)
             ->write($output);
     }

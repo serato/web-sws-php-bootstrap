@@ -1,6 +1,8 @@
 <?php
 namespace Serato\SwsApp\Test\Slim\Handlers;
 
+use Aws\Exception\CredentialsException;
+use Serato\SwsApp\Slim\Handlers\Error;
 use Serato\SwsApp\Test\TestCase;
 use Serato\SwsApp\Slim\Handlers\Error as ErrorHandler;
 use Serato\Slimulator\EnvironmentBuilder;
@@ -74,8 +76,13 @@ class ErrorTest extends TestCase
         
         // Parse the body content
         $json = json_decode($response->getBody(), true);
-        
-        if (!is_a($exception, '\Serato\SwsApp\Http\Rest\Exception\AbstractException')) {
+
+        if ($exception instanceof CredentialsException) {
+            $logContents = trim(file_get_contents($this->getErrorLogPath()));
+            # THERE is a log entry.
+            $this->assertCount(1,explode("\n", $logContents), $assertText);
+            $this->assertEquals(Error::GENERIC_ERROR_MESSAGE, $json['message']);
+        } elseif (!is_a($exception, '\Serato\SwsApp\Http\Rest\Exception\AbstractException')) {
             // Unhandled exceptions can output a stack trace to the client
             // when $displayErrorDetals = true.
             $this->assertEquals($displayErrorDetals, isset($json['exception']), $assertText);
@@ -123,7 +130,8 @@ class ErrorTest extends TestCase
             ['\Exception', 500, true],
             ['\Exception', 500, false],
             ['\Serato\SwsApp\Http\Rest\Exception\ExpiredAccessTokenException', 401, true],
-            ['\Serato\SwsApp\Http\Rest\Exception\ExpiredAccessTokenException', 401, true]
+            ['\Serato\SwsApp\Http\Rest\Exception\ExpiredAccessTokenException', 401, true],
+            ['Aws\Exception\CredentialsException', 503, true]
         ];
     }
 }
