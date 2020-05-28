@@ -80,7 +80,7 @@ class ErrorTest extends TestCase
         if ($exception instanceof CredentialsException) {
             $logContents = trim(file_get_contents($this->getErrorLogPath()));
             # THERE is a log entry.
-            $this->assertCount(1,explode("\n", $logContents), $assertText);
+            $this->assertCount(1, explode("\n", $logContents), $assertText);
             $this->assertEquals(Error::GENERIC_ERROR_MESSAGE, $json['message']);
         } elseif (!is_a($exception, '\Serato\SwsApp\Http\Rest\Exception\AbstractException')) {
             // Unhandled exceptions can output a stack trace to the client
