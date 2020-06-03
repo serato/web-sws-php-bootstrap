@@ -24,6 +24,7 @@ class Error extends SlimError
     public const ERROR_CODE_HTTP_HEADER = 'X-Serato-ErrorCode';
     public const ERROR_MESSAGE_HTTP_HEADER = 'X-Serato-ErrorMessage';
     const BASE_CLASS = '\Serato\SwsApp\Exception\AbstractException';
+    public const GENRIC_ERROR_MESSAGE = 'Oops, something went wrong, please try again.';
 
     /**
      * Application name
@@ -107,7 +108,7 @@ class Error extends SlimError
         }
 
         $contentType = $this->determineContentType($request);
-        
+
         switch ($contentType) {
             case 'application/json':
                 $output = $this->renderJsonErrorMessage($exception);
@@ -132,11 +133,11 @@ class Error extends SlimError
         $body->write($output);
 
         $response = $response
-                ->withStatus($http_response_code)
-                ->withHeader('Content-type', $contentType)
-                ->withHeader(self::ERROR_CODE_HTTP_HEADER, $exception->getCode())
-                ->withHeader(self::ERROR_MESSAGE_HTTP_HEADER, str_replace("\n", ' ', $exception->getMessage()))
-                ->withBody($body);
+            ->withStatus($http_response_code)
+            ->withHeader('Content-type', $contentType)
+            ->withHeader(self::ERROR_CODE_HTTP_HEADER, $exception->getCode())
+            ->withHeader(self::ERROR_MESSAGE_HTTP_HEADER, str_replace("\n", ' ', $exception->getMessage()))
+            ->withBody($body);
 
         if (is_a($exception, self::BASE_CLASS)) {
             $this->accessLogWriter->log($exception->getRequest(), $response);
@@ -173,7 +174,7 @@ class Error extends SlimError
                     break;
             }
         } elseif (!$this->displayErrorDetails) {
-            $html .= '<p>A website error has occurred. Sorry for the inconvenience.</p>';
+            $html .= '<p>' . self::GENRIC_ERROR_MESSAGE . '</p>';
         }
 
         if ($this->displayErrorDetails) {
@@ -208,8 +209,8 @@ class Error extends SlimError
      */
     protected function renderJsonErrorMessage(\Exception $exception): string
     {
-        $msg = $this->applicationName . ' - Application Error';
-        
+        $msg = self::GENRIC_ERROR_MESSAGE;
+
         $error = ['message' => $msg];
 
         if (is_a($exception, self::BASE_CLASS)) {
@@ -244,7 +245,7 @@ class Error extends SlimError
             }
             $error['previous'][] = $this->renderThrowableAsArray($throwable);
         }
-        
+
         $this->logger->critical(
             'Slim Application Unhandled Exception',
             array_merge(
