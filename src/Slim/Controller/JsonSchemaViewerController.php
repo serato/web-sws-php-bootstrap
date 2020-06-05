@@ -187,10 +187,10 @@ class JsonSchemaViewerController extends AbstractController
 
     private function makeJsonDocLinks(string $baseUri, string $body): string
     {
-        preg_match_all('/".*\.json\#/', $body, $matches);
+        preg_match_all('/".*\.json/', $body, $matches);
 
         foreach ($matches[0] as $match) {
-            $jsonFileName = substr(rtrim($match, '#'), strrpos($match, '"') + 1);
+            $jsonFileName = substr($match, strrpos($match, '"') + 1);
             $jsonLink = '<a href="' . $baseUri . '/' . self::HTML_VIEW . '/' . $jsonFileName . '">' .
                         $jsonFileName . '</a>';
             $body = str_replace($jsonFileName, $jsonLink, $body);
