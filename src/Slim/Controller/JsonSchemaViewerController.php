@@ -31,6 +31,9 @@ class JsonSchemaViewerController extends AbstractController
     /* @var string */
     private $stylesDirectoryPath;
 
+    /* @var ?string */
+    private $namedRoute;
+
     /**
      * Construct the controller
      *
@@ -38,19 +41,23 @@ class JsonSchemaViewerController extends AbstractController
      * @param RouterInterface   $router                 Slim router instance
      * @param string            $appName                Application name
      * @param string            $schemaDirectoryPath    Path to directory containing JSON schema files
+     * @param string|null       $namedRoute             The named route for the base URI that the controller
+     *                                                  is mapped to
      */
     public function __construct(
         LoggerInterface $logger,
         RouterInterface $router,
         string $appName,
         string $schemaDirectoryPath,
-        string $stylesDirectoryPath
+        string $stylesDirectoryPath,
+        ?string $namedRoute = null
     ) {
         parent::__construct($logger);
         $this->router = $router;
         $this->appName = $appName;
         $this->schemaDirectoryPath = rtrim($schemaDirectoryPath, '/');
         $this->stylesDirectoryPath = rtrim($stylesDirectoryPath, '/');
+        $this->namedRoute = $namedRoute;
     }
 
     /**
@@ -66,7 +73,7 @@ class JsonSchemaViewerController extends AbstractController
      */
     public function execute(Request $request, Response $response, array $args): Response
     {
-        $baseUri = $this->router->pathFor(self::SCHEMAS_LIST_NAMED_ROUTE);
+        $baseUri = $this->router->pathFor($this->getNamedRoute());
 
         $contentType = 'text/html';
 
@@ -123,6 +130,28 @@ class JsonSchemaViewerController extends AbstractController
                 ->write($content);
         }
         return $response;
+    }
+
+    /**
+     * Sets the named route for the base URI that the controller is mapped to
+     *
+     * @return string
+     */
+    public function setNamedRoute(string $namedRoute): void
+    {
+        $this->namedRoute = $namedRoute;
+    }
+
+    /**
+     * Returns the named route for the base URI that the controller is mapped to
+     *
+     * @return string
+     */
+    public function getNamedRoute(): string
+    {
+        # This function MUST return self::SCHEMAS_LIST_NAMED_ROUTE if no value is
+        # explicitly set for $this->namedRoute to maintain backwards compatibility.
+        return $this->namedRoute === null ? self::SCHEMAS_LIST_NAMED_ROUTE : $this->namedRoute;
     }
 
     private function makeFileListHtml(string $baseUri): string
