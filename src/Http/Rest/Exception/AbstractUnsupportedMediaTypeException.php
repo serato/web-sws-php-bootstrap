@@ -10,8 +10,7 @@ use Serato\SwsApp\Http\Rest\Exception\AbstractException;
  * This exception is thrown when the server refuses to accept the request because the payload format is in an
  * unsupported format.
  *
- * The format problem might be due to the request's indicated Content-Type or Content-Encoding, or as a result of
- * inspecting the data directly.
+ * The format problem might be due to the request's indicated Content-Type or Content-Encoding.
  */
 
 abstract class AbstractUnsupportedMediaTypeException extends AbstractException
