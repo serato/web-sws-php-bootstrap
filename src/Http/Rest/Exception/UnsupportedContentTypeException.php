@@ -17,5 +17,5 @@ class UnsupportedContentTypeException extends AbstractException
 {
     protected $http_response_code = 415;
     protected $code = 2003;
-    protected $message = 'Invalid request Content-Type. Refer to the API spec for more details.';
+    protected $message = 'Invalid Request Content-Type. Refer to the API spec for more details.';
 }
