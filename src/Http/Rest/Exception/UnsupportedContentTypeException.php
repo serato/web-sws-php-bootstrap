@@ -2,20 +2,15 @@
 
 namespace Serato\SwsApp\Http\Rest\Exception;
 
-use Serato\SwsApp\Http\Rest\Exception\AbstractException;
+use Serato\SwsApp\Http\Rest\Exception\AbstractUnsupportedMediaTypeException;
 
 /**
  * Unsupported Content-Type Exception
  *
- * This exception is thrown when the server refuses to accept the request because the payload format is in an
- * unsupported format.
- *
- * The format problem would be due to the request's indicated Content-Type.
+ * The exception is thrown when the request's indicated Content-Type is not supported.
  */
-
-class UnsupportedContentTypeException extends AbstractException
+class UnsupportedContentTypeException extends AbstractUnsupportedMediaTypeException
 {
-    protected $http_response_code = 415;
     protected $code = 2003;
     protected $message = 'Invalid Request Content-Type. Refer to the API spec for more details.';
 }
