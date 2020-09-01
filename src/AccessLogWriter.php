@@ -70,6 +70,7 @@ class AccessLogWriter
                     'name'  => $request->getAttribute(RequestMiddleware::APP_NAME, '')
                 ];
             }
+
             $data = [
                 'request_method'    => $request->getMethod(),
                 'request_uri'       => $request->getUri()->getPath(),
@@ -79,15 +80,20 @@ class AccessLogWriter
                 'client_app'        => $app,
                 'request_scopes'    => $request->getAttribute(RequestMiddleware::SCOPES, []),
                 'request_user_id'   => $request->getAttribute(RequestMiddleware::USER_ID, ''),
-                'extra'             => $extra,
-                'body_params'     => array_filter(
-                    $request->getParseBody(),
+                'extra'             => $extra
+            ];
+            if (is_array($request->getParsedBody())) {
+                $logBodyParams = array_filter(
+                    $request->getParsedBody(),
                     function ($key) use ($bodyParamNames) {
                         return in_array($key, $bodyParamNames);
                     },
                     ARRAY_FILTER_USE_KEY
-                )
-            ];
+                );
+                if (!empty($logBodyParams)) {
+                    $data['body_params'] = $logBodyParams;
+                }
+            }
 
             if ($response !== null) {
                 $data['http_status_code'] = $response->getStatusCode();
