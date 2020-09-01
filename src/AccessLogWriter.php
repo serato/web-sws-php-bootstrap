@@ -17,16 +17,21 @@ class AccessLogWriter
     /* @var string */
     private $logLevel;
 
+    /* @var array */
+    private $bodyParamNames;
+
     /**
      * Construct the error handler
      *
-     * @param Logger    $logger          PSR-3 logger interface
-     * @param string    $logLevel        The log level to write entries to
+     * @param Logger    $logger                 PSR-3 logger interface
+     * @param string    $logLevel               The log level to write entries to
+     * @param array     $bodyParamNames         Body parameter names to log
      */
-    public function __construct(Logger $logger, string $logLevel = 'INFO')
+    public function __construct(Logger $logger, string $logLevel = 'INFO', array $bodyParamNames = [])
     {
         $this->logger = $logger;
         $this->logLevel = $logLevel;
+        $this->bodyParamNames = $bodyParamNames;
         // Set the formatter to JSON
         foreach ($this->logger->getHandlers() as $handler) {
             $handler->setFormatter(new MonologJsonFormatter());
@@ -36,13 +41,14 @@ class AccessLogWriter
     /**
      * Writes a log entry
      *
-     * @param Request           $request   The most recent Request object
-     * @param Response          $response  The most recent Response object
-     * @param Array             $extra     Extra information to log
+     * @param Request           $request            The most recent Request object
+     * @param Response          $response           The most recent Response object
+     * @param Array             $extra              Extra information to log
+     * @param Array             $bodyParamNames     Body parameter names to log
      *
      * @return void
      */
-    public function log(?Request $request, Response $response = null, array $extra = []): void
+    public function log(?Request $request, Response $response = null, array $extra = [], array $bodyParamNames = []): void
     {
         if ($request !== null) {
             $geo = [];
@@ -73,7 +79,14 @@ class AccessLogWriter
                 'client_app'        => $app,
                 'request_scopes'    => $request->getAttribute(RequestMiddleware::SCOPES, []),
                 'request_user_id'   => $request->getAttribute(RequestMiddleware::USER_ID, ''),
-                'extra'             => $extra
+                'extra'             => $extra,
+                'body_params'     => array_filter(
+                    $request->getParseBody(),
+                    function ($key) use ($bodyParamNames) {
+                        return in_array($key, $bodyParamNames);
+                    },
+                    ARRAY_FILTER_USE_KEY
+                )
             ];
 
             if ($response !== null) {
