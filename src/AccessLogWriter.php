@@ -44,11 +44,10 @@ class AccessLogWriter
      * @param Request           $request            The most recent Request object
      * @param Response          $response           The most recent Response object
      * @param Array             $extra              Extra information to log
-     * @param Array             $bodyParamNames     Body parameter names to log
      *
      * @return void
      */
-    public function log(?Request $request, Response $response = null, array $extra = [], array $bodyParamNames = []): void
+    public function log(?Request $request, Response $response = null, array $extra = []): void
     {
         if ($request !== null) {
             $geo = [];
@@ -85,8 +84,8 @@ class AccessLogWriter
             if (is_array($request->getParsedBody())) {
                 $logBodyParams = array_filter(
                     $request->getParsedBody(),
-                    function ($key) use ($bodyParamNames) {
-                        return in_array($key, $bodyParamNames);
+                    function ($key) {
+                        return in_array($key, $this->bodyParamNames);
                     },
                     ARRAY_FILTER_USE_KEY
                 );
@@ -94,7 +93,6 @@ class AccessLogWriter
                     $data['body_params'] = $logBodyParams;
                 }
             }
-
             if ($response !== null) {
                 $data['http_status_code'] = $response->getStatusCode();
                 $seratoErrorCode = $response->getHeaderLine(ErrorHandler::ERROR_CODE_HTTP_HEADER);
