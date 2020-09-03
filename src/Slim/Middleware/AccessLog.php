@@ -16,10 +16,11 @@ class AccessLog
      *
      * @param Logger    $logger          PSR-3 logger interface
      * @param string    $logLevel        The log level to write entries to
+     * @param array     $bodyParamNames         Body parameter names to log
      */
-    public function __construct(Logger $logger, string $logLevel = 'INFO')
+    public function __construct(Logger $logger, string $logLevel = 'INFO', array $bodyParamNames = [])
     {
-        $this->accessLogWriter = new AccessLogWriter($logger, $logLevel);
+        $this->accessLogWriter = new AccessLogWriter($logger, $logLevel, $bodyParamNames);
     }
 
     /**
