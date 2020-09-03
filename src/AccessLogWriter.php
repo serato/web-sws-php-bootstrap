@@ -17,16 +17,21 @@ class AccessLogWriter
     /* @var string */
     private $logLevel;
 
+    /* @var array */
+    private $bodyParamNames;
+
     /**
      * Construct the error handler
      *
-     * @param Logger    $logger          PSR-3 logger interface
-     * @param string    $logLevel        The log level to write entries to
+     * @param Logger    $logger                 PSR-3 logger interface
+     * @param string    $logLevel               The log level to write entries to
+     * @param array     $bodyParamNames         Body parameter names to log
      */
-    public function __construct(Logger $logger, string $logLevel = 'INFO')
+    public function __construct(Logger $logger, string $logLevel = 'INFO', array $bodyParamNames = [])
     {
         $this->logger = $logger;
         $this->logLevel = $logLevel;
+        $this->bodyParamNames = $bodyParamNames;
         // Set the formatter to JSON
         foreach ($this->logger->getHandlers() as $handler) {
             $handler->setFormatter(new MonologJsonFormatter());
@@ -36,9 +41,9 @@ class AccessLogWriter
     /**
      * Writes a log entry
      *
-     * @param Request           $request   The most recent Request object
-     * @param Response          $response  The most recent Response object
-     * @param Array             $extra     Extra information to log
+     * @param Request           $request            The most recent Request object
+     * @param Response          $response           The most recent Response object
+     * @param Array             $extra              Extra information to log
      *
      * @return void
      */
@@ -64,6 +69,7 @@ class AccessLogWriter
                     'name'  => $request->getAttribute(RequestMiddleware::APP_NAME, '')
                 ];
             }
+
             $data = [
                 'request_method'    => $request->getMethod(),
                 'request_uri'       => $request->getUri()->getPath(),
@@ -75,7 +81,18 @@ class AccessLogWriter
                 'request_user_id'   => $request->getAttribute(RequestMiddleware::USER_ID, ''),
                 'extra'             => $extra
             ];
-
+            if (is_array($request->getParsedBody())) {
+                $logBodyParams = array_filter(
+                    $request->getParsedBody(),
+                    function ($key) {
+                        return in_array($key, $this->bodyParamNames);
+                    },
+                    ARRAY_FILTER_USE_KEY
+                );
+                if (!empty($logBodyParams)) {
+                    $data['body_params'] = $logBodyParams;
+                }
+            }
             if ($response !== null) {
                 $data['http_status_code'] = $response->getStatusCode();
                 $seratoErrorCode = $response->getHeaderLine(ErrorHandler::ERROR_CODE_HTTP_HEADER);
