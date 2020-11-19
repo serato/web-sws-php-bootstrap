@@ -1,9 +1,13 @@
 <?php
-
 namespace Serato\SwsApp\Slim\App;
+
+define('SWS_REQUEST_ID', 'sws_request_id');
 
 use Slim\App;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Message\ResponseInterface as Response;
+use Ramsey\Uuid\Uuid;
 
 /**
  * Bootstrap the Slim application by adding routes, controllers, error handlers
@@ -51,6 +55,16 @@ abstract class Bootstrap
         // Add routes and middleware
         $this->addAppMiddleware();
         $this->addRoutes();
+
+        // Add a middleware that adds a request_id attribute to the Request object
+        // Note: this middleware is executed first because it's added after all other middleware.
+        $this->app->add(function (Request $request, Response $response, callable $next) {
+            $request = $request->withAttribute(
+                SWS_REQUEST_ID,
+                str_replace('-', '', Uuid::uuid4()->toString())
+            );
+            return $next($request, $response);
+        });
 
         return $this->getApp();
     }
