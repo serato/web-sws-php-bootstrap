@@ -1,13 +1,15 @@
 <?php
 namespace Serato\SwsApp\Slim\App;
 
-define('SWS_REQUEST_ID', 'sws_request_id');
+define('DISPATCHER', 'event-dispatcher');
 
 use Slim\App;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Ramsey\Uuid\Uuid;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Serato\SwsApp\EventDispatcher\Event\SwsHttpResponse;
 
 /**
  * Bootstrap the Slim application by adding routes, controllers, error handlers
@@ -40,6 +42,7 @@ abstract class Bootstrap
     {
         $this->app = new App($settings);
         $this->container = $this->app->getContainer();
+        $this->container[DISPATCHER] = new EventDispatcher;
     }
 
     /**
@@ -49,22 +52,26 @@ abstract class Bootstrap
      */
     public function createApp(): App
     {
+        // Add a middleware to fire the `SwsHttpResponse` event.
+        // This middleware must run after all other middleware. Hence, add it first.
+        $dispatcher = $this->container[DISPATCHER];
+        $this->app->add(
+            function (Request $request, Response $response, callable $next) use ($dispatcher): Response {
+                # Execute all other middleware first
+                $response = $next($request, $response);
+                $event = new SwsHttpResponse;
+                $event['request'] = $request;
+                $event['response'] = $response;
+                $dispatcher->dispatch($event, SwsHttpResponse::getEventName());
+                return $response;
+            }
+        );
         // Register and configure common services
         $this->registerControllers();
         $this->registerErrorHandlers();
         // Add routes and middleware
         $this->addAppMiddleware();
         $this->addRoutes();
-
-        // Add a middleware that adds a request_id attribute to the Request object
-        // Note: this middleware is executed first because it's added after all other middleware.
-        $this->app->add(function (Request $request, Response $response, callable $next) {
-            $request = $request->withAttribute(
-                SWS_REQUEST_ID,
-                str_replace('-', '', Uuid::uuid4()->toString())
-            );
-            return $next($request, $response);
-        });
 
         return $this->getApp();
     }
