@@ -9,6 +9,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Serato\SwsApp\EventDispatcher\Event\SwsHttpResponse;
 
 /**
@@ -98,6 +99,35 @@ abstract class Bootstrap
     {
         $this->container[$key] = $f;
         return $this;
+    }
+
+
+    /**
+     * Adds an event listener to the dispatcher.
+     *
+     * @param string   $eventName The event to listen on
+     * @param callable $listener  The listener
+     * @param int      $priority  The higher this value, the earlier an event
+     *                            listener will be triggered in the chain (defaults to 0)
+     * @return void
+     */
+    public function addEventListener(string $eventName, callable $listener, int $priority = 0): void
+    {
+        $this->container[DISPATCHER]->addListener($eventName, $listener, $priority);
+    }
+
+    /**
+     * Adds an event subscriber.
+     *
+     * The subscriber is asked for all the events it is
+     * interested in and added as a listener for these events.
+     *
+     * @param EventSubscriberInterface $subscriber
+     * @return void
+     */
+    public function addEventSubscriber(EventSubscriberInterface $subscriber): void
+    {
+        $this->container[DISPATCHER]->addSubscriber($subscriber);
     }
 
     /**
