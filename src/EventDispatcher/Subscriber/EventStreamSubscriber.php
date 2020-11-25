@@ -3,6 +3,7 @@ namespace Serato\SwsApp\EventDispatcher\Subscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Serato\SwsApp\EventDispatcher\Event\SwsHttpResponse;
+use Serato\SwsApp\EventDispatcher\Normalizer\PsrMessageNormalizer;
 
 /**
  * EventStreamSubscriber
@@ -13,10 +14,13 @@ class EventStreamSubscriber implements EventSubscriberInterface
 {
     /** @var string */
     private $appName;
+
     /** @var string */
     private $env;
+
     /** @var int */
     private $stackNumber;
+
     /**
      * Constructs the object
      *
@@ -49,6 +53,53 @@ class EventStreamSubscriber implements EventSubscriberInterface
      */
     public function onSwsHttpResponse(SwsHttpResponse $event): void
     {
-        // echo "\n\nRECEIVED SwsHttpResponse\n\n";
+        $path = '/srv/www/shared_license_serato_com/req_rep_dumps/';
+        @mkdir($path);
+
+        $prettyJson = function (string $json): string {
+            $data = json_decode($json, true);
+            return json_encode($data, JSON_PRETTY_PRINT);
+        };
+
+        $prettyJsonFromArray = function (array $data): string {
+            return json_encode($data, JSON_PRETTY_PRINT);
+        };
+
+        $requestFile = fopen($path . date('Y-m-dTH:i:s') . '-request.json', 'a');
+        $responseFileName = fopen($path . date('Y-m-dTH:i:s') . '.-response.json', 'a');
+
+        $normalizer = new PsrMessageNormalizer;
+
+        // fwrite($requestFile, $prettyJson($this->serializer->serialize($event['request'], 'json')));
+        // fwrite($responseFileName, $prettyJson($this->serializer->serialize($event['response'], 'json')));
+        fwrite(
+            $requestFile,
+            $prettyJsonFromArray($normalizer->normalizePsrServerRequestInterface($event['request']))
+        );
+        fwrite(
+            $responseFileName,
+            $prettyJsonFromArray($normalizer->normalizePsrServerResponseInterface($event['response']))
+        );
+
+        fclose($requestFile);
+        fclose($responseFileName);
     }
+
+    /**
+     * --------
+     * Request
+     * --------
+     * - Bug?: "contentType": ""
+     * - Bug? "geoIpRecord": [] Can't encode the Geo IP City record
+     * - What to do with "cookieParams"
+     * - Clean up "serverParams"
+     *      Remove if repeated elsewhere
+     * --------
+     * Response
+     * --------
+     * - Encode request/response body somehow
+     *      - Strip sensitive?
+     *      - Limit size?
+     * - Do we use Attributes??
+     */
 }
