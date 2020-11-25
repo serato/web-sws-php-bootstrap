@@ -87,13 +87,14 @@ class EventStreamSubscriber implements EventSubscriberInterface
 
     /**
      * --------
+     * Bootstrapping
+     * --------
+     * Make usable via error handlers
+     * 
+     * --------
      * Request
      * --------
-     * - Bug?: "contentType": ""
-     * - Bug? "geoIpRecord": [] Can't encode the Geo IP City record
      * - What to do with "cookieParams"
-     * - Clean up "serverParams"
-     *      Remove if repeated elsewhere
      * --------
      * Response
      * --------
@@ -101,5 +102,25 @@ class EventStreamSubscriber implements EventSubscriberInterface
      *      - Strip sensitive?
      *      - Limit size?
      * - Do we use Attributes??
+
+
+Remove sensitive data
+Testing
+  Methods
+    POST
+    PUT
+    OPTIONS
+    DELETE
+  Request payload encodings (check payload and Content-Type header)
+    application/x-www-form-urlencoded
+    application/json
+  Authorization
+    None
+    Basic
+    Bearer token
+  Query params
+    GET. Anything other methods.
+
+
      */
 }

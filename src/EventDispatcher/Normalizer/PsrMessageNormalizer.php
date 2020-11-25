@@ -112,8 +112,7 @@ class PsrMessageNormalizer
     public function normalizeRequestAttributes(array $attributes): array
     {
         if (isset($attributes['geoIpRecord']) && is_a($attributes['geoIpRecord'], 'GeoIp2\Model\City')) {
-            $geoIp2Normalizer = new GeoIp2Normalizer;
-            $attributes['geoIpRecord'] = $geoIp2Normalizer->normalizeCityRecord($attributes['geoIpRecord']);
+            $attributes['geoIpRecord'] = $attributes['geoIpRecord']->jsonSerialize();
         }
         return $attributes;
     }
@@ -162,6 +161,5 @@ class PsrMessageNormalizer
             null,
             $defaultContext
         );
-
     }
 }
