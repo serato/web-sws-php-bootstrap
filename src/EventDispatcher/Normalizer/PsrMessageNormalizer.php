@@ -263,6 +263,6 @@ class PsrMessageNormalizer
         if (is_array($value) && count($value) === 1 && strpos($value[0], '; ') !== false) {
             return explode('; ', $value[0]);
         }
-        return [];
+        return $value;
     }
 }
