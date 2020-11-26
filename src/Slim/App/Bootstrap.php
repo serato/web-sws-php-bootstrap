@@ -53,20 +53,6 @@ abstract class Bootstrap
      */
     public function createApp(): App
     {
-        // Add a middleware to fire the `SwsHttpResponse` event.
-        // This middleware must run after all other middleware. Hence, add it first.
-        $dispatcher = $this->container[DISPATCHER];
-        $this->app->add(
-            function (Request $request, Response $response, callable $next) use ($dispatcher): Response {
-                # Execute all other middleware first
-                $response = $next($request, $response);
-                $event = new SwsHttpResponse;
-                $event['request'] = $request;
-                $event['response'] = $response;
-                $dispatcher->dispatch($event, SwsHttpResponse::getEventName());
-                return $response;
-            }
-        );
         // Register and configure common services
         $this->registerControllers();
         $this->registerErrorHandlers();
@@ -75,6 +61,27 @@ abstract class Bootstrap
         $this->addRoutes();
 
         return $this->getApp();
+    }
+
+    /**
+     * Run application
+     *
+     * @param boolean $silent
+     * @return Response
+     */
+    public function run(bool $silent = false): Response
+    {
+        // Run the Slim app
+        $response = $this->getApp()->run($silent);
+
+        // Fire off the `SwsHttpResponse` event
+        $dispatcher = $this->container[DISPATCHER];
+        $event = new SwsHttpResponse;
+        $event['request'] = $this->container->get('request');
+        $event['response'] = $response;
+        $dispatcher->dispatch($event, SwsHttpResponse::getEventName());
+
+        return $response;
     }
 
     /**
