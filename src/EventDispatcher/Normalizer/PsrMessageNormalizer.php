@@ -4,12 +4,16 @@ namespace Serato\SwsApp\EventDispatcher\Normalizer;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
 class PsrMessageNormalizer
 {
+    // The maximum size of the Body of message before being omitted
+    private const MAX_BODY_SIZE = 1024 * 1024;
+
     public function normalizePsrServerRequestInterface(ServerRequestInterface $request): array
     {
         $callbacks = [
@@ -21,6 +25,30 @@ class PsrMessageNormalizer
             },
             'attributes' => function ($innerObject) {
                 return $this->normalizeRequestAttributes($innerObject);
+            },
+            'body' => function (StreamInterface $body, ServerRequestInterface $httpMessage) {
+                # Determine content type from the `Content-Type` request header.
+                # It may not be set.
+                $contentType = null;
+                $contentTypeHeader = $this->normalizeContentTypeHeader($httpMessage->getHeader('Content-Type'));
+                if (count($contentTypeHeader) > 0) {
+                    $contentType = $contentTypeHeader[0];
+                }
+
+                # Determine content length from the `Content-Length` request header
+                # It may not be set. Assume that this a request with no body (eg a GET request)
+                $contentLength = 0;
+                $contentLengthHeader = $httpMessage->getHeader('Content-Length');
+                if (count($contentLengthHeader) > 0 && is_numeric($contentLengthHeader[0])) {
+                    $contentLength = (int)$contentLengthHeader[0];
+                }
+
+                return $this->normalizePsrMessageBody(
+                    $body,
+                    $contentType,
+                    $contentLength,
+                    $httpMessage->getParsedBody()
+                );
             }
         ];
 
@@ -31,7 +59,24 @@ class PsrMessageNormalizer
 
     public function normalizePsrServerResponseInterface(ResponseInterface $response): array
     {
-        $normalizer = $this->createObjectNormalizer();
+        $callbacks = [
+            'body' => function (StreamInterface $body, ResponseInterface $httpMessage) {
+                # Determine content type from the `Content-Type` request header.
+                # It may not be set.
+                $contentType = null;
+                $contentTypeHeader = $httpMessage->getHeader('Content-Type');
+                if (count($contentTypeHeader) > 0) {
+                    $contentType = $contentTypeHeader[0];
+                }
+
+                # Determine content length from the StreamInterface
+                $contentLength = $body->getSize();
+
+                return $this->normalizePsrMessageBody($body, $contentType, $contentLength);
+            }
+        ];
+
+        $normalizer = $this->createObjectNormalizer($callbacks);
         $data = $this->normalizePsrMessageInterface(new Serializer([$normalizer]), $response);
         return $data;
     }
@@ -57,9 +102,7 @@ class PsrMessageNormalizer
             }
             # Normalize values
             if ($key === 'content-type') {
-                if (is_array($value) && count($value) === 1 && strpos($value[0], '; ') !== false) {
-                    $value = explode('; ', $value[0]);
-                }
+                $value = $this->normalizeContentTypeHeader($value);
             }
             $normalizedHeaders[ucwords($key, '-')] = $value;
         }
@@ -118,6 +161,57 @@ class PsrMessageNormalizer
     }
 
     /**
+     * Normalizes a PSR message body
+     *
+     * @param StreamInterface $body
+     * @param string|null $contentType
+     * @param int $contentLength
+     * @param null|array|object $parsedBody
+     * @return null|array
+     */
+    public function normalizePsrMessageBody(
+        StreamInterface $requestBodyStream,
+        ?string $contentType,
+        int $contentLength,
+        $parsedBody = null
+    ): ?array {
+        $body = null;
+
+        # Maybe there is no body (eg GET request, 201 response etc)
+        if ($contentLength === 0) {
+            return $body;
+        }
+
+        $body['contentLength'] = $contentLength;
+        if ($contentType !== null) {
+            $body['contentType'] = $contentType;
+        }
+
+        if ($contentLength >self::MAX_BODY_SIZE) {
+            $body['notice'] = 'Body content omitted. Content length of ' . $contentLength . ' bytes ' .
+                                'exceeds maximum allowable length of ' . self::MAX_BODY_SIZE . ' bytes.';
+        } else {
+            if ($parsedBody === null) {
+                # Is the content type `multipart/form-data`?
+                # See: https://www.php.net/manual/en/wrappers.php.php
+                # We HAVE to use $_POST vars. These are passed via $parsedBody.
+                if ($contentType === 'multipart/form-data') {
+                    # If we have no $parsedBody, no use in proceeding
+                    return $body;
+                }
+            } else {
+                $body['parsed'] = $parsedBody;
+            }
+            $requestBodyStream->rewind();
+            $raw = $requestBodyStream->getContents();
+            if ($raw !== '') {
+                $body['raw'] = $raw;
+            }
+        }
+        return $body;
+    }
+
+    /**
      * Returns an array representation of Psr\Http\Message\MessageInterface instance
      *
      * @param Serializer $serializer
@@ -147,7 +241,8 @@ class PsrMessageNormalizer
                     'params'
                 ],
                 $ignoredAttributes
-            )
+            ),
+            AbstractNormalizer::CALLBACKS => $callbacks
         ];
         if (count($callbacks) > 0) {
             $defaultContext[AbstractNormalizer::CALLBACKS] = $callbacks;
@@ -161,5 +256,13 @@ class PsrMessageNormalizer
             null,
             $defaultContext
         );
+    }
+
+    private function normalizeContentTypeHeader($value): array
+    {
+        if (is_array($value) && count($value) === 1 && strpos($value[0], '; ') !== false) {
+            return explode('; ', $value[0]);
+        }
+        return [];
     }
 }
