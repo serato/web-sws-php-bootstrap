@@ -14,6 +14,13 @@ class PsrMessageNormalizer
     // The maximum size of the Body of message before being omitted
     private const MAX_BODY_SIZE = 1024 * 1024;
 
+    // A list of HTTP headers to exclude
+    private const HTTP_HEADER_BLACKLIST = [
+        // This is weird PHP thing where it puts the password section of a Basic auth header into
+        // This header (there's also `Php-Auth-User`, but we keep that and rename it)
+        'Php-Auth-Pw'
+    ];
+
     public function normalizePsrServerRequestInterface(ServerRequestInterface $request): array
     {
         $callbacks = [
@@ -95,16 +102,45 @@ class PsrMessageNormalizer
     {
         $normalizedHeaders = [];
         foreach ($headers as $key => $value) {
-            # Normalize header names
+            // Normalize header names
             $key = strtr(strtolower($key), '_', '-');
             if (strpos($key, 'http-') === 0) {
                 $key = substr($key, 5);
             }
-            # Normalize values
-            if ($key === 'content-type') {
+            
+            // Normalize values
+            
+            # `Content-Type`
+            # Can have ';' a delimiter when value is 'form/multipart'.
+            # The other side of the delimiter is the multi-part MIME separator
+            # Slim ordinarily deals with headers like this correctly, but it treats
+            # Requests with a Content-Type = 'form/multipart' a bit differently under the hood.
+            if (strtolower($key) === 'content-type') {
                 $value = $this->normalizeContentTypeHeader($value);
             }
-            $normalizedHeaders[ucwords($key, '-')] = $value;
+
+            # `Authorization`
+            # We want to strip out the value here because it's sensitive.
+            # Basic auth values are user name/password in clear text.
+            # Bearer token values are less sensitive because they are a short JWT access token.
+            # But there's no value in keeping them, so remove too
+            if (strtolower($key) === 'authorization') {
+                if (is_array($value)) {
+                    $value = $value[0];
+                }
+                if (stripos($value, 'basic ') === 0) {
+                    $value = ['Basic [APP ID + SECRET]'];
+                } elseif (stripos($value, 'bearer ') === 0) {
+                    $value = ['Bearer [JWT ACCESS TOKEN]'];
+                }
+            }
+
+            if (!in_array(
+                strtolower($key),
+                array_map('strtolower', self::HTTP_HEADER_BLACKLIST)
+            )) {
+                $normalizedHeaders[ucwords($key, '-')] = $value;
+            }
         }
         return $normalizedHeaders;
     }
@@ -157,6 +193,9 @@ class PsrMessageNormalizer
         if (isset($attributes['geoIpRecord']) && is_a($attributes['geoIpRecord'], 'GeoIp2\Model\City')) {
             $attributes['geoIpRecord'] = $attributes['geoIpRecord']->jsonSerialize();
         }
+        # Slim adds route info to the Request object.
+        # It doesn't add anything useful in my opinion, and would require writing a custom normalizer.
+        unset($attributes['route'], $attributes['routeInfo']);
         return $attributes;
     }
 
