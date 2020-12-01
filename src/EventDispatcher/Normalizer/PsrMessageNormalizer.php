@@ -103,14 +103,16 @@ class PsrMessageNormalizer
         $data = [];
         $serializer = new Serializer([new ObjectNormalizer]);
         $data = $serializer->normalize($uri);
-        # The `authority`, `userInfo` and `baseUrl` keys will all contain user name and password in clear text
-        # if the request uses Basic auth. We need to remove the password component.
-        # The format is '<user name>:<password>'.
-        foreach ($data as $k => $v) {
-            if (in_array($k, ['authority', 'userInfo', 'baseUrl'])) {
-                $data[$k] = $this->removeUriPassword($v);
-            } else {
-                $data[$k] = $v;
+        if (isset($data['userInfo']) && $data['userInfo'] !== '') {
+            # The `authority`, `userInfo` and `baseUrl` keys will all contain user name and password in clear text
+            # if the request uses Basic auth. We need to remove the password component.
+            # The format is '<user name>:<password>'.
+            foreach ($data as $k => $v) {
+                if (in_array($k, ['authority', 'userInfo', 'baseUrl'])) {
+                    $data[$k] = $this->removeUriPassword($v);
+                } else {
+                    $data[$k] = $v;
+                }
             }
         }
         return $data;

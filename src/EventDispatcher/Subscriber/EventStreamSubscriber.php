@@ -70,8 +70,6 @@ class EventStreamSubscriber implements EventSubscriberInterface
 
         $normalizer = new PsrMessageNormalizer;
 
-        // fwrite($requestFile, $prettyJson($this->serializer->serialize($event['request'], 'json')));
-        // fwrite($responseFileName, $prettyJson($this->serializer->serialize($event['response'], 'json')));
         fwrite(
             $requestFile,
             $prettyJsonFromArray($normalizer->normalizePsrServerRequestInterface($event['request']))
@@ -84,65 +82,4 @@ class EventStreamSubscriber implements EventSubscriberInterface
         fclose($requestFile);
         fclose($responseFileName);
     }
-
-    /**
-     * --------
-     * Request
-     * --------
-     * - What to do with "cookieParams"
-     * - Attributes. Where are they?
-     *      app id would be good
-     *      refresh token ID maybe
-     * --------
-     * Response
-     * --------
-     * - Encode request/response body somehow
-     *      - Strip sensitive?
-     * - Do we use Attributes??
-
-    
-Implementation
-    A middleware to be added to route groups
-    A trait that allows the containter['requestPostMiddleware'] to be updated
-        private $container = null;
-        public funcion setContainer($container): void;
-        protected function updateRequest(): void;
-
-Better name than `requestPostMiddleware`
-
-     Bootstrapping
-        Need to add new 'set request object to container' middleware to all route groups
-        What about routes that don't have groups? Add as app middleware?
-            SOLVED. But needs more testing.
-        Also need error handlers to set updated request to middleware.
-
-
-Remove sensitive data
-    Refresh tokens
-        ID service
-        Are they used anywhere else?
-        Access tokens are OK.
-    Basic auth creds in requests
-        `Authorization` header value
-        `Php-Auth-User` header value (maybe keep this)
-        `Php-Auth-Pw` header value
-
-Testing
-  Methods
-    POST
-    PUT
-    OPTIONS
-    DELETE
-  Request payload encodings (check payload and Content-Type header)
-    application/x-www-form-urlencoded
-    application/json
-  Authorization
-    None
-    Basic
-    Bearer token
-  Query params
-    GET. Anything other methods.
-  Etag requests and Not Modified responses
-
-     */
 }

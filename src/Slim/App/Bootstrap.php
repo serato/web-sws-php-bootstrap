@@ -61,17 +61,12 @@ abstract class Bootstrap
      */
     public function createApp(): App
     {
-        // Add a middleware to fetch the Request object AFTER it's run through all other middleware.
-        // This is required for when we dispatch the SwsHttpRequest event (see self::run).
-        // This middleware must run after all other middleware. Hence, add it first.
-        $this->app->add($this->getRequestToContainerMiddleware());
-
         // Register and configure common services
         $this->registerControllers();
         $this->registerErrorHandlers();
         // Add routes and middleware
-        $this->addRoutes();
         $this->addAppMiddleware();
+        $this->addRoutes();
 
         return $this->getApp();
     }
