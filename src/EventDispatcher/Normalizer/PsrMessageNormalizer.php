@@ -108,18 +108,9 @@ class PsrMessageNormalizer
         # The format is '<user name>:<password>'.
         foreach ($data as $k => $v) {
             if (in_array($k, ['authority', 'userInfo', 'baseUrl'])) {
-                $bits = explode('://', $v);
-                $pre = '';
-                $str = $bits[0];
-                if (count($bits) === 2) {
-                    $pre = $bits[0] . '://';
-                    $str = $bits[1];
-                }
-                if (strpos($str, '@') !== false) {
-                    $data[$k] = $pre . preg_replace('/:(.+)@/', ':PASSWORD_REMOVED@', $str);
-                } else {
-                    $data[$k] = $pre . preg_replace('/:(.+)/', ':PASSWORD_REMOVED', $str);
-                }
+                $data[$k] = $this->removeUriPassword($v);
+            } else {
+                $data[$k] = $v;
             }
         }
         return $data;
@@ -340,5 +331,23 @@ class PsrMessageNormalizer
             return explode('; ', $value[0]);
         }
         return $value;
+    }
+
+    private function removeUriPassword(string $uri): string
+    {
+        $uriRemoved = '';
+        $bits = explode('://', $uri);
+        if (count($bits) === 1) {
+            $bits[1] = $bits[0];
+            $bits[0] = '';
+        } elseif (count($bits) === 2) {
+            $bits[0] = $bits[0] . '://';
+        }
+        if (strpos($bits[1], '@') !== false) {
+            $uriRemoved = $bits[0] . preg_replace('/:(.+)@/', ':PASSWORD_REMOVED@', $bits[1]);
+        } else {
+            $uriRemoved = $bits[0] . preg_replace('/:(.+)/', ':PASSWORD_REMOVED', $bits[1]);
+        }
+        return $uriRemoved;
     }
 }
