@@ -21,11 +21,13 @@ The `Serato\SwsApp\Slim\App\Bootstrap` class has two new methods for adding list
 
 TODO
 
-## The SwsHttpResponse event
+## The SwsHttpRequest event
 
-An SWS web application can now be configured such that it dispatches a `Serato\SwsApp\EventDispatcher\Event\SwsHttpResponse` event for every HTTP request.
+An SWS web application can now be configured such that it dispatches a `Serato\SwsApp\EventDispatcher\Event\SwsHttpRequest` event for every HTTP request.
 
-This requires a change to the per-application concrete child instance of the `Serato\SwsApp\Slim\App\Bootstrap` abstract class.
+### Bootstrapping
+
+Dispatching the `SwsHttpRequest` requires changing the usage of the per-application concrete child instance of the `Serato\SwsApp\Slim\App\Bootstrap` abstract class.
 
 Typically, a per-application concreate Bootstrap object is created in an `index.php` that contains code like this:
 
@@ -40,7 +42,7 @@ $bootstrap = new \App\Bootstrap(['settings' => require '../config.php']);
 $bootstrap->createApp()->run();
 ```
 
-To modify this bootstrapper to dispatch the `Serato\SwsApp\EventDispatcher\Event\SwsHttpResponse` event this last line of the file must be changed, as follows:
+To dispatch the `Serato\SwsApp\EventDispatcher\Event\SwsHttpRequest` event this last line of the file must be changed, as follows:
 
 ```php
 <?php
@@ -53,6 +55,32 @@ $bootstrap->createApp();
 # Execute the `run` method of the Bootstrap instance
 $bootstrap->run();
 ```
+
+This is the minimum requirements to dispatch the `Serato\SwsApp\EventDispatcher\Event\SwsHttpRequest` event.
+
+The following two steps are optional but highly desirable as they ensure the the `SwsHttpRequest` event is dispatched with the correctly mutated `Psr\Http\Message\ServerRequestInterface` instance.
+
+### Use the `Bootstrap::addRouteGroup` method to add route groups
+
+In the concrete child instance of the `Serato\SwsApp\Slim\App\Bootstrap`, instead of using the `group()` method of the underlying Slim application object to add route groups, the `Bootstrap::addRouteGroup` method should be used instead.
+
+Using this method ensures that routes specified via route groups are able to provide the correct `ServerRequestInterface` instance to the dispatched `SwsHttpRequest` event.
+
+The method signatures are identical, so `Bootstrap::addRouteGroup` returns a `Slim\Interfaces\RouteGroupInterface` instance.
+
+```php
+# Don't do this.
+# $this->getApp()->group('<route pattern>', function () {/** Route mapping logic */});
+# Instead..
+
+$this->addRouteGroup('<route pattern>', function () {/** Route mapping logic */});
+```
+
+### Pass the container instance to the error handlers
+
+The `Serato\SwsApp\Slim\Handlers\Error` and `Serato\SwsApp\Slim\Handlers\PhpError` error handlers now have an optional 4th argument: the Slim container instance.
+
+Providing this argument insures that error handlers can provide the correct `ServerRequestInterface` instance to the dispatched `SwsHttpRequest` event.
 
 ## Currently there are no listeners or subscribers
 

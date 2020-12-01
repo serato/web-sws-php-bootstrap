@@ -4,13 +4,15 @@ namespace Serato\SwsApp\Slim\App;
 define('DISPATCHER', 'event-dispatcher');
 
 use Slim\App;
-use Psr\Container\ContainerInterface;
+use Slim\Container;
+use Slim\Interfaces\RouteGroupInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use Ramsey\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Serato\SwsApp\EventDispatcher\Event\SwsHttpResponse;
+use Serato\SwsApp\EventDispatcher\Event\SwsHttpRequest;
+use Serato\SwsApp\RequestToContainerTrait;
+use Serato\SwsApp\Slim\Middleware\RequestToContainer as RequestToContainerMiddleware;
 
 /**
  * Bootstrap the Slim application by adding routes, controllers, error handlers
@@ -18,6 +20,8 @@ use Serato\SwsApp\EventDispatcher\Event\SwsHttpResponse;
  */
 abstract class Bootstrap
 {
+    use RequestToContainerTrait;
+
     /**
      * Slim application
      *
@@ -26,11 +30,14 @@ abstract class Bootstrap
     private $app;
 
     /**
-     * PSR dependency container
+     * Slim container
      *
-     * @var ContainerInterface
+     * @var Container
      */
     private $container;
+
+    /** @var RequestToContainerMiddleware */
+    private $requestToContainerMiddleware;
 
     /**
      * Constructs the Bootstrap instance
@@ -44,6 +51,7 @@ abstract class Bootstrap
         $this->app = new App($settings);
         $this->container = $this->app->getContainer();
         $this->container[DISPATCHER] = new EventDispatcher;
+        $this->requestToContainerMiddleware = new RequestToContainerMiddleware($this->container);
     }
 
     /**
@@ -53,14 +61,27 @@ abstract class Bootstrap
      */
     public function createApp(): App
     {
+        // Add a middleware to fetch the Request object AFTER it's run through all other middleware.
+        // This is required for when we dispatch the SwsHttpRequest event (see self::run).
+        // This middleware must run after all other middleware. Hence, add it first.
+        $this->app->add($this->getRequestToContainerMiddleware());
+
         // Register and configure common services
         $this->registerControllers();
         $this->registerErrorHandlers();
         // Add routes and middleware
-        $this->addAppMiddleware();
         $this->addRoutes();
+        $this->addAppMiddleware();
 
         return $this->getApp();
+    }
+
+    public function addRouteGroup(string $pattern, callable $callable): RouteGroupInterface
+    {
+        # Create the route group...
+        $group = $this->getApp()->group($pattern, $callable);
+        # ...and add the `RequestToContainerMiddleware` to it
+        return $group->add($this->getRequestToContainerMiddleware());
     }
 
     /**
@@ -74,12 +95,17 @@ abstract class Bootstrap
         // Run the Slim app
         $response = $this->getApp()->run($silent);
 
-        // Fire off the `SwsHttpResponse` event
-        $dispatcher = $this->container[DISPATCHER];
-        $event = new SwsHttpResponse;
-        $event['request'] = $this->container->get('request');
+        // Create the `SwsHttpRequest` event...
+        $event = new SwsHttpRequest;
         $event['response'] = $response;
-        $dispatcher->dispatch($event, SwsHttpResponse::getEventName());
+        $event['request'] = $this->getRequestFromContainer($this->container);
+        if ($event['request'] === null) {
+            $event['request'] = $this->container->get('request');
+        }
+
+        // ...and dispatch it
+        $dispatcher = $this->container[DISPATCHER];
+        $dispatcher->dispatch($event, SwsHttpRequest::getEventName());
 
         return $response;
     }
@@ -87,9 +113,9 @@ abstract class Bootstrap
     /**
      * Get the dependency container
      *
-     * @return ContainerInterface
+     * @return Container
      */
-    public function getContainer(): ContainerInterface
+    public function getContainer(): Container
     {
         return $this->container;
     }
@@ -135,6 +161,16 @@ abstract class Bootstrap
     public function addEventSubscriber(EventSubscriberInterface $subscriber): void
     {
         $this->container[DISPATCHER]->addSubscriber($subscriber);
+    }
+
+    /**
+     * Get the `Serato\SwsApp\Slim\Middleware\RequestToContainer` instance
+     *
+     * @return RequestToContainerMiddleware
+     */
+    private function getRequestToContainerMiddleware(): RequestToContainerMiddleware
+    {
+        return $this->requestToContainerMiddleware;
     }
 
     /**
