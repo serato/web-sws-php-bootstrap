@@ -2,12 +2,8 @@
 namespace Serato\SwsApp\Slim\Handlers;
 
 use Slim\Handlers\PhpError as SlimPhpError;
-use Slim\Container;
 use Psr\Log\LoggerInterface as Logger;
-use Serato\SwsApp\RequestToContainerTrait;
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
-
+ 
 /**
  * Application PhpError Handler
  *
@@ -16,8 +12,6 @@ use Psr\Http\Message\ResponseInterface as Response;
  */
 class PhpError extends SlimPhpError
 {
-    use RequestToContainerTrait;
-
     /**
      * Application name
      *
@@ -31,40 +25,19 @@ class PhpError extends SlimPhpError
      * @var Logger
      */
     protected $logger;
-
-    /** @var Container */
-    private $container;
-
+    
     /**
      * Construct the error handler
      *
-     * @param string            $applicationName        Human readable name of application
-     * @param bool              $displayErrorDetails    Display full error message including stack trace
-     * @param Logger            $logger                 PSR-3 logger interface
-     * @param Container|null    $container              Slim container instance
+     * @param string    $applicationName        Human readable name of application
+     * @param bool      $displayErrorDetails    Display full error message including stack trace
+     * @param Logger    $logger                 PSR-3 logger interface
      */
-    public function __construct(
-        string $applicationName,
-        bool $displayErrorDetails,
-        Logger $logger,
-        ?Container $container = null
-    ) {
+    public function __construct(string $applicationName, bool $displayErrorDetails, Logger $logger)
+    {
         parent::__construct($displayErrorDetails);
         $this->logger = $logger;
         $this->applicationName = $applicationName;
-        $this->container = $container;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function __invoke(Request $request, Response $response, \Throwable $error)
-    {
-        # Set the request object to the container
-        # (the setRequestToContainer() method is part of `Serato\SwsApp\RequestToContainerTrait`)
-        $this->setRequestToContainer($request, $this->container);
-
-        parent::__invoke($request, $response, $error);
     }
 
     /**

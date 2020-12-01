@@ -118,6 +118,9 @@ class Error extends SlimError
         $http_response_code = 500;
         if (is_a($exception, self::BASE_CLASS)) {
             $http_response_code = $exception->getHttpResponseCode();
+            if ($exception->getRequest() !== null) {
+                $request = $exception->getRequest();
+            }
         }
 
         $contentType = $this->determineContentType($request);

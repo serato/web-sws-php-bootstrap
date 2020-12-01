@@ -5,6 +5,7 @@ use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UriInterface;
 use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
@@ -16,14 +17,17 @@ class PsrMessageNormalizer
 
     // A list of HTTP headers to exclude
     private const HTTP_HEADER_BLACKLIST = [
-        // This is weird PHP thing where it puts the password section of a Basic auth header into
-        // This header (there's also `Php-Auth-User`, but we keep that and rename it)
+        // This is weird PHP thing where it puts the password section of a `Basic` auth header into
+        // this header (there's also `Php-Auth-User`, but we keep that)
         'Php-Auth-Pw'
     ];
 
     public function normalizePsrServerRequestInterface(ServerRequestInterface $request): array
     {
         $callbacks = [
+            'uri' => function ($innerObject) {
+                return $this->normalizeUri($innerObject);
+            },
             'headers' => function ($innerObject) {
                 return $this->normalizeHttpHeaders($innerObject);
             },
@@ -85,6 +89,39 @@ class PsrMessageNormalizer
 
         $normalizer = $this->createObjectNormalizer($callbacks);
         $data = $this->normalizePsrMessageInterface(new Serializer([$normalizer]), $response);
+        return $data;
+    }
+
+    /**
+     * Normalizes a `Psr\Http\Message\UriInterface` instance
+     *
+     * @param UriInterface $uri
+     * @return array
+     */
+    public function normalizeUri(UriInterface $uri): array
+    {
+        $data = [];
+        $serializer = new Serializer([new ObjectNormalizer]);
+        $data = $serializer->normalize($uri);
+        # The `authority`, `userInfo` and `baseUrl` keys will all contain user name and password in clear text
+        # if the request uses Basic auth. We need to remove the password component.
+        # The format is '<user name>:<password>'.
+        foreach ($data as $k => $v) {
+            if (in_array($k, ['authority', 'userInfo', 'baseUrl'])) {
+                $bits = explode('://', $v);
+                $pre = '';
+                $str = $bits[0];
+                if (count($bits) === 2) {
+                    $pre = $bits[0] . '://';
+                    $str = $bits[1];
+                }
+                if (strpos($str, '@') !== false) {
+                    $data[$k] = $pre . preg_replace('/:(.+)@/', ':PASSWORD_REMOVED@', $str);
+                } else {
+                    $data[$k] = $pre . preg_replace('/:(.+)/', ':PASSWORD_REMOVED', $str);
+                }
+            }
+        }
         return $data;
     }
 

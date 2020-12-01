@@ -76,11 +76,11 @@ The method signatures are identical, so `Bootstrap::addRouteGroup` returns a `Sl
 $this->addRouteGroup('<route pattern>', function () {/** Route mapping logic */});
 ```
 
-### Pass the container instance to the error handlers
+### Pass the container instance to the `Serato\SwsApp\Slim\Handlers\Error` error handler
 
-The `Serato\SwsApp\Slim\Handlers\Error` and `Serato\SwsApp\Slim\Handlers\PhpError` error handlers now have an optional 4th argument: the Slim container instance.
+The `Serato\SwsApp\Slim\Handlers\Error` error handler now has an optional 4th argument: the Slim container instance.
 
-Providing this argument insures that error handlers can provide the correct `ServerRequestInterface` instance to the dispatched `SwsHttpRequest` event.
+Providing this argument ensures that error handler can pass the correct `ServerRequestInterface` instance to the dispatched `SwsHttpRequest` event.
 
 ## Currently there are no listeners or subscribers
 
