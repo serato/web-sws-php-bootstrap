@@ -15,11 +15,38 @@ class PsrMessageNormalizer
     // The maximum size of the Body of message before being omitted
     private const MAX_BODY_SIZE = 1024 * 1024;
 
+    private const REFRESH_TOKEN_SUBSTITUTION_VALUE = '[REFESH TOKEN]';
+
     // A list of HTTP headers to exclude
     private const HTTP_HEADER_BLACKLIST = [
         // This is weird PHP thing where it puts the password section of a `Basic` auth header into
         // this header (there's also `Php-Auth-User`, but we keep that)
         'Php-Auth-Pw'
+    ];
+
+    // A list of body parameters (from either a request or a response) whose value should be
+    // substituted with a placeholder.
+    // Each item in the list should be of the format [[path] => <substitution value>]
+    // where path is array of path names to the desired parameter
+    private const BODY_PARAMETER_SUBSTITUTIONS = [
+        [
+            # Request parameter by the SWS ID Service `POST /api/v1/tokens/refresh` endpoint
+            # http://docs.serato.net/serato/id-serato-com/master/rest-api.html#tokens_refresh_post
+            ['refresh_token'],
+            self::REFRESH_TOKEN_SUBSTITUTION_VALUE
+        ],
+        [
+            # Response parameter by the SWS ID Service `POST /api/v1/tokens/exchange` endpoint
+            # http://docs.serato.net/serato/id-serato-com/master/rest-api.html#tokens_refresh_post
+            ['refresh', 'token'],
+            self::REFRESH_TOKEN_SUBSTITUTION_VALUE
+        ],
+        [
+            # Response parameter by the SWS ID Service `POST /api/v1/tokens/exchange` endpoint
+            # http://docs.serato.net/serato/id-serato-com/master/rest-api.html#tokens_exchange_post
+            ['tokens', 'refresh', 'token'],
+            self::REFRESH_TOKEN_SUBSTITUTION_VALUE
+        ]
     ];
 
     public function normalizePsrServerRequestInterface(ServerRequestInterface $request): array
@@ -47,7 +74,7 @@ class PsrMessageNormalizer
                 }
 
                 # Determine content length from the `Content-Length` request header
-                # It may not be set. Assume that this a request with no body (eg a GET request)
+                # It may not be set. If not, assume that it's a request with no body (eg a GET request)
                 $contentLength = 0;
                 $contentLengthHeader = $httpMessage->getHeader('Content-Length');
                 if (count($contentLengthHeader) > 0 && is_numeric($contentLengthHeader[0])) {
@@ -60,6 +87,12 @@ class PsrMessageNormalizer
                     $contentLength,
                     $httpMessage->getParsedBody()
                 );
+            },
+            'parsedBody' => function (?array $parsedBody, ServerRequestInterface $httpMessage): ?array {
+                if ($parsedBody !== null && is_array($parsedBody)) {
+                    return $this->stripBodyParams($parsedBody);
+                }
+                return null;
             }
         ];
 
@@ -256,7 +289,7 @@ class PsrMessageNormalizer
             $body['contentType'] = $contentType;
         }
 
-        if ($contentLength >self::MAX_BODY_SIZE) {
+        if ($contentLength > self::MAX_BODY_SIZE) {
             $body['notice'] = 'Body content omitted. Content length of ' . $contentLength . ' bytes ' .
                                 'exceeds maximum allowable length of ' . self::MAX_BODY_SIZE . ' bytes.';
         } else {
@@ -271,10 +304,13 @@ class PsrMessageNormalizer
             } else {
                 $body['parsed'] = $parsedBody;
             }
+            if (isset($body['parsed']) && is_array($body['parsed'])) {
+                $body['parsed'] = $this->stripBodyParams($body['parsed']);
+            }
             $requestBodyStream->rewind();
             $raw = $requestBodyStream->getContents();
             if ($raw !== '') {
-                $body['raw'] = $raw;
+                $body['raw'] = $this->stripRawBodyParams($raw, $contentType);
             }
         }
         return $body;
@@ -351,5 +387,42 @@ class PsrMessageNormalizer
             $uriRemoved = $bits[0] . preg_replace('/:(.+)/', ':PASSWORD_REMOVED', $bits[1]);
         }
         return $uriRemoved;
+    }
+
+    private function stripRawBodyParams(string $bodyRaw, string $contentType): string
+    {
+        $bodyParams = null;
+        if ($contentType === 'application/json') {
+            $bodyParams = json_decode($bodyRaw, true);
+        }
+        if ($contentType === 'application/x-www-form-urlencoded') {
+            parse_str($bodyRaw, $bodyParams);
+        }
+        if (is_array($bodyParams)) {
+            return json_encode($this->stripBodyParams($bodyParams));
+        }
+        return $bodyRaw;
+    }
+
+    private function stripBodyParams(array $bodyParams): array
+    {
+        foreach (self::BODY_PARAMETER_SUBSTITUTIONS as $subs) {
+            if (isset($bodyParams[$subs[0][0]])) {
+                return $this->walkBodyParamsPath($bodyParams, $subs[0], $subs[1]);
+            }
+        }
+        return $bodyParams;
+    }
+
+    private function walkBodyParamsPath($params, array $path, string $replacement): array
+    {
+        if (count($path) === 1) {
+            if (isset($params[$path[0]]) && is_string($params[$path[0]])) {
+                $params[$path[0]] = $replacement;
+            }
+            return $params;
+        }
+        $key = array_shift($path);
+        return $this->walkBodyParamsPath($params[$key], $path, $replacement);
     }
 }
