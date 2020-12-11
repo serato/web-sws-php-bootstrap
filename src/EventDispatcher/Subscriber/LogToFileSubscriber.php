@@ -6,11 +6,13 @@ use Serato\SwsApp\EventDispatcher\Event\SwsHttpRequest;
 use Serato\SwsApp\EventDispatcher\Normalizer\PsrMessageNormalizer;
 
 /**
- * EventStreamSubscriber
+ * LogToFileSubscriber
  *
- * An event subscriber subscribes to all events
+ * An event subscriber that logs event data to a file.
+ *
+ * Is (currently) intended to be only used for testing purposes.
  */
-class EventStreamSubscriber implements EventSubscriberInterface
+class LogToFileSubscriber implements EventSubscriberInterface
 {
     /** @var string */
     private $appName;
@@ -21,18 +23,24 @@ class EventStreamSubscriber implements EventSubscriberInterface
     /** @var int */
     private $stackNumber;
 
+    /** @var string */
+    private $logDirPath;
+
     /**
      * Constructs the object
      *
      * @param string $appName
      * @param string $env
      * @param integer $stackNumber
+     * @param string $logDirPath
      */
-    public function __construct(string $appName, string $env, int $stackNumber)
+    public function __construct(string $appName, string $env, int $stackNumber, string $logDirPath)
     {
         $this->appName = $appName;
         $this->env = $env;
         $this->stackNumber = $stackNumber;
+        $this->logDirPath = $logDirPath;
+        @mkdir($this->logDirPath);
     }
 
     /**
@@ -53,9 +61,6 @@ class EventStreamSubscriber implements EventSubscriberInterface
      */
     public function onSwsHttpRequest(SwsHttpRequest $event): void
     {
-        $path = '/srv/www/shared_license_serato_com/req_rep_dumps/';
-        @mkdir($path);
-
         $prettyJson = function (string $json): string {
             $data = json_decode($json, true);
             return json_encode($data, JSON_PRETTY_PRINT);
@@ -65,8 +70,8 @@ class EventStreamSubscriber implements EventSubscriberInterface
             return json_encode($data, JSON_PRETTY_PRINT);
         };
 
-        $requestFile = fopen($path . date('Y-m-dTH:i:s') . '-request.json', 'a');
-        $responseFileName = fopen($path . date('Y-m-dTH:i:s') . '.-response.json', 'a');
+        $requestFile = fopen($this->logDirPath . date('Y-m-dTH:i:s') . '-request.json', 'a');
+        $responseFileName = fopen($this->logDirPath . date('Y-m-dTH:i:s') . '.-response.json', 'a');
 
         $normalizer = new PsrMessageNormalizer;
 
