@@ -61,11 +61,6 @@ class LogToFileSubscriber implements EventSubscriberInterface
      */
     public function onSwsHttpRequest(SwsHttpRequest $event): void
     {
-        $prettyJson = function (string $json): string {
-            $data = json_decode($json, true);
-            return json_encode($data, JSON_PRETTY_PRINT);
-        };
-
         $prettyJsonFromArray = function (array $data): string {
             return json_encode($data, JSON_PRETTY_PRINT);
         };
@@ -81,7 +76,7 @@ class LogToFileSubscriber implements EventSubscriberInterface
         );
         fwrite(
             $responseFileName,
-            $prettyJsonFromArray($normalizer->normalizePsrServerResponseInterface($event['response']))
+            $prettyJsonFromArray($normalizer->normalizePsrResponseInterface($event['response']))
         );
 
         fclose($requestFile);

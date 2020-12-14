@@ -10,24 +10,45 @@ use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
+/**
+ * ** PsrMessageNormalizer **
+ *
+ * Provides normalization functionality for PSR ServerRequestInterface and ResponseInterface message instances.
+ *
+ * Normalization in this case means transforming the messages into plain old PHP arrays.
+ *
+ * A number of public methods are avaialble for normalizing the constitute parts of a message instance, but in
+ * common usage the `self::normalizePsrServerRequestInterface` and `self::normalizePsrResponseInterface` are the
+ * most useful as they normalize a complete message instance.
+ *
+ * Sensitive HTTP header or body data can be substituted with a placeholder during the normalization process.
+ *
+ * To substitute sensitive header data add the appropriate header name to `self::HTTP_HEADER_VALUE_REMOVED`.
+ * The value is also substituted to "REMOVED".
+ *
+ * To substitute a body parameter value add a new array item to `self::BODY_PARAMETER_SUBSTITUTIONS` (see comments).
+ */
 class PsrMessageNormalizer
 {
     // The maximum size of the Body of message before being omitted
     private const MAX_BODY_SIZE = 1024 * 1024;
 
-    private const REFRESH_TOKEN_SUBSTITUTION_VALUE = '[REFESH TOKEN]';
+    private const REFRESH_TOKEN_SUBSTITUTION_VALUE = 'REFESH_TOKEN';
 
-    // A list of HTTP headers to exclude
-    private const HTTP_HEADER_BLACKLIST = [
-        // This is weird PHP thing where it puts the password section of a `Basic` auth header into
-        // this header (there's also `Php-Auth-User`, but we keep that)
+    // A list of HTTP headers whose value should be replaced with a placeholder
+    private const HTTP_HEADER_VALUE_REMOVED = [
+        // This is weird PHP thing where it puts the password section of a `Basic` auth header into this
+        // header (there's also `Php-Auth-User`, but we keep that because it's the app ID ie. useful).
         'Php-Auth-Pw'
     ];
 
     // A list of body parameters (from either a request or a response) whose value should be
     // substituted with a placeholder.
     // Each item in the list should be of the format [[path] => <substitution value>]
-    // where path is array of path names to the desired parameter
+    // where [path] is array of path names to the desired parameter (body content types of `form/multipart` or
+    // `application/x-www-form-urlencoded` will only ever have a single item for [path], wheres a content type
+    // of `application/json` maybe require a multi-step path to identify the required parameter in the JSON
+    // structure to substitute).
     private const BODY_PARAMETER_SUBSTITUTIONS = [
         [
             # Request parameter by the SWS ID Service `POST /api/v1/tokens/refresh` endpoint
@@ -49,6 +70,12 @@ class PsrMessageNormalizer
         ]
     ];
 
+    /**
+     * Normalizes a `Psr\Http\Message\ServerRequestInterface` instance
+     *
+     * @param ServerRequestInterface $request
+     * @return array
+     */
     public function normalizePsrServerRequestInterface(ServerRequestInterface $request): array
     {
         $callbacks = [
@@ -101,7 +128,13 @@ class PsrMessageNormalizer
         return $data;
     }
 
-    public function normalizePsrServerResponseInterface(ResponseInterface $response): array
+    /**
+     * Normalizes a `Psr\Http\Message\ResponseInterface` instance
+     *
+     * @param ResponseInterface $response
+     * @return array
+     */
+    public function normalizePsrResponseInterface(ResponseInterface $response): array
     {
         $callbacks = [
             'body' => function (StreamInterface $body, ResponseInterface $httpMessage) {
@@ -198,10 +231,12 @@ class PsrMessageNormalizer
                 }
             }
 
-            if (!in_array(
+            if (in_array(
                 strtolower($key),
-                array_map('strtolower', self::HTTP_HEADER_BLACKLIST)
+                array_map('strtolower', self::HTTP_HEADER_VALUE_REMOVED)
             )) {
+                $normalizedHeaders[ucwords($key, '-')] = 'REMOVED';
+            } else {
                 $normalizedHeaders[ucwords($key, '-')] = $value;
             }
         }
@@ -317,13 +352,16 @@ class PsrMessageNormalizer
     }
 
     /**
-     * Returns an array representation of Psr\Http\Message\MessageInterface instance
+     * Returns an array representation of Psr\Http\Message\MessageInterface instance.
+     *
+     * This function does the heavy lifting by leveraging `Symfony\Component\Serializer\Normalizer\ObjectNormalizer`.
+     * It should remain a private method so that we can swap out the underlying normalizer if required.
      *
      * @param Serializer $serializer
      * @param MessageInterface $message
      * @return array
      */
-    public function normalizePsrMessageInterface(Serializer $serializer, MessageInterface $message): array
+    private function normalizePsrMessageInterface(Serializer $serializer, MessageInterface $message): array
     {
         return $serializer->normalize($message);
     }
@@ -371,6 +409,15 @@ class PsrMessageNormalizer
         return $value;
     }
 
+    /**
+     * Strips out the password value from a URI.
+     *
+     * The password will be present various parts of a `Psr\Http\Message\UriInterface` instance when the request
+     * uses Basic authentication.
+     *
+     * @param string $uri
+     * @return string
+     */
     private function removeUriPassword(string $uri): string
     {
         $uriRemoved = '';
@@ -399,7 +446,12 @@ class PsrMessageNormalizer
             parse_str($bodyRaw, $bodyParams);
         }
         if (is_array($bodyParams)) {
-            return json_encode($this->stripBodyParams($bodyParams));
+            if ($contentType === 'application/json') {
+                return json_encode($this->stripBodyParams($bodyParams));
+            }
+            if ($contentType === 'application/x-www-form-urlencoded') {
+                return http_build_query($this->stripBodyParams($bodyParams));
+            }
         }
         return $bodyRaw;
     }
