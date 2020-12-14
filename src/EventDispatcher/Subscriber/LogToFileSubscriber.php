@@ -4,6 +4,7 @@ namespace Serato\SwsApp\EventDispatcher\Subscriber;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Serato\SwsApp\EventDispatcher\Event\SwsHttpRequest;
 use Serato\SwsApp\EventDispatcher\Normalizer\PsrMessageNormalizer;
+use Ramsey\Uuid\Uuid;
 
 /**
  * LogToFileSubscriber
@@ -14,6 +15,9 @@ use Serato\SwsApp\EventDispatcher\Normalizer\PsrMessageNormalizer;
  */
 class LogToFileSubscriber implements EventSubscriberInterface
 {
+    /** @var string */
+    private $id;
+
     /** @var string */
     private $appName;
 
@@ -41,6 +45,11 @@ class LogToFileSubscriber implements EventSubscriberInterface
         $this->stackNumber = $stackNumber;
         $this->logDirPath = $logDirPath;
         @mkdir($this->logDirPath);
+
+        # The `id` value should be included in the contents of all event data written to disk.
+        # This allows us to correlate disparate event data as having originate from the same subscriber
+        # instance and therefore, in the case of a web application, the same HTTP request.
+        $this->id = Uuid::uuid4();
     }
 
     /**
@@ -72,14 +81,31 @@ class LogToFileSubscriber implements EventSubscriberInterface
 
         fwrite(
             $requestFile,
-            $prettyJsonFromArray($normalizer->normalizePsrServerRequestInterface($event['request']))
+            $prettyJsonFromArray(array_merge(
+                ['meta' => $this->getMetaData(SwsHttpRequest::getEventName())],
+                $normalizer->normalizePsrServerRequestInterface($event['request'])
+            ))
         );
         fwrite(
             $responseFileName,
-            $prettyJsonFromArray($normalizer->normalizePsrResponseInterface($event['response']))
+            $prettyJsonFromArray(array_merge(
+                ['meta' => $this->getMetaData(SwsHttpRequest::getEventName())],
+                $normalizer->normalizePsrResponseInterface($event['response'])
+            ))
         );
 
         fclose($requestFile);
         fclose($responseFileName);
+    }
+
+    private function getMetaData(string $eventName): array
+    {
+        return [
+            'application_name' => $this->appName,
+            'application_environment' => $this->env,
+            'application_stack_number' => $this->stackNumber,
+            'id' => $this->id,
+            'event_name' => $eventName
+        ];
     }
 }
