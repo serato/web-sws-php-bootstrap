@@ -44,7 +44,7 @@ class LogToFileSubscriber implements EventSubscriberInterface
         $this->env = $env;
         $this->stackNumber = $stackNumber;
         $this->logDirPath = $logDirPath;
-        @mkdir($this->logDirPath);
+        @mkdir($this->logDirPath, 0777, true);
 
         # The `id` value should be included in the contents of all event data written to disk.
         # This allows us to correlate disparate event data as having originate from the same subscriber
