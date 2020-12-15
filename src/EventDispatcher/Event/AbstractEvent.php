@@ -16,7 +16,7 @@ use Exception;
  *   defined in the array will result in an exception.
  *
  * - Adds a public static method `self::getEventName` that returns a string that should
- *   always be used as the name that an event object is dispatched with.
+ *   always be used as the name that an event instance is dispatched with.
  */
 abstract class AbstractEvent extends GenericEvent
 {
@@ -47,7 +47,7 @@ abstract class AbstractEvent extends GenericEvent
     /**
      * Returns the event name.
      *
-     * This is the name that this event object should always be dispatched with.
+     * This is the name that instances of this event should always be dispatched with.
      *
      * @return string
      */

@@ -50,14 +50,16 @@ class BootstrapTest extends TestCase
 
     /**
      * Tests that the `Serato\SwsApp\EventDispatcher\Event\SwsHttpRequest` event is dispatched.
+     *
+     * Also acts as a smoke test for `Serato\SwsApp\EventDispatcher\Event\SwsHttpRequest`.
      */
     public function testSwsHttpRequestEventDispatch()
     {
         # As best as I can tell, the Symfony Event dispatcher does not provide any means of resporting on
         # what events is has dispatched (would LOVE to be proven wrong about this).
-        # So to determine whether or not an event has dispatched we need to provide a lister or subscriber
+        # So to determine whether or not an event has been dispatched we need to provide a lister or subscriber
         # that allows us to assert on the event(s) we're interested in.
-        # Over time it may make sense to create an event subscriber class specifically for testing purposes
+        # Over time it may make sense to create an event subscriber class specifically for unit testing purposes
         # but for now I'm just going to use the LogToFileSubscriber class.
         $tmpFileDir = rtrim(sys_get_temp_dir(), '/') . '/phpunit_BootstrapTest/' .
             str_replace(' ', '', ltrim(microtime(), '0.')) . '/';

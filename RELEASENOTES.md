@@ -17,9 +17,46 @@ The `Serato\SwsApp\Slim\App\Bootstrap` class has two new methods for adding list
 - `Bootstrap::addEventListener`
 - `Bootstrap::addEventSubscriber`
 
-## Abstract event class
+Whilst there are a number of different ways we could provide listeners and subscribers to the event dispatcher it makes to be consistent
+across all web applications. I suggest the following approach:
 
-TODO
+### 1. Create a file called `eventDispatcher.php` in the `<app name>/app/bootstrap` directory.
+
+Create a new file in `<app name>/app/bootstrap` and name it `eventDispatcher.php`. This is where we can add any and all listeners and
+subscribers on a per-application basis. The file will look something like this:
+
+```php
+<?php
+use Serato\SwsApp\EventDispatcher\Subscriber\LogToFileSubscriber;
+
+/**
+ * Configures the Event Dispatcher for this application
+ */
+
+# Might need to use the container, so extract it here.
+$container = $bootstrap->getContainer();
+
+# Add a `Serato\SwsApp\EventDispatcher\Subscriber\LogToFileSubscriber` instance to the event dispatcher.
+# Note the use of the (new) `Serato\SwsApp\Slim\App\Bootstrap::addEventSubscriber` method.
+# The $boostrap instance is available globally in this file (obviously) - see next step.
+$bootstrap->addEventSubscriber(
+    new LogToFileSubscriber(
+        $container['settings']['application_name'],
+        $container['settings']['app_env'],
+        $container['settings']['app_stack_number'],
+        '/srv/www/shared_license_serato_com/req_rep_dumps/'
+    )
+);
+```
+
+### 2. Include `eventDispatcher.php` into 'index.php`
+
+Add a new `require` statement in `<app name>/app/index.php`:
+
+```php
+# Add this line
+require '../bootstrap/eventDispatcher.php';
+```
 
 ## The SwsHttpRequest event
 
@@ -60,7 +97,7 @@ This is the minimum requirements to dispatch the `Serato\SwsApp\EventDispatcher\
 
 The following two steps are optional but highly desirable as they ensure the the `SwsHttpRequest` event is dispatched with the correctly mutated `Psr\Http\Message\ServerRequestInterface` instance.
 
-### Use the `Bootstrap::addRouteGroup` method to add route groups
+#### Use the `Bootstrap::addRouteGroup` method to add route groups
 
 In the concrete child instance of the `Serato\SwsApp\Slim\App\Bootstrap`, instead of using the `group()` method of the underlying Slim application object to add route groups, the `Bootstrap::addRouteGroup` method should be used instead.
 
@@ -76,12 +113,22 @@ The method signatures are identical, so `Bootstrap::addRouteGroup` returns a `Sl
 $this->addRouteGroup('<route pattern>', function () {/** Route mapping logic */});
 ```
 
-### Pass the container instance to the `Serato\SwsApp\Slim\Handlers\Error` error handler
+#### Pass the container instance to the `Serato\SwsApp\Slim\Handlers\Error` error handler
 
 The `Serato\SwsApp\Slim\Handlers\Error` error handler now has an optional 4th argument: the Slim container instance.
 
 Providing this argument ensures that error handler can pass the correct `ServerRequestInterface` instance to the dispatched `SwsHttpRequest` event.
 
-## Currently there are no listeners or subscribers
+## Subscribers
 
-Need to define how to Bootstrap these. (see License service)
+The following subscribers are included in this update:
+
+### LogToFileSubscriber
+
+The `Serato\SwsApp\EventDispatcher\Subscriber\LogToFileSubscriber` is intended to be used as a debugging tool only. Consider it POC as
+to how to implement an event subscriber.
+
+It provides a callback called `onSwsHttpRequest` that subscribes to the `Serato\SwsApp\EventDispatcher\Event\SwsHttpRequest` event
+and JSON encodes the request and response instances into separate files.
+
+More event handlers can be added as required.
