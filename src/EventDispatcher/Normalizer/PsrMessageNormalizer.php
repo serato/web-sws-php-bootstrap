@@ -34,6 +34,7 @@ class PsrMessageNormalizer
     private const MAX_BODY_SIZE = 1024 * 1024;
 
     private const REFRESH_TOKEN_SUBSTITUTION_VALUE = 'REFESH_TOKEN';
+    private const PASSWORD_REMOVED_SUBSTITUTION_VALUE = 'PASSWORD_REMOVED';
 
     // A list of HTTP headers whose value should be replaced with a placeholder
     private const HTTP_HEADER_VALUE_REMOVED = [
@@ -95,7 +96,7 @@ class PsrMessageNormalizer
                 # Determine content type from the `Content-Type` request header.
                 # It may not be set.
                 $contentType = null;
-                $contentTypeHeader = $this->normalizeContentTypeHeader($httpMessage->getHeader('Content-Type'));
+                $contentTypeHeader = $this->normalizeHeaderValue($httpMessage->getHeader('Content-Type'));
                 if (count($contentTypeHeader) > 0) {
                     $contentType = $contentTypeHeader[0];
                 }
@@ -212,7 +213,7 @@ class PsrMessageNormalizer
             # Slim ordinarily deals with headers like this correctly, but it treats
             # Requests with a Content-Type = 'form/multipart' a bit differently under the hood.
             if (strtolower($key) === 'content-type') {
-                $value = $this->normalizeContentTypeHeader($value);
+                $value = $this->normalizeHeaderValue($value);
             }
 
             # `Authorization`
@@ -401,12 +402,16 @@ class PsrMessageNormalizer
         );
     }
 
-    private function normalizeContentTypeHeader($value): array
+    private function normalizeHeaderValue($value): array
     {
-        if (is_array($value) && count($value) === 1 && strpos($value[0], '; ') !== false) {
-            return explode('; ', $value[0]);
+        if (is_array($value)) {
+            if (count($value) === 1 && strpos($value[0], '; ') !== false) {
+                return explode('; ', $value[0]);
+            }
+            return $value;
+        } else {
+            return [$value];
         }
-        return $value;
     }
 
     /**
@@ -429,9 +434,17 @@ class PsrMessageNormalizer
             $bits[0] = $bits[0] . '://';
         }
         if (strpos($bits[1], '@') !== false) {
-            $uriRemoved = $bits[0] . preg_replace('/:(.+)@/', ':PASSWORD_REMOVED@', $bits[1]);
+            $uriRemoved = $bits[0] . preg_replace(
+                '/:(.+)@/',
+                ':' . self::PASSWORD_REMOVED_SUBSTITUTION_VALUE . '@',
+                $bits[1]
+            );
         } else {
-            $uriRemoved = $bits[0] . preg_replace('/:(.+)/', ':PASSWORD_REMOVED', $bits[1]);
+            $uriRemoved = $bits[0] . preg_replace(
+                '/:(.+)/',
+                ':' . self::PASSWORD_REMOVED_SUBSTITUTION_VALUE . '',
+                $bits[1]
+            );
         }
         return $uriRemoved;
     }
@@ -456,25 +469,45 @@ class PsrMessageNormalizer
         return $bodyRaw;
     }
 
+    /**
+     * @param array $bodyParams
+     * @return array
+     */
     private function stripBodyParams(array $bodyParams): array
     {
         foreach (self::BODY_PARAMETER_SUBSTITUTIONS as $subs) {
             if (isset($bodyParams[$subs[0][0]])) {
-                return $this->walkBodyParamsPath($bodyParams, $subs[0], $subs[1]);
+                $key = $subs[0][0];
+                array_shift($subs[0]);
+                $params = $this->walkBodyParamsPath($bodyParams[$key], $subs[0], $subs[1]);
+                $bodyParams[$key] = $params;
             }
         }
         return $bodyParams;
     }
 
-    private function walkBodyParamsPath($params, array $path, string $replacement): array
+    /**
+     * @param array|string $params
+     * @param array $path
+     * @param string $replacement
+     * @return array|string
+     */
+    private function walkBodyParamsPath($params, array $path, string $replacement)
     {
-        if (count($path) === 1) {
-            if (isset($params[$path[0]]) && is_string($params[$path[0]])) {
-                $params[$path[0]] = $replacement;
-            }
-            return $params;
+        if (is_string($params)) {
+            return $replacement;
         }
+
         $key = array_shift($path);
-        return $this->walkBodyParamsPath($params[$key], $path, $replacement);
+
+        if (count($path) === 0) {
+            $params[$key] = $replacement;
+            return $params;
+        } else {
+            if (isset($params[$key])) {
+                $params[$key] = $this->walkBodyParamsPath($params[$key], $path, $replacement);
+            }
+        }
+        return $params;
     }
 }
