@@ -12,9 +12,29 @@ use ReflectionClassConstant;
  * Current only smokes tests the normalizePsrServerRequestInterface and normalizePsrResponseInterface.
  * Other public methods are not explicitly tested, by all are used by two methods that are tested.
  *
+ * Muck of the heavy lifting in the `PsrMessageNormalizer` class is done by private methods and these
+ * are all tested here to varying degrees of thoroughness.
+ *
+ * The `PsrMessageNormalizer::normalizePsrServerRequestInterface` and
+ * `PsrMessageNormalizer::normalizePsrResponseInterface` methods are the primary public interfaces for the class. In
+ * common usage only these methods will be used. The tests for these methods are little more than smoke tests because
+ * creating data inputs for these tests is quite complex and would make this test case very cumbersone.
+ *
+ * These public methods use all other public and private methods so they provide us with a minimum code coverage by
+ * exercising all functionality within the class.
+ *
+ * Some other public do have specific tests targeting them but the following public methods do not currently have any
+ * tests specifically targeting them:
+ *
+ * - `PsrMessageNormalizer::normalizeUri`
+ * - `PsrMessageNormalizer::normalizeServerParams`
+ * - `PsrMessageNormalizer::normalizeRequestAttributes`
+ * - `PsrMessageNormalizer::normalizePsrMessageBody`
  */
 class PsrMessageNormalizerTest extends TestCase
 {
+    private const BASIC_AUTH_HEADER_VALUE = 'ZTUzZWU5NDAtYjk1YS00MWJmLTkwYWUtMDEzN2IzNmExNDAwOmJ1bGxfZHVzdA==';
+    private const BEARER_TOKEN_HEADER_VALUE= 'eyJhbGciOiJIUzUxMiIsImNyaXQiOlsiaXNzIiwiYXVkIiwic3ViIiwiZXhwIl0sI';
     // public function testNormalizePsrServerRequestInterface()
     // {
     //     //
@@ -25,12 +45,132 @@ class PsrMessageNormalizerTest extends TestCase
     //     //
     // }
 
-    # ** public **
-    # normalizeUri
-    # normalizeHttpHeaders
-    # normalizeServerParams
-    # normalizeRequestAttributes
-    # normalizePsrMessageBody
+    /**
+     * Tests the `PsrMessageNormalizer::normalizeHttpHeaders` public method.
+     *
+     * @dataProvider normalizeHttpHeadersProvider
+     *
+     * @param array $denormalizedHeaders
+     * @return void
+     */
+    public function testNormalizeHttpHeaders(array $denormalizedHeaders): void
+    {
+        $normalizer = new PsrMessageNormalizer;
+        foreach ($normalizer->normalizeHttpHeaders($denormalizedHeaders) as $name => $value) {
+            # Asserts that all header values are arrays
+            $this->assertTrue(is_array($value), 'Header `' . $name . '` value is an array');
+            foreach ($value as $item) {
+                # Asserts that no header value array items contain a `; ` separator.
+                $this->assertFalse(
+                    strpos($item, '; '),
+                    "Header `$name`, value item `$item` does not contain `; ` delimiter"
+                );
+                # Asserts that no header value array items contain sensitive data.
+                # To do this we simple test for the negative presence of the two const values we use to represent
+                # senstive authentication-related values
+                foreach ([self::BASIC_AUTH_HEADER_VALUE, self::BEARER_TOKEN_HEADER_VALUE] as $sensitive) {
+                    $this->assertFalse(
+                        strpos($item, $sensitive),
+                        "Header `$name`, value item `$item` does not contain sensitive data"
+                    );
+                }
+            }
+        }
+        $this->assertTrue(true);
+    }
+
+    public function normalizeHttpHeadersProvider(): array
+    {
+        return [
+            # GET /me/licenses?app_name=serato_dj
+            # Bearer auth
+            [
+                [
+                    'HTTP_COOKIE' => ['PHPSESSID=u22p8vvu3fvpb9u22r8m6ed6b0'],
+                    'HTTP_CONNECTION' => ['keep-alive'],
+                    'HTTP_ACCEPT_ENCODING' => ['gzip, deflate, br'],
+                    'Host' => ['192.168.4.14'],
+                    'HTTP_POSTMAN_TOKEN' => ['c8796907-947c-4c50-bc88-4a3fd3248a54'],
+                    'HTTP_CACHE_CONTROL' => ['no-cache'],
+                    'HTTP_USER_AGENT' => ['PostmanRuntime/7.26.8'],
+                    'HTTP_AUTHORIZATION' => ['Bearer ' . self::BEARER_TOKEN_HEADER_VALUE],
+                    'HTTP_ACCEPT' => ['application/json'],
+                    'CONTENT_LENGTH' => [],
+                    'CONTENT_TYPE' => []
+                ]
+            ],
+            # DELETE /products/products/:product_id
+            # Basic auth
+            [
+                [
+                    'HTTP_COOKIE' => ['PHPSESSID=u22p8vvu3fvpb9u22r8m6ed6b0'],
+                    'HTTP_CONNECTION' => ['keep-alive'],
+                    'HTTP_ACCEPT_ENCODING' => ['gzip, deflate, br'],
+                    'Host' => ['192.168.4.14'],
+                    'HTTP_POSTMAN_TOKEN' => ['7f4413f0-331c-46b4-b5f0-bb8e8a7448ae'],
+                    'HTTP_CACHE_CONTROL' => ['no-cache'],
+                    'HTTP_USER_AGENT' => ['PostmanRuntime/7.26.8'],
+                    'HTTP_AUTHORIZATION' => ['Basic ' . self::BASIC_AUTH_HEADER_VALUE],
+                    'HTTP_ACCEPT' => ['application/json'],
+                    'CONTENT_LENGTH' => [''],
+                    'CONTENT_TYPE' => [''],
+                    'PHP_AUTH_USER' => ['853eef40-b95a-41bf-90ae-0137946a14df'],
+                    'PHP_AUTH_PW' => ['super_gnarly_password']
+                ]
+            ],
+            // POST /tokens/refresh
+            // No auth
+            [
+                [
+                    'HTTP_CONNECTION' => ['keep-alive'],
+                    'HTTP_ACCEPT_ENCODING' => ['gzip, deflate, br'],
+                    'Host' => ['192.168.4.14'],
+                    'HTTP_POSTMAN_TOKEN' => ['f5ac6387-1013-41ac-9881-922274351302'],
+                    'HTTP_CACHE_CONTROL' => ['no-cache'],
+                    'HTTP_USER_AGENT' => ['PostmanRuntime/7.26.8'],
+                    'CONTENT_TYPE' => ['application/x-www-form-urlencoded'],
+                    'HTTP_ACCEPT' => ['application/json'],
+                    'CONTENT_LENGTH' => ['809']
+                ]
+            ],
+            // POST /me/licenses/authorizations
+            // Bearer authorizations
+            // application/x-www-form-urlencoded
+            [
+                [
+                    'HTTP_COOKIE' => ['PHPSESSID=u22p8vvu3fvpb9u22r8m6ed6b0'],
+                    'CONTENT_TYPE' => ['application/x-www-form-urlencoded'],
+                    'HTTP_CONNECTION' => ['keep-alive'],
+                    'HTTP_ACCEPT_ENCODING' => ['gzip, deflate, br'],
+                    'Host' => ['192.168.4.14'],
+                    'HTTP_POSTMAN_TOKEN' => ['e602f4bd-243a-48ba-bce0-8fb426c23332'],
+                    'HTTP_CACHE_CONTROL' => ['no-cache'],
+                    'HTTP_USER_AGENT' => ['PostmanRuntime/7.26.8'],
+                    'HTTP_AUTHORIZATION' => ['Bearer ' . self::BEARER_TOKEN_HEADER_VALUE],
+                    'HTTP_ACCEPT' => ['application/json'],
+                    'CONTENT_LENGTH' => ['201']
+                ]
+            ],
+            // POST /me/licenses/authorizations
+            // Bearer authorizations
+            // multipart/form-data
+            [
+                [
+                    'HTTP_COOKIE' => ['PHPSESSID=u22p8vvu3fvpb9u22r8m6ed6b0'],
+                    'CONTENT_TYPE' => ['multipart/form-data; boundary=----------------------164730240724688633667546'],
+                    'HTTP_CONNECTION' => ['keep-alive'],
+                    'HTTP_ACCEPT_ENCODING' => ['gzip, deflate, br'],
+                    'Host' => ['192.168.4.14'],
+                    'HTTP_POSTMAN_TOKEN' => ['9a2ee82b-d758-49f6-aa87-15c8d376b6a9'],
+                    'HTTP_CACHE_CONTROL' => ['no-cache'],
+                    'HTTP_USER_AGENT' => ['PostmanRuntime/7.26.8'],
+                    'HTTP_AUTHORIZATION' => ['Bearer ' . self::BEARER_TOKEN_HEADER_VALUE],
+                    'HTTP_ACCEPT' => ['application/json'],
+                    'CONTENT_LENGTH' => ['957']
+                ]
+            ]
+        ];
+    }
 
     /**
      * Tests the `PsrMessageNormalizer::normalizeHeaderValue` private method.

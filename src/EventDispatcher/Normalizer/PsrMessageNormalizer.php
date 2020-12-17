@@ -188,7 +188,7 @@ class PsrMessageNormalizer
     /**
      * Normalizes the collection of HTTP headers.
      *
-     * Currently this is only required for requests objects. Something to do with how the
+     * Currently this is only required for request objects. Something to do with how the
      * Slim request object uses the raw `HTTP_xxx` header name under the hood but the normalized
      * form when using getter method.
      *
@@ -236,7 +236,7 @@ class PsrMessageNormalizer
                 strtolower($key),
                 array_map('strtolower', self::HTTP_HEADER_VALUE_REMOVED)
             )) {
-                $normalizedHeaders[ucwords($key, '-')] = 'REMOVED';
+                $normalizedHeaders[ucwords($key, '-')] = ['REMOVED'];
             } else {
                 $normalizedHeaders[ucwords($key, '-')] = $value;
             }
