@@ -3,6 +3,11 @@ namespace Serato\SwsApp\Test\EventDispatcher\Normalizer;
 
 use Serato\SwsApp\Test\TestCase;
 use Serato\SwsApp\EventDispatcher\Normalizer\PsrMessageNormalizer;
+use Serato\Slimulator\EnvironmentBuilder;
+use Serato\Slimulator\Request;
+use Serato\Slimulator\Authorization\BearerToken;
+use Serato\Slimulator\RequestBody\UrlEncoded;
+use Slim\Http\Response;
 use ReflectionMethod;
 use ReflectionClassConstant;
 
@@ -12,7 +17,7 @@ use ReflectionClassConstant;
  * Current only smokes tests the normalizePsrServerRequestInterface and normalizePsrResponseInterface.
  * Other public methods are not explicitly tested, by all are used by two methods that are tested.
  *
- * Muck of the heavy lifting in the `PsrMessageNormalizer` class is done by private methods and these
+ * Much of the heavy lifting in the `PsrMessageNormalizer` class is done by private methods and these
  * are all tested here to varying degrees of thoroughness.
  *
  * The `PsrMessageNormalizer::normalizePsrServerRequestInterface` and
@@ -35,15 +40,75 @@ class PsrMessageNormalizerTest extends TestCase
 {
     private const BASIC_AUTH_HEADER_VALUE = 'ZTUzZWU5NDAtYjk1YS00MWJmLTkwYWUtMDEzN2IzNmExNDAwOmJ1bGxfZHVzdA==';
     private const BEARER_TOKEN_HEADER_VALUE= 'eyJhbGciOiJIUzUxMiIsImNyaXQiOlsiaXNzIiwiYXVkIiwic3ViIiwiZXhwIl0sI';
-    // public function testNormalizePsrServerRequestInterface()
-    // {
-    //     //
-    // }
 
-    // public function testNormalizePsrResponseInterface()
-    // {
-    //     //
-    // }
+    /**
+     * Smoke tests the `PsrMessageNormalizer::normalizePsrServerRequestInterface` public method.
+     *
+     * @return void
+     */
+    public function testNormalizePsrServerRequestInterface(): void
+    {
+        $httpMethod = 'POST';
+        $acceptHeader = 'application/json';
+        $contentTypeHeader = 'application/x-www-form-urlencoded';
+        $requestBody = ['var1' => 'val1', 'var2' => 'val2'];
+
+        $request = Request::createFromEnvironmentBuilder(
+            EnvironmentBuilder::create()
+                ->setRequestMethod($httpMethod)
+                ->addHeader('Accept', $acceptHeader)
+                ->addHeader('Content-Type', $contentTypeHeader)
+                ->addHeader('Content-Length', '123')
+                ->setUri('http://my.server/my/uri?var1=val1')
+                ->setAuthorization(BearerToken::create(self::BEARER_TOKEN_HEADER_VALUE))
+                ->setRequestBody(UrlEncoded::create($requestBody))
+        );
+
+        $normalizer = new PsrMessageNormalizer;
+        $data = $normalizer->normalizePsrServerRequestInterface($request);
+
+        $this->assertEquals($data['method'], $httpMethod);
+        $this->assertEquals($data['headers']['Accept'][0], $acceptHeader);
+        $this->assertEquals($data['headers']['Content-Type'][0], $contentTypeHeader);
+        $this->assertTrue(isset($data['headers']['Content-Length'][0]));
+        $this->assertTrue(strpos($data['headers']['Authorization'][0], 'Bearer ') === 0);
+        $this->assertTrue(strpos($data['headers']['Authorization'][0], self::BEARER_TOKEN_HEADER_VALUE) === false);
+        $this->assertEquals($data['body']['parsed'], $requestBody);
+        $this->assertEquals($data['body']['contentType'], $contentTypeHeader);
+        $this->assertTrue(isset($data['body']['raw']));
+    }
+
+    /**
+     * Smoke tests the `PsrMessageNormalizer::normalizePsrResponseInterface` public method.
+     *
+     * @return void
+     */
+    public function testNormalizePsrResponseInterface()
+    {
+        $httpResponseCode = 200;
+        $responseBody = ['var1' => 'val1', 'var2' => 'val2'];
+        $contentTypeHeader = 'application/json';
+        $contentLengthHeader = '123';
+
+        $response = new Response($httpResponseCode);
+        $response = $response
+            ->withProtocolVersion('1.1')
+            ->withHeader('Content-type', $contentTypeHeader)
+            ->withHeader('Content-Length', $contentLengthHeader)
+            ->withJson($responseBody); // Note: this method is not part of the PSR-7 standard. It's a Slim-only thing.
+
+        $normalizer = new PsrMessageNormalizer;
+        $data = $normalizer->normalizePsrResponseInterface($response);
+
+        $this->assertEquals($data['statusCode'], $httpResponseCode);
+        $this->assertEquals($data['headers']['Content-Type'][0], $contentTypeHeader);
+        $this->assertTrue(isset($data['headers']['Content-Length'][0]));
+        $this->assertTrue(isset($data['body']['contentLength']));
+        $this->assertEquals($data['body']['contentType'], $contentTypeHeader);
+        $this->assertTrue(isset($data['body']['raw']));
+
+        $this->assertTrue(true);
+    }
 
     /**
      * Tests the `PsrMessageNormalizer::normalizeHttpHeaders` public method.
