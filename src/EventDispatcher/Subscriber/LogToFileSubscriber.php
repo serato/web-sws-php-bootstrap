@@ -104,7 +104,7 @@ class LogToFileSubscriber implements EventSubscriberInterface
             'application_name' => $this->appName,
             'application_environment' => $this->env,
             'application_stack_number' => $this->stackNumber,
-            'id' => $this->id,
+            'event_id' => $this->id,
             'event_name' => $eventName
         ];
     }
