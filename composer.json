@@ -20,7 +20,8 @@
 		"squizlabs/php_codesniffer": "~2.0",
 		"monolog/monolog": "^1.21.0",
 		"serato/slimulator": "^1.0.0",
-		"symfony/cache": "^4.0"
+		"symfony/cache": "^4.0",
+		"sensiolabs/security-checker": "^6.0"
 	},
 	"autoload": {
 		"psr-4": {
