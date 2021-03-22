@@ -4,7 +4,7 @@
 	"description": "Bootstrap functionality for SWS web applications",
 	"type": "library",
 	"require": {
-		"php" : "^7.1",
+		"php": "^7.1",
 		"slim/slim": "^3.0.0",
 		"serato/jwt": "^1.0.0",
 		"aws/aws-sdk-php": "^3.0",
@@ -21,7 +21,7 @@
 		"monolog/monolog": "^1.21.0",
 		"serato/slimulator": "^1.0.0",
 		"symfony/cache": "^4.0",
-		"sensiolabs/security-checker": "^6.0"
+		"enlightn/security-checker": "^1.4"
 	},
 	"autoload": {
 		"psr-4": {
