@@ -124,7 +124,7 @@ abstract class AbstractRouteTest extends TestCase
      * @param string $callableFullNamespace
      * @return string
      */
-    protected function getClassNameFromString(string $callableFullNamespace): string
+    private function getClassNameFromString(string $callableFullNamespace): string
     {
         $explodedCallableFullNamespace = explode('\\', $callableFullNamespace);
         return end($explodedCallableFullNamespace);
