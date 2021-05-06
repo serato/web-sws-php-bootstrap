@@ -173,7 +173,7 @@ class Error extends SlimError
      *
      * @return string
      */
-    protected function renderHtmlErrorMessage(\Exception $exception): string
+    protected function renderHtmlErrorMessage(\Exception $exception)
     {
         $title = $this->applicationName;
         $html = '';
