@@ -16,6 +16,7 @@ install: composer install
 script:
 - php vendor/bin/phpunit -c phpunit.xml
 - "./vendor/bin/phpcs"
+- "./vendor/bin/security-checker security:check"
 after_success:
 - php sami.phar update phpdoc.php
 addons:
