@@ -295,6 +295,18 @@ class PsrMessageNormalizer
         # Slim adds route info to the Request object.
         # It doesn't add anything useful in my opinion, and would require writing a custom normalizer.
         unset($attributes['route'], $attributes['routeInfo']);
+        # Sometimes, for better or worse, there may be a Propel model assigned to a request attribute.
+        # These objects can encounter recursion errors using Symfony object normalizer, and there's also
+        # the possibility that would could inadvertently included senstive data in the output.
+        # So handle these specifically and only include the class name and primary key value in the output.
+        foreach ($attributes as $k => $v) {
+            if (is_object($v) && $v instanceof \Propel\Runtime\ActiveRecord\ActiveRecordInterface) {
+                $attributes[$k] = [
+                    'propelModelName' => get_class($v),
+                    'primaryKey' => $v->getPrimaryKey()
+                ];
+            }
+        }
         return $attributes;
     }
 
