@@ -4,8 +4,6 @@ namespace Serato\SwsApp\Service;
 /**
  * Class CountryService
  * @package App\Service
- *
- * @todo remove "country" column from the DB, use "country_code" instead.
  */
 class CountryService implements CountryServiceInterface
 {
