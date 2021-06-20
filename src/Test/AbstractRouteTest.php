@@ -1,7 +1,7 @@
 <?php
 namespace Serato\SwsApp\Test;
 
-use Slim\Container;
+use Psr\Container\ContainerInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -16,7 +16,7 @@ abstract class AbstractRouteTest extends TestCase
     protected const METHOD_DELETE = 'DELETE';
 
     /**
-     * @var null|Container
+     * @var null|ContainerInterface
      */
     protected $container = null;
 
@@ -36,9 +36,9 @@ abstract class AbstractRouteTest extends TestCase
     abstract public function getRoutes(): array;
 
     /**
-     * @return Container
+     * @return ContainerInterface
      */
-    abstract protected function getContainer(): Container;
+    abstract protected function getContainer(): ContainerInterface;
 
     /**
      * Here we check whether all the app routes are present in the whitelist above
