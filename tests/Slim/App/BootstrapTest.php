@@ -55,9 +55,9 @@ class BootstrapTest extends TestCase
      */
     public function testSwsHttpRequestEventDispatch()
     {
-        # As best as I can tell, the Symfony Event dispatcher does not provide any means of resporting on
+        # As best as I can tell, the Symfony Event dispatcher does not provide any means of reporting on
         # what events is has dispatched (would LOVE to be proven wrong about this).
-        # So to determine whether or not an event has been dispatched we need to provide a lister or subscriber
+        # So to determine whether or not an event has been dispatched we need to provide a listener or subscriber
         # that allows us to assert on the event(s) we're interested in.
         # Over time it may make sense to create an event subscriber class specifically for unit testing purposes
         # but for now I'm just going to use the LogToFileSubscriber class.
