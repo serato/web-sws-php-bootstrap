@@ -7,7 +7,7 @@ use DateTime;
 
 class MonologJsonFormatter extends JsonFormatter
 {
-    private const SIMPLE_DATE = "Y-m-d H:i:s";
+    public const SIMPLE_DATE = "Y-m-d H:i:s";
 
     protected $dateFormat;
     /**
