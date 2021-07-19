@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\EventDispatcher\Normalizer;
 
 use Psr\Http\Message\MessageInterface;
@@ -168,7 +169,7 @@ class PsrMessageNormalizer
     public function normalizeUri(UriInterface $uri): array
     {
         $data = [];
-        $serializer = new Serializer([new ObjectNormalizer]);
+        $serializer = new Serializer([new ObjectNormalizer()]);
         $data = $serializer->normalize($uri);
         if (isset($data['userInfo']) && $data['userInfo'] !== '') {
             # The `authority`, `userInfo` and `baseUrl` keys will all contain user name and password in clear text
@@ -204,9 +205,9 @@ class PsrMessageNormalizer
             if (strpos($key, 'http-') === 0) {
                 $key = substr($key, 5);
             }
-            
+
             // Normalize values
-            
+
             # `Content-Type`
             # Can have ';' a delimiter when value is 'form/multipart'.
             # The other side of the delimiter is the multi-part MIME separator
@@ -232,10 +233,12 @@ class PsrMessageNormalizer
                 }
             }
 
-            if (in_array(
-                strtolower($key),
-                array_map('strtolower', self::HTTP_HEADER_VALUE_REMOVED)
-            )) {
+            if (
+                in_array(
+                    strtolower($key),
+                    array_map('strtolower', self::HTTP_HEADER_VALUE_REMOVED)
+                )
+            ) {
                 $normalizedHeaders[ucwords($key, '-')] = ['REMOVED'];
             } else {
                 $normalizedHeaders[ucwords($key, '-')] = $value;

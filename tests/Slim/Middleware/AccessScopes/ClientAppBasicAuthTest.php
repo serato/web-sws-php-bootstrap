@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Test\Slim\Middleware;
 
 use Serato\SwsApp\Test\TestCase;
@@ -29,8 +30,8 @@ class ClientAppBasicAuthTest extends TestCase
         string $assertMessage
     ) {
         $middleware = new ClientAppBasicAuth($webServiceName, $clientAppList);
-        $nextMiddleware = new EmptyWare;
-        
+        $nextMiddleware = new EmptyWare();
+
         $envBuilder = EnvironmentBuilder::create();
         // Add Basic auth header if user and password are provided
         if ($basicAuthUser !== '' && $basicAuthPass !== '') {
@@ -41,7 +42,7 @@ class ClientAppBasicAuthTest extends TestCase
 
         $response = $middleware(
             Request::createFromEnvironmentBuilder($envBuilder),
-            new Response,
+            new Response(),
             $nextMiddleware
         );
 

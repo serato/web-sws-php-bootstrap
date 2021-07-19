@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Slim\Middleware;
 
 use Slim\Handlers\AbstractHandler;
@@ -21,11 +22,11 @@ use Slim\Handlers\AbstractHandler;
  */
 abstract class AbstractRequestWithAttributeMiddleware extends AbstractHandler
 {
-    const APP_ID                = 'app_id';
-    const APP_NAME              = 'app_name';
-    const SCOPES                = 'scopes';
-    const USER_ID               = 'uid';
-    const USER_EMAIL            = 'email';
-    const USER_EMAIL_VERIFIED   = 'email_verified';
-    const REFRESH_TOKEN_ID      = 'rtid';
+    public const APP_ID              = 'app_id';
+    public const APP_NAME            = 'app_name';
+    public const SCOPES              = 'scopes';
+    public const USER_ID             = 'uid';
+    public const USER_EMAIL          = 'email';
+    public const USER_EMAIL_VERIFIED = 'email_verified';
+    public const REFRESH_TOKEN_ID    = 'rtid';
 }

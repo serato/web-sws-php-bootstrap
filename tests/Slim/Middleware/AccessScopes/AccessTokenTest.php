@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Test\Slim\Middleware\AccessScopes;
 
 use Serato\SwsApp\Test\TestCase;
@@ -16,8 +17,8 @@ use Aws\Sdk;
  */
 class AccessTokenTest extends TestCase
 {
-    const MOCK_ENCRYPTION_KEY = '123456789abcdefg';
-    const WEBSERVICE_NAME = 'my.webservice.me';
+    private const MOCK_ENCRYPTION_KEY = '123456789abcdefg';
+    private const WEBSERVICE_NAME = 'my.webservice.me';
 
     /**
      * Call the middleware without a token at all.
@@ -33,10 +34,10 @@ class AccessTokenTest extends TestCase
             $this->getFileSystemCachePool(),
             self::WEBSERVICE_NAME
         );
-        $nextMiddleware = new EmptyWare;
+        $nextMiddleware = new EmptyWare();
         $response = $middleware(
             Request::createFromEnvironmentBuilder(EnvironmentBuilder::create()),
-            new Response,
+            new Response(),
             $nextMiddleware
         );
 
@@ -65,14 +66,14 @@ class AccessTokenTest extends TestCase
             self::WEBSERVICE_NAME
         );
 
-        $nextMiddleware = new EmptyWare;
+        $nextMiddleware = new EmptyWare();
 
         $response = $middleware(
             Request::createFromEnvironmentBuilder(
                 EnvironmentBuilder::create()
                     ->setAuthorization(BearerToken::create((string)$token))
             ),
-            new Response,
+            new Response(),
             $nextMiddleware
         );
 
@@ -124,14 +125,14 @@ class AccessTokenTest extends TestCase
             self::WEBSERVICE_NAME
         );
 
-        $nextMiddleware = new EmptyWare;
+        $nextMiddleware = new EmptyWare();
 
         $response = $middleware(
             Request::createFromEnvironmentBuilder(
                 EnvironmentBuilder::create()
                     ->setAuthorization(BearerToken::create((string)$token))
             ),
-            new Response,
+            new Response(),
             $nextMiddleware
         );
 
@@ -188,8 +189,8 @@ class AccessTokenTest extends TestCase
                 EnvironmentBuilder::create()
                     ->setAuthorization(BearerToken::create((string)$token))
             ),
-            new Response,
-            new EmptyWare
+            new Response(),
+            new EmptyWare()
         );
     }
 
@@ -218,8 +219,8 @@ class AccessTokenTest extends TestCase
                 EnvironmentBuilder::create()
                     ->setAuthorization(BearerToken::create((string)$token))
             ),
-            new Response,
-            new EmptyWare
+            new Response(),
+            new EmptyWare()
         );
     }
 

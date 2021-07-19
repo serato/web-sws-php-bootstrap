@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\ClientApplication\Cli\Command;
 
 use Exception;

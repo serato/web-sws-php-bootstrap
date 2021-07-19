@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Slim\Middleware\AccessScopes;
 
 use Serato\SwsApp\Slim\Middleware\AccessScopes\AbstractAccessScopesMiddleware;
@@ -57,7 +58,8 @@ class ClientAppBasicAuth extends AbstractAccessScopesMiddleware
         $server_params = $request->getServerParams();
         if (isset($server_params['PHP_AUTH_USER']) && isset($server_params['PHP_AUTH_PW'])) {
             foreach ($this->clientAppData as $k => $appData) {
-                if ($appData['id'] == $server_params['PHP_AUTH_USER'] &&
+                if (
+                    $appData['id'] == $server_params['PHP_AUTH_USER'] &&
                     password_verify($server_params['PHP_AUTH_PW'], $appData['password_hash'])
                 ) {
                     if (isset($appData['name'])) {
@@ -68,7 +70,8 @@ class ClientAppBasicAuth extends AbstractAccessScopesMiddleware
                         # This will (usually? always?) correlate with the web service that is implementing this
                         # middleware.
                         $scopes = [];
-                        if (isset($appData['scopes']) && is_array($appData['scopes']) &&
+                        if (
+                            isset($appData['scopes']) && is_array($appData['scopes']) &&
                             isset($appData['scopes'][$this->webServiceName]) &&
                             is_array($appData['scopes'][$this->webServiceName])
                         ) {

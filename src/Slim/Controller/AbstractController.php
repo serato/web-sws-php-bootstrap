@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Slim\Controller;
 
 use Serato\SwsApp\Slim\Handlers\Error as ErrorHandler;
@@ -44,7 +45,7 @@ abstract class AbstractController
      *
      * @return LoggerInterface
      */
-    public function getLogger() : LoggerInterface
+    public function getLogger(): LoggerInterface
     {
         return $this->logger;
     }
@@ -59,7 +60,7 @@ abstract class AbstractController
      *
      * @return Response
      */
-    public function __invoke(Request $request, Response $response, array $args) : Response
+    public function __invoke(Request $request, Response $response, array $args): Response
     {
         # Require a client to specify a `Content-Type` header with a supported value for POST and PUT requests
         if (in_array(strtolower($request->getMethod()), ['post', 'put'])) {
@@ -185,7 +186,7 @@ abstract class AbstractController
         Request $request,
         array $uriArgs = [],
         bool $catchClientErrors = false
-    ) : Response {
+    ): Response {
         $response = new SlimResponse();
 
         if ($catchClientErrors) {
@@ -216,5 +217,5 @@ abstract class AbstractController
         Request $request,
         Response $response,
         array $args
-    ) : Response;
+    ): Response;
 }

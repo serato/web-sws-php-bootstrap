@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Test\Service;
 
 use Serato\SwsApp\Service\CountryService;
@@ -11,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 class CountryServiceTest extends TestCase
 {
     /**
-     * @dataProvider testGetCountryNameWithCountryCodeProvider
+     * @dataProvider getCountryNameWithCountryCodeProvider
      *
      * @param string $countryCode
      * @param string $expectedCountryName
@@ -180,7 +181,7 @@ class CountryServiceTest extends TestCase
     /**
      * @return array
      */
-    public function testGetCountryNameWithCountryCodeProvider(): array
+    public function getCountryNameWithCountryCodeProvider(): array
     {
         return [
             [

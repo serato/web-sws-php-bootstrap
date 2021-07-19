@@ -42,7 +42,7 @@ class Builder extends AbstractBuilder
         // generates model class files (using the QuickBuilder::buildClasses method)
         // and includes these files into the current namespace making it impossible
         // to test our own model classes.
-        $builder = new QuickBuilder;
+        $builder = new QuickBuilder();
         $builder->setSchema(self::mergeSchemaXml(self::readSchemaXmlFiles($schemaDirs), $dbName));
         $adapter = new SqliteAdapter();
         $connection = new ConnectionWrapper(

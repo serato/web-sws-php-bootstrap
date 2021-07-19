@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Test\Slim\Controller\Status;
 
 use Serato\SwsApp\Test\TestCase;
@@ -153,7 +154,7 @@ class StatusControllerTest extends TestCase
         $this->assertRegExp('/\<\/body\>/', $html);
         $this->assertRegExp('/Application Status/', $html);
         $this->assertRegExp('/Remote IP address/', $html);
-        $this->assertRegExp('/' . $ip_address .'/', $html);
+        $this->assertRegExp('/' . $ip_address . '/', $html);
         $this->assertRegExp('/Location:/', $html);
     }
 
@@ -232,7 +233,7 @@ class StatusControllerTest extends TestCase
         Request $request,
         array $uriArgs = [],
         bool $catchClientErrors = false
-    ) : Response {
+    ): Response {
         $response = new Response();
 
         if ($catchClientErrors) {

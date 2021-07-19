@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Slim\Middleware;
 
 use Slim\Http\Body;
@@ -19,7 +20,7 @@ class EmptyWare extends AbstractHandler
      * @var Request
      */
     protected $request;
-    
+
     /**
      * Response Interface
      *
@@ -35,11 +36,11 @@ class EmptyWare extends AbstractHandler
      *
      * @return Response
      */
-    public function __invoke(Request $request, Response $response) : Response
+    public function __invoke(Request $request, Response $response): Response
     {
         $this->request = $request;
         $this->response = $response;
-        
+
         return $response;
     }
 

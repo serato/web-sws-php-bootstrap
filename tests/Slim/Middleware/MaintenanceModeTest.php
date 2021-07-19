@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Test\Slim\Middleware;
 
 use Serato\SwsApp\Test\TestCase;
@@ -19,8 +20,8 @@ class MaintenanceModeTest extends TestCase
 
         $response = $middleware(
             Request::createFromEnvironmentBuilder(EnvironmentBuilder::create()),
-            new Response,
-            new EmptyWare
+            new Response(),
+            new EmptyWare()
         );
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -35,8 +36,8 @@ class MaintenanceModeTest extends TestCase
                 EnvironmentBuilder::create()
                     ->addHeader('Accept', 'application/json')
             ),
-            new Response,
-            new EmptyWare
+            new Response(),
+            new EmptyWare()
         );
 
         $json = json_decode((string)$response->getBody(), true);
@@ -54,8 +55,8 @@ class MaintenanceModeTest extends TestCase
                 EnvironmentBuilder::create()
                     ->addHeader('Accept', 'text/html')
             ),
-            new Response,
-            new EmptyWare
+            new Response(),
+            new EmptyWare()
         );
 
         $this->assertRegExp('/503 Service Unavailable/', (string)$response->getBody());
@@ -71,8 +72,8 @@ class MaintenanceModeTest extends TestCase
                 EnvironmentBuilder::create()
                     ->addHeader('Accept', 'text/xml')
             ),
-            new Response,
-            new EmptyWare
+            new Response(),
+            new EmptyWare()
         );
 
         $xml = simplexml_load_string((string)$response->getBody());
@@ -90,8 +91,8 @@ class MaintenanceModeTest extends TestCase
                 EnvironmentBuilder::create()
                     ->addHeader('Accept', 'application/xml')
             ),
-            new Response,
-            new EmptyWare
+            new Response(),
+            new EmptyWare()
         );
 
         $xml = simplexml_load_string((string)$response->getBody());

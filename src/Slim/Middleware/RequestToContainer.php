@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Slim\Middleware;
 
 use Slim\Http\Body;
@@ -31,7 +32,7 @@ class RequestToContainer
      *
      * @return ResponseInterface
      */
-    public function __invoke(Request $request, Response $response, callable $next) : Response
+    public function __invoke(Request $request, Response $response, callable $next): Response
     {
         # Execute all other middleware first
         $response = $next($request, $response);

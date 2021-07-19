@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\ClientApplication\Cli\Command;
 
 use Serato\SwsApp\ClientApplication\Cli\Command\AbstractCommand;
@@ -73,13 +74,13 @@ class ConfirmPasswordCommand extends AbstractCommand
             if ($data['id'] === $appId) {
                 if (!isset($data['password_hash'])) {
                     throw new Exception(
-                        "No password hash found for app ID '$appId' in '"  . $this->getEnv(). "' environment"
+                        "No password hash found for app ID '$appId' in '"  . $this->getEnv() . "' environment"
                     );
                 } else {
                     return $data['password_hash'];
                 }
             }
         }
-        throw new Exception("Application ID '$appId' not found in '"  . $this->getEnv(). "' environment");
+        throw new Exception("Application ID '$appId' not found in '"  . $this->getEnv() . "' environment");
     }
 }

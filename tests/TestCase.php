@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Test;
 
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
@@ -16,7 +17,7 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter as FileSystemCachePool;
 
 class TestCase extends PHPUnitTestCase
 {
-    const FILE_SYSTEM_CACHE_NAMESPACE = 'tests';
+    private const FILE_SYSTEM_CACHE_NAMESPACE = 'tests';
 
     protected $fileSystemCacheDir;
     protected static $fileSystemCachePool;
@@ -81,7 +82,7 @@ class TestCase extends PHPUnitTestCase
     protected function deleteFileSystemCacheDir()
     {
         if ($this->fileSystemCacheDir !== null && is_dir($this->fileSystemCacheDir)) {
-            exec('rm -rf '. escapeshellarg($this->fileSystemCacheDir));
+            exec('rm -rf ' . escapeshellarg($this->fileSystemCacheDir));
         }
     }
 

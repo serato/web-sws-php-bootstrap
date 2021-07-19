@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp;
 
 use Psr\Log\LoggerInterface as Logger;

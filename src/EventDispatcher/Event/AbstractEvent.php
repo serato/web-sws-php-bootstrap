@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\EventDispatcher\Event;
 
 use Symfony\Component\EventDispatcher\GenericEvent;

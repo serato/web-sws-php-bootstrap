@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Slim\Handlers;
 
 use Serato\SwsApp\AccessLogWriter;
@@ -27,7 +28,7 @@ class Error extends SlimError
 
     public const ERROR_CODE_HTTP_HEADER = 'X-Serato-ErrorCode';
     public const ERROR_MESSAGE_HTTP_HEADER = 'X-Serato-ErrorMessage';
-    const BASE_CLASS = '\Serato\SwsApp\Exception\AbstractException';
+    protected const BASE_CLASS = '\Serato\SwsApp\Exception\AbstractException';
     public const GENRIC_ERROR_MESSAGE = 'Oops, something went wrong, please try again.';
 
     /**

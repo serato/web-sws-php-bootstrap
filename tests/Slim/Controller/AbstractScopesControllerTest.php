@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Test\Slim\Controller\Status;
 
 use Serato\SwsApp\Test\TestCase;
@@ -59,7 +60,7 @@ class AbstractScopesControllerTest extends TestCase
                     return is_array($arg);
                 })
             )
-            ->willReturn(new Response);
+            ->willReturn(new Response());
 
         $controller(
             Request::createFromEnvironmentBuilder(

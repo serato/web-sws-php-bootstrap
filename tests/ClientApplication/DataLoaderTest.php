@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Test\ClientApplication;
 
 use Aws\Sdk;
@@ -177,9 +178,9 @@ class DataLoaderTest extends TestCase
     {
         # Make sure that the correct number of apps are loaded
         $this->assertEquals(4, count($appData));
-        
+
         # *** Validate some details ***
-        
+
         # 1. App 1 should have JWT settings but no 'restricted_to` setting
         $this->assertTrue(isset($appData['App1']['jwt']));
         $this->assertFalse(isset($appData['App1']['jwt']['access']['restricted_to']));
