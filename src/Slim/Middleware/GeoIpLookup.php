@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Slim\Middleware;
 
 use Slim\Http\Body;
@@ -22,8 +23,8 @@ use Exception;
  */
 class GeoIpLookup extends AbstractHandler
 {
-    const IP_ADDRESS = 'ipAddress';
-    const GEOIP_RECORD = 'geoIpRecord';
+    public const IP_ADDRESS = 'ipAddress';
+    public const GEOIP_RECORD = 'geoIpRecord';
 
     /* @var string */
     private $geoLiteDbPath;
@@ -47,7 +48,7 @@ class GeoIpLookup extends AbstractHandler
      *
      * @return ResponseInterface
      */
-    public function __invoke(Request $request, Response $response, callable $next) : Response
+    public function __invoke(Request $request, Response $response, callable $next): Response
     {
         $ip = $request->getServerParam('HTTP_X_FORWARDED_FOR', '');
         if ($ip === '') {

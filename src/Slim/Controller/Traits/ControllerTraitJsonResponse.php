@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Slim\Controller\Traits;
 
 use Psr\Http\Message\ResponseInterface as Response;
@@ -41,7 +42,7 @@ trait ControllerTraitJsonResponse
      * @param  Response    $response           Response interface
      * @return Response
      */
-    protected function writeJsonBody(Response $response) : Response
+    protected function writeJsonBody(Response $response): Response
     {
         $response = $response->withHeader('Content-type', 'application/json');
 

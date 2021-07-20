@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Test\Slim\Handlers;
 
 use Serato\SwsApp\Test\TestCase;
@@ -15,7 +16,7 @@ use Exception;
  */
 class PhpErrorTest extends TestCase
 {
-    const APP_NAME = 'My Web App';
+    private const APP_NAME = 'My Web App';
 
     public function setUp()
     {
@@ -46,8 +47,8 @@ class PhpErrorTest extends TestCase
                 EnvironmentBuilder::create()
                     ->addHeader('Accept', 'application/json')
             ),
-            new Response,
-            new Exception
+            new Response(),
+            new Exception()
         );
 
 

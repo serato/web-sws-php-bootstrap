@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\EventDispatcher\Subscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -77,7 +78,7 @@ class LogToFileSubscriber implements EventSubscriberInterface
         $requestFile = fopen($this->logDirPath . date('Y-m-dTH:i:s') . '-request.json', 'a');
         $responseFileName = fopen($this->logDirPath . date('Y-m-dTH:i:s') . '.-response.json', 'a');
 
-        $normalizer = new PsrMessageNormalizer;
+        $normalizer = new PsrMessageNormalizer();
 
         fwrite(
             $requestFile,

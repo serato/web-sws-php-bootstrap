@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Test\Slim\Controller\Status;
 
 use Serato\SwsApp\Test\TestCase;
@@ -33,7 +34,7 @@ class AbstractControllerTest extends TestCase
                     return is_array($arg);
                 })
             )
-            ->willReturn(new Response);
+            ->willReturn(new Response());
 
         $controller(
             Request::createFromEnvironmentBuilder(EnvironmentBuilder::create()),
@@ -48,8 +49,8 @@ class AbstractControllerTest extends TestCase
         $controller = $this->getMockForAbstractClass(AbstractController::class, [$logger]);
         $controller->expects($this->any())
             ->method('execute')
-            ->willReturn(new Response);
-        
+            ->willReturn(new Response());
+
         $response = $controller->mockInvoke(
             Request::createFromEnvironmentBuilder(EnvironmentBuilder::create())
         );

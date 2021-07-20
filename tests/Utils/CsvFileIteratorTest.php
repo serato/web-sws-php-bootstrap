@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Test\Utils;
 
 use Serato\SwsApp\Test\TestCase;

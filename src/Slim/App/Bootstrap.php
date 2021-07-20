@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Slim\App;
 
 define('DISPATCHER', 'event-dispatcher');
@@ -50,7 +51,7 @@ abstract class Bootstrap
     {
         $this->app = new App($settings);
         $this->container = $this->app->getContainer();
-        $this->container[DISPATCHER] = new EventDispatcher;
+        $this->container[DISPATCHER] = new EventDispatcher();
         $this->requestToContainerMiddleware = new RequestToContainerMiddleware($this->container);
     }
 
@@ -91,7 +92,7 @@ abstract class Bootstrap
         $response = $this->getApp()->run($silent);
 
         // Create the `SwsHttpRequest` event...
-        $event = new SwsHttpRequest;
+        $event = new SwsHttpRequest();
         $event['response'] = $response;
         $event['request'] = $this->getRequestFromContainer($this->container);
         if ($event['request'] === null) {

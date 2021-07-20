@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Slim\Middleware\AccessScopes;
 
 use Aws\Sdk;
@@ -162,7 +163,8 @@ class AccessToken extends AbstractAccessScopesMiddleware
     {
         $scopes = [];
 
-        if (is_array($accessToken->getClaim('scopes')) &&
+        if (
+            is_array($accessToken->getClaim('scopes')) &&
             isset($accessToken->getClaim('scopes')[$this->webServiceName])
         ) {
             $scopes = $accessToken->getClaim('scopes')[$this->webServiceName];

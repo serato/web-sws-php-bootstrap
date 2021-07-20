@@ -34,7 +34,7 @@ abstract class AbstractException extends RuntimeException
      *
      * @return int The HTTP response code.
      */
-    public function getHttpResponseCode() : int
+    public function getHttpResponseCode(): int
     {
         return $this->http_response_code;
     }

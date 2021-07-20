@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Test\Slim\Controller\Traits;
 
 use Serato\SwsApp\Test\TestCase;
@@ -19,7 +20,7 @@ class ControllerTraitValidateApiEndpointVersionTest extends TestCase
     public function testHandlerValidApiVersion(array $validEndpointVersions, int $endPointVersion, bool $isValid)
     {
         $request = Request::createFromEnvironmentBuilder(EnvironmentBuilder::create());
-        $response = new Response;
+        $response = new Response();
 
         $mock = $this->getMockForTrait(ControllerTraitValidateApiEndpointVersion::class);
 

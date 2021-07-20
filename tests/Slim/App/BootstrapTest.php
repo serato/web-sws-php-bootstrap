@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Test\Slim\App;
 
 use Serato\SwsApp\Test\TestCase;
@@ -10,7 +11,7 @@ use Serato\SwsApp\EventDispatcher\Subscriber\LogToFileSubscriber;
  */
 class BootstrapTest extends TestCase
 {
-    const CONTAINER_ITEM = 'A string of text';
+    private const CONTAINER_ITEM = 'A string of text';
 
     public function testSmokeTest()
     {

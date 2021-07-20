@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Slim\Controller;
 
 use Serato\SwsApp\Slim\Controller\AbstractController;

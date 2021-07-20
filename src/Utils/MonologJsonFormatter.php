@@ -1,12 +1,13 @@
 <?php
+
 namespace Serato\SwsApp\Utils;
 
 use Monolog\Formatter\JsonFormatter;
-use \DateTime;
+use DateTime;
 
 class MonologJsonFormatter extends JsonFormatter
 {
-    const SIMPLE_DATE = "Y-m-d H:i:s";
+    public const SIMPLE_DATE = "Y-m-d H:i:s";
 
     protected $dateFormat;
     /**

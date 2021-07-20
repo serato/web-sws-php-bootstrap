@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Test\EventDispatcher\Normalizer;
 
 use Serato\SwsApp\Test\TestCase;
@@ -39,7 +40,7 @@ use ReflectionClassConstant;
 class PsrMessageNormalizerTest extends TestCase
 {
     private const BASIC_AUTH_HEADER_VALUE = 'ZTUzZWU5NDAtYjk1YS00MWJmLTkwYWUtMDEzN2IzNmExNDAwOmJ1bGxfZHVzdA==';
-    private const BEARER_TOKEN_HEADER_VALUE= 'eyJhbGciOiJIUzUxMiIsImNyaXQiOlsiaXNzIiwiYXVkIiwic3ViIiwiZXhwIl0sI';
+    private const BEARER_TOKEN_HEADER_VALUE = 'eyJhbGciOiJIUzUxMiIsImNyaXQiOlsiaXNzIiwiYXVkIiwic3ViIiwiZXhwIl0sI';
 
     /**
      * Smoke tests the `PsrMessageNormalizer::normalizePsrServerRequestInterface` public method.
@@ -64,7 +65,7 @@ class PsrMessageNormalizerTest extends TestCase
                 ->setRequestBody(UrlEncoded::create($requestBody))
         );
 
-        $normalizer = new PsrMessageNormalizer;
+        $normalizer = new PsrMessageNormalizer();
         $data = $normalizer->normalizePsrServerRequestInterface($request);
 
         $this->assertEquals($data['method'], $httpMethod);
@@ -97,7 +98,7 @@ class PsrMessageNormalizerTest extends TestCase
             ->withHeader('Content-Length', $contentLengthHeader)
             ->withJson($responseBody); // Note: this method is not part of the PSR-7 standard. It's a Slim-only thing.
 
-        $normalizer = new PsrMessageNormalizer;
+        $normalizer = new PsrMessageNormalizer();
         $data = $normalizer->normalizePsrResponseInterface($response);
 
         $this->assertEquals($data['statusCode'], $httpResponseCode);
@@ -120,7 +121,7 @@ class PsrMessageNormalizerTest extends TestCase
      */
     public function testNormalizeHttpHeaders(array $denormalizedHeaders): void
     {
-        $normalizer = new PsrMessageNormalizer;
+        $normalizer = new PsrMessageNormalizer();
         foreach ($normalizer->normalizeHttpHeaders($denormalizedHeaders) as $name => $value) {
             # Asserts that all header values are arrays
             $this->assertTrue(is_array($value), 'Header `' . $name . '` value is an array');
@@ -256,7 +257,7 @@ class PsrMessageNormalizerTest extends TestCase
      */
     public function testNormalizeHeaderValue($raw, array $normalized): void
     {
-        $normalizer = new PsrMessageNormalizer;
+        $normalizer = new PsrMessageNormalizer();
         $method = new ReflectionMethod($normalizer, 'normalizeHeaderValue');
         $method->setAccessible(true);
         $this->assertEquals($method->invoke($normalizer, $raw), $normalized);
@@ -321,7 +322,7 @@ class PsrMessageNormalizerTest extends TestCase
      */
     public function testRemoveUriPassword(string $password, string $raw, string $clean): void
     {
-        $normalizer = new PsrMessageNormalizer;
+        $normalizer = new PsrMessageNormalizer();
         $method = new ReflectionMethod($normalizer, 'removeUriPassword');
         $method->setAccessible(true);
         $this->assertEquals($method->invoke($normalizer, $raw), $clean);
@@ -330,7 +331,7 @@ class PsrMessageNormalizerTest extends TestCase
 
     public function removeUriPasswordProvider()
     {
-        $normalizer = new PsrMessageNormalizer;
+        $normalizer = new PsrMessageNormalizer();
         $const = new ReflectionClassConstant($normalizer, 'PASSWORD_REMOVED_SUBSTITUTION_VALUE');
 
         $appId = 'my-app-id-123';
@@ -400,7 +401,7 @@ class PsrMessageNormalizerTest extends TestCase
      */
     public function testStripRawBodyParams(string $contentType, string $dirty, string $clean): void
     {
-        $normalizer = new PsrMessageNormalizer;
+        $normalizer = new PsrMessageNormalizer();
         $method = new ReflectionMethod($normalizer, 'stripRawBodyParams');
         $method->setAccessible(true);
 
@@ -412,7 +413,7 @@ class PsrMessageNormalizerTest extends TestCase
         $senstiveString = 'TOP-SECRET_SHHHH';
         $data = [];
 
-        $normalizer = new PsrMessageNormalizer;
+        $normalizer = new PsrMessageNormalizer();
         $const = new ReflectionClassConstant($normalizer, 'BODY_PARAMETER_SUBSTITUTIONS');
 
         ###################################################################################################
@@ -480,7 +481,7 @@ class PsrMessageNormalizerTest extends TestCase
      */
     public function testStripBodyParams(array $dirty, array $clean): void
     {
-        $normalizer = new PsrMessageNormalizer;
+        $normalizer = new PsrMessageNormalizer();
         $method = new ReflectionMethod($normalizer, 'stripBodyParams');
         $method->setAccessible(true);
 
@@ -507,7 +508,7 @@ class PsrMessageNormalizerTest extends TestCase
         # is correctly preserved.
         $senstiveString = 'TOP-SECRET_SHHHH';
 
-        $normalizer = new PsrMessageNormalizer;
+        $normalizer = new PsrMessageNormalizer();
         $const = new ReflectionClassConstant($normalizer, 'BODY_PARAMETER_SUBSTITUTIONS');
         foreach ($const->getValue() as $findReplace) {
             $pathArray = $findReplace[0];

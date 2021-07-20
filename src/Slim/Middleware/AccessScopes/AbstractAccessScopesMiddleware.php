@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Slim\Middleware\AccessScopes;
 
 use Serato\SwsApp\Slim\Middleware\AbstractRequestWithAttributeMiddleware;

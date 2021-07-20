@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Test\Slim\Controller\Traits;
 
 use Serato\SwsApp\Test\TestCase;
@@ -25,16 +26,16 @@ class ControllerTraitValidateRequiredRequestBodyParamsTest extends TestCase
         $request = Request::createFromEnvironmentBuilder(
             EnvironmentBuilder::create()->setRequestBody(UrlEncoded::create($requestParams))
         );
-        $response = new Response;
+        $response = new Response();
 
         $mock = $this->getMockForTrait(ControllerTraitValidateRequiredRequestBodyParams::class);
 
         $reflection = new ReflectionClass($mock);
-        
+
         $propRequiredRequestBodyParams = $reflection->getProperty('requiredRequestBodyParams');
         $propRequiredRequestBodyParams->setAccessible(true);
         $propRequiredRequestBodyParams->setValue($mock, $requiredRequestBodyParams);
-        
+
         $methodValidateRequestBodyParams = $reflection->getMethod('validateRequestBodyParams');
         $methodValidateRequestBodyParams->setAccessible(true);
 

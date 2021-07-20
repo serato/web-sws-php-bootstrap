@@ -1,8 +1,9 @@
 <?php
+
 namespace Serato\SwsApp\Slim\Middleware;
 
 use Slim\Http\Body;
-use \Slim\Handlers\AbstractHandler;
+use Slim\Handlers\AbstractHandler;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
@@ -38,7 +39,7 @@ class MaintenanceMode extends AbstractHandler
      *
      * @return ResponseInterface
      */
-    public function __invoke(Request $request, Response $response, callable $next) : Response
+    public function __invoke(Request $request, Response $response, callable $next): Response
     {
         if ($this->maintenanceMode) {
             return $this->defaultMaintenancePage($request, $response);
@@ -55,7 +56,7 @@ class MaintenanceMode extends AbstractHandler
      *
      * @return ResponseInterface
      */
-    public function defaultMaintenancePage(Request $request, Response $response) : Response
+    public function defaultMaintenancePage(Request $request, Response $response): Response
     {
         $contentType = $this->determineContentType($request);
 
