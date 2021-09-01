@@ -55,21 +55,24 @@ abstract class AbstractRouteTest extends TestCase
             $methods = $route->getMethods();
 
             foreach ($methods as $method) {
-
                 // trying to find the route in the list of valid routes
                 $filteredRoutes = array_filter($this->getRoutes(), function ($route, $key) use ($pattern, $method) {
                     return $route['pattern'] === $pattern && $route['method'] === $method;
                 }, ARRAY_FILTER_USE_BOTH);
 
                 // If this line fails, it means the route you just added/changed was not added to the getRoutes method.
-                $errorMessage = "Route {$method} {$pattern} is not present in the whitelist of routes in RouteTest::getRoutes()";
+                $errorMessage = sprintf(
+                    'Route %s %s is not present in the whitelist of routes in RouteTest::getRoutes()',
+                    $method,
+                    $pattern
+                );
+
                 $this->assertCount(1, $filteredRoutes, $errorMessage);
                 $expectedController = current($filteredRoutes)['controller'];
                 $actualController   = $route->getCallable();
 
                 $this->compareRoutes($expectedController, $actualController);
             }
-
         }
     }
 
@@ -89,19 +92,22 @@ abstract class AbstractRouteTest extends TestCase
             foreach ($applicationRoutes as $route) {
                 foreach ($route->getMethods() as $method) {
                     if ($route->getPattern() === $pattern && $method === $expectedMethod) {
-                        $filteredRoutes[]= $route;
+                        $filteredRoutes[] = $route;
                     }
                 }
             }
             // If this line fails, it means a new route has to be added to the getRoutes method.
-            $errorMessage = "Route {$expectedMethod} {$pattern} is not present in the whitelist of routes in RouteTest::getRoutes()";
+            $errorMessage = sprintf(
+                'Route %s %s is not present in the whitelist of routes in RouteTest::getRoutes()',
+                $expectedMethod,
+                $pattern
+            );
 
             $this->assertCount(1, $filteredRoutes, $errorMessage);
             $actualController   = current($filteredRoutes)->getCallable();
             $expectedController = $expectedRoute['controller'];
 
             $this->compareRoutes($expectedController, $actualController);
-
         }
     }
 
