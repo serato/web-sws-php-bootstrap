@@ -177,8 +177,8 @@ class CountryServiceTest extends TestCase
             ],
             [
                 'country_code' => 'CA',
-                'region_name'  => 'New Brunswick/Nouveau-Brunswick',
-                'state_code'   => 'NB',
+                'region_name'  => 'Alberta',
+                'state_code'   => 'AB',
             ],
             [
                 'country_code' => 'CA',
