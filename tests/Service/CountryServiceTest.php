@@ -175,6 +175,26 @@ class CountryServiceTest extends TestCase
                 'region_name'  => 'PuErTo RiCo',
                 'state_code'   => 'PR',
             ],
+            [
+                'country_code' => 'CA',
+                'region_name'  => 'Alberta',
+                'state_code'   => 'AB',
+            ],
+            [
+                'country_code' => 'CA',
+                'region_name'  => 'New Brunswick/Nouveau-Brunswick',
+                'state_code'   => 'NB',
+            ],
+            [
+                'country_code' => 'CA',
+                'region_name'  => 'Newfoundland and Labrador',
+                'state_code'   => 'NL',
+            ],
+            [
+                'country_code' => 'CA',
+                'region_name'  => ' Newfoundland  AND  Labrador ',
+                'state_code'   => 'NL',
+            ],
         ];
     }
 
