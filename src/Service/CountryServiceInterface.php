@@ -361,6 +361,15 @@ interface CountryServiceInterface
     public static function getCountryNameWithCountryCode(string $countryCode): ?string;
 
     /**
+     * This method is a temporary solution.
+     * We should refactor our database to store country code instead of country name.
+     *
+     * @param string $countryName
+     * @return string|null
+     */
+    public static function getCountryCodeWithCountryName(string $countryName): ?string;
+
+    /**
      * @return string[]
      */
     public static function getCountries(): array;
@@ -373,4 +382,12 @@ interface CountryServiceInterface
      * @return string
      */
     public static function getCountryRegionCode(string $countryCode, string $regionName): ?string;
+
+    /**
+     * @param string $countryCode
+     * @param string $regionCode
+     *
+     * @return string|null
+     */
+    public static function getCountryRegionName(string $countryCode, string $regionCode): ?string;
 }
