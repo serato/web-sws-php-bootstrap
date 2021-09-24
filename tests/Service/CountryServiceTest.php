@@ -237,9 +237,19 @@ class CountryServiceTest extends TestCase
                 'region_name'  => 'PuErTo RiCo',
                 'state_code'   => 'PR',
             ],
+            [// Valid country name and region name
+                'country_code' => 'US',
+                'region_name'  => 'PR',
+                'state_code'   => 'PR',
+            ],
             [
                 'country_code' => 'CA',
                 'region_name'  => 'Alberta',
+                'state_code'   => 'AB',
+            ],
+            [
+                'country_code' => 'CA',
+                'region_name'  => ' AB ',
                 'state_code'   => 'AB',
             ],
             [

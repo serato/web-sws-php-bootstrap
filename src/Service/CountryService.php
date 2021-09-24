@@ -72,6 +72,12 @@ class CountryService implements CountryServiceInterface
 
         // Get the array containing regions and codes
         $countryRegions = static::sanitizeArrayOfStrings(static::REGION[$countryCode]);
+
+        // Check if it is a valid region code, not a region name
+        if (!empty($countryRegions[strtoupper($regionName)])) {
+            return strtoupper($regionName);
+        }
+
         $countryRegions = array_flip($countryRegions);
 
         // If the region name is invalid, return null
