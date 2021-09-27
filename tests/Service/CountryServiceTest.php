@@ -20,7 +20,7 @@ class CountryServiceTest extends TestCase
     public function testGetCountryNameWithCountryCode(string $countryCode, string $expectedCountryName): void
     {
         $countryName = CountryService::getCountryNameWithCountryCode($countryCode);
-        $this->assertEquals($expectedCountryName, $countryName);
+        $this->assertSame($expectedCountryName, $countryName);
     }
 
     public function testGetCountries(): void
@@ -28,7 +28,7 @@ class CountryServiceTest extends TestCase
         $countries = CountryService::getCountries();
         $this->assertEquals(247, count($countries));
         $this->assertArrayHasKey('US', $countries);
-        $this->assertEquals($countries['US'], 'United States of America');
+        $this->assertSame($countries['US'], 'United States of America');
     }
 
     /**
@@ -45,6 +45,19 @@ class CountryServiceTest extends TestCase
     }
 
     /**
+     * @dataProvider getGetRegionNameDataProvider
+     *
+     * @param string $countryCode
+     * @param string $regionCode
+     * @param string|null $regionName
+     */
+    public function testGetCountryRegionName(string $countryCode, string $regionCode, ?string $regionName): void
+    {
+        $result = CountryService::getCountryRegionName($countryCode, $regionCode);
+        $this->assertSame($regionName, $result);
+    }
+
+    /**
      * @dataProvider getGetCountryCodeWithCountryNameDataProvider
      *
      * @param string $countryName
@@ -53,7 +66,56 @@ class CountryServiceTest extends TestCase
     public function testGetCountryCodeWithCountryName(string $countryName, ?string $expectedCountryCode): void
     {
         $actualCountryCode = CountryService::getCountryCodeWithCountryName($countryName);
-        $this->assertEquals($expectedCountryCode, $actualCountryCode);
+        $this->assertSame($expectedCountryCode, $actualCountryCode);
+    }
+
+    /**
+     * @return \string[][]
+     */
+    public function getGetRegionNameDataProvider(): array
+    {
+        return [
+            [ // uppercase
+                'country_code' => 'US',
+                'state_code'   => 'CA',
+                'region_name'  => 'California',
+            ],
+            [ // lowercase
+                'country_code' => 'us',
+                'state_code'   => 'ca',
+                'region_name'  => 'California',
+            ],
+            [ // not existing country
+                'country_code' => 'xx',
+                'state_code'   => 'ca',
+                'region_name'  => null,
+            ],
+            [ // not existing state
+                'country_code' => 'US',
+                'state_code'   => 'xx',
+                'region_name'  => null,
+            ],
+            [ // armed forces
+                'country_code' => 'US',
+                'state_code'   => 'AE',
+                'region_name'  => 'Armed Forces (Africa, Canada, Europe, Middle East)',
+            ],
+            [ // not real state
+                'country_code' => 'US',
+                'state_code'   => 'PR',
+                'region_name'  => 'Puerto Rico',
+            ],
+            [ // province of canada
+                'country_code' => 'CA',
+                'state_code'   => 'MB',
+                'region_name'  => 'Manitoba',
+            ],
+            [ // province of canada
+                'country_code' => 'CA',
+                'state_code'   => 'PE',
+                'region_name'  => 'Prince Edward Island',
+            ],
+        ];
     }
 
     /**
@@ -175,9 +237,19 @@ class CountryServiceTest extends TestCase
                 'region_name'  => 'PuErTo RiCo',
                 'state_code'   => 'PR',
             ],
+            [// Valid country name and region name
+                'country_code' => 'US',
+                'region_name'  => 'PR',
+                'state_code'   => 'PR',
+            ],
             [
                 'country_code' => 'CA',
                 'region_name'  => 'Alberta',
+                'state_code'   => 'AB',
+            ],
+            [
+                'country_code' => 'CA',
+                'region_name'  => ' AB ',
                 'state_code'   => 'AB',
             ],
             [

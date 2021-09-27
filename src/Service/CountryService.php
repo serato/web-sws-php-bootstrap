@@ -72,6 +72,12 @@ class CountryService implements CountryServiceInterface
 
         // Get the array containing regions and codes
         $countryRegions = static::sanitizeArrayOfStrings(static::REGION[$countryCode]);
+
+        // Check if it is a valid region code, not a region name
+        if (!empty($countryRegions[strtoupper($regionName)])) {
+            return strtoupper($regionName);
+        }
+
         $countryRegions = array_flip($countryRegions);
 
         // If the region name is invalid, return null
@@ -80,6 +86,30 @@ class CountryService implements CountryServiceInterface
         }
 
         return $countryRegions[$regionName];
+    }
+
+    /**
+     * @param string $countryCode
+     * @param string $regionCode
+     *
+     * @return string|null
+     */
+    public static function getCountryRegionName(string $countryCode, string $regionCode): ?string
+    {
+        $countryCode = static::sanitizeString($countryCode);
+        $regionCode  = static::sanitizeString($regionCode);
+
+        // If the country code is invalid return null
+        if (!array_key_exists($countryCode, static::COUNTRIES)) {
+            return null;
+        }
+
+        // If the country does not have regions, return null
+        if (!array_key_exists($countryCode, static::REGION)) {
+            return null;
+        }
+
+        return empty(static::REGION[$countryCode][$regionCode]) ? null : static::REGION[$countryCode][$regionCode];
     }
 
     /**
