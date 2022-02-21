@@ -93,7 +93,8 @@ class CspHeaders extends AbstractHandler
                 'data:',
                 'https://www.facebook.com',
                 'https://stats.g.doubleclick.net',
-                'https://optimize.google.com'
+                'https://optimize.google.com',
+                'https://www.googletagmanager.com'
             ],
             'font-src' => [
                 'https://static.serato.com',
