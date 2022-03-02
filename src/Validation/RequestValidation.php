@@ -1,6 +1,6 @@
 <?php
 
-namespace Serato\SwsApp\Validation\RequestValidation;
+namespace Serato\SwsApp\Validation;
 
 use App\Exception\MissingRequiredParametersException;
 use App\Exception\RequestValidation\InvalidRequestParametersException;
