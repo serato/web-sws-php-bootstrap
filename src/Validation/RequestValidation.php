@@ -2,8 +2,8 @@
 
 namespace Serato\SwsApp\Validation;
 
-use App\Exception\MissingRequiredParametersException;
-use App\Exception\RequestValidation\InvalidRequestParametersException;
+use Serato\SwsApp\Exception\MissingRequiredParametersException;
+use Serato\SwsApp\Exception\InvalidRequestParametersException;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Rakit\Validation\Validator;
 

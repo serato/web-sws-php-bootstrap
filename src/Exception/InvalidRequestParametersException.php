@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exception\RequestValidation;
+namespace Serato\SwsApp\Exception;
 
 use Serato\SwsApp\Http\Rest\Exception\AbstractBadRequestException;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Exception;
+namespace Serato\SwsApp\Exception;
 
 use Serato\SwsApp\Http\Rest\Exception\AbstractBadRequestException;
 use Psr\Http\Message\ServerRequestInterface as Request;
