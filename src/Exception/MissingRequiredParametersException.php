@@ -14,7 +14,7 @@ class MissingRequiredParametersException extends AbstractBadRequestException
     /**
      * @var int
      */
-    protected $code = 4010;
+    protected $code = 2013;
 
     /**
      * @var string

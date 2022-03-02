@@ -13,7 +13,7 @@ class InvalidRequestParametersException extends AbstractBadRequestException
     /**
      * @var int
      */
-    protected $code = 4032;
+    protected $code = 2012;
 
     /**
      * @var string
