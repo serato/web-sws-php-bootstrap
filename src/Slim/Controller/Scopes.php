@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Slim\Controller;
 
 /**

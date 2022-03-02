@@ -1,14 +1,17 @@
 <?php
+
 namespace Serato\SwsApp\Slim\Handlers;
 
 use Serato\SwsApp\AccessLogWriter;
 use Slim\Http\Body;
+use Slim\Container;
 use Slim\Handlers\Error as SlimError;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface as Logger;
 use Exception;
 use UnexpectedValueException;
+use Serato\SwsApp\RequestToContainerTrait;
 
 /**
  * Application Error Handler
@@ -21,9 +24,11 @@ use UnexpectedValueException;
  */
 class Error extends SlimError
 {
+    use RequestToContainerTrait;
+
     public const ERROR_CODE_HTTP_HEADER = 'X-Serato-ErrorCode';
     public const ERROR_MESSAGE_HTTP_HEADER = 'X-Serato-ErrorMessage';
-    const BASE_CLASS = '\Serato\SwsApp\Exception\AbstractException';
+    protected const BASE_CLASS = '\Serato\SwsApp\Exception\AbstractException';
     public const GENRIC_ERROR_MESSAGE = 'Oops, something went wrong, please try again.';
 
     /**
@@ -71,19 +76,28 @@ class Error extends SlimError
     /* @var AccessLogWriter */
     private $accessLogWriter;
 
+    /** @var Container */
+    private $container;
+
     /**
      * Construct the error handler
      *
-     * @param string    $applicationName        Human readable name of application
-     * @param bool      $displayErrorDetails    Display full error message including stack trace
-     * @param Logger    $logger                 PSR-3 logger interface
+     * @param string            $applicationName        Human readable name of application
+     * @param bool              $displayErrorDetails    Display full error message including stack trace
+     * @param Logger            $logger                 PSR-3 logger interface
+     * @param Container|null    $container              Slim container instance
      */
-    public function __construct(string $applicationName, bool $displayErrorDetails, Logger $logger)
-    {
+    public function __construct(
+        string $applicationName,
+        bool $displayErrorDetails,
+        Logger $logger,
+        ?Container $container = null
+    ) {
         parent::__construct($displayErrorDetails);
         $this->logger = $logger;
         $this->applicationName = $applicationName;
         $this->accessLogWriter = new AccessLogWriter($logger);
+        $this->container = $container;
     }
 
     /**
@@ -105,6 +119,9 @@ class Error extends SlimError
         $http_response_code = 500;
         if (is_a($exception, self::BASE_CLASS)) {
             $http_response_code = $exception->getHttpResponseCode();
+            if ($exception->getRequest() !== null) {
+                $request = $exception->getRequest();
+            }
         }
 
         $contentType = $this->determineContentType($request);
@@ -142,6 +159,10 @@ class Error extends SlimError
         if (is_a($exception, self::BASE_CLASS)) {
             $this->accessLogWriter->log($exception->getRequest(), $response);
         }
+
+        # Set the request object to the container
+        # (the setRequestToContainer() method is part of `Serato\SwsApp\RequestToContainerTrait`)
+        $this->setRequestToContainer($request, $this->container);
 
         return $response;
     }

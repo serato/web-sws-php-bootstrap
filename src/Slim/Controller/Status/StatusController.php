@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Slim\Controller\Status;
 
 use Psr\Log\LoggerInterface;
@@ -55,7 +56,7 @@ final class StatusController extends AbstractController
                 $contentType = $mediaType->getType();
             }
         }
-        
+
         // Allow for setting the content type via a GET parameter
         // (I'm looking at you Jenkins, you POS)
         if ($request->getQueryParam('content_type', null) !== null) {
@@ -68,8 +69,8 @@ final class StatusController extends AbstractController
             }
         }
 
-        $date = new Datetime;
-        
+        $date = new Datetime();
+
         $vars = [
             'current_time' => $date->format(DateTime::ATOM),
             'host' => $request->getHeaderLine('Host'),

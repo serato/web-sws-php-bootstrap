@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Slim\Controller;
 
 use Serato\SwsApp\Slim\Controller\AbstractController;
@@ -11,13 +12,13 @@ use Highlight\Highlighter;
 
 class JsonSchemaViewerController extends AbstractController
 {
-    const SCHEMAS_LIST_NAMED_ROUTE = 'schemasList';
+    public const SCHEMAS_LIST_NAMED_ROUTE = 'schemasList';
 
-    const HTML_VIEW = 'html';
-    const JSON_VIEW = 'json';
-    const JSONLIST_VIEW = 'jsonlist';
+    private const HTML_VIEW = 'html';
+    private const JSON_VIEW = 'json';
+    private const JSONLIST_VIEW = 'jsonlist';
 
-    const STYLE_SHEET = 'github-gist.css';
+    private const STYLE_SHEET = 'github-gist.css';
 
     /* @var RouterInterface */
     private $router;
@@ -90,7 +91,7 @@ class JsonSchemaViewerController extends AbstractController
                 $content = json_encode([
                     'description' => $this->appName . ' - REST API JSON Schemas',
                     'baseUri' => $request->getUri()->getScheme() . '://' .
-                                    $request->getUri()->getHost() . $baseUri .'/' . self::JSON_VIEW,
+                                    $request->getUri()->getHost() . $baseUri . '/' . self::JSON_VIEW,
                     'items' => $this->getJsonFileList()
                 ]);
             } else {

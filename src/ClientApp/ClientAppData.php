@@ -20,8 +20,8 @@ use Psr\Cache\CacheItemPoolInterface;
 
 class ClientAppData
 {
-    const CACHE_KEY = 'SWS-App-Request-ClientAppData';
-    const CACHE_EXPIRY_TIME = 3600; // seconds
+    private const CACHE_KEY = 'SWS-App-Request-ClientAppData';
+    private const CACHE_EXPIRY_TIME = 3600; // seconds
 
     /**
      * AWS SDK client

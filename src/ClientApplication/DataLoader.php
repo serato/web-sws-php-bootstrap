@@ -232,13 +232,13 @@ class DataLoader
                 if (!isset($credentialsData[$appName]['id'])) {
                     throw new MissingApplicationIdException(
                         'Invalid configuration for application `' . $appName . '` in credentials file `' .
-                        $credentialsObjectPath. '`. Missing required key `id`.'
+                        $credentialsObjectPath . '`. Missing required key `id`.'
                     );
                 }
                 if (!isset($credentialsData[$appName]['password_hash'])) {
                     throw new MissingApplicationPasswordHash(
                         'Invalid configuration for application `' . $appName . '` in credentials file `' .
-                        $credentialsObjectPath. '`. Missing required key `password_hash`.'
+                        $credentialsObjectPath . '`. Missing required key `password_hash`.'
                     );
                 }
 

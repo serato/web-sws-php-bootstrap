@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Test\Slim\Handlers;
 
 use Serato\SwsApp\Test\TestCase;
@@ -15,7 +16,7 @@ use Exception;
  */
 class ErrorTest extends TestCase
 {
-    const APP_NAME = 'My Web App';
+    private const APP_NAME = 'My Web App';
 
     public function setUp()
     {
@@ -42,7 +43,7 @@ class ErrorTest extends TestCase
         $displayErrorDetals
     ) {
         $assertText = "$exceptionClass $httpResponseCode $displayErrorDetals";
-        
+
         $errorHandler = new ErrorHandler(
             self::APP_NAME,
             $displayErrorDetals,
@@ -56,7 +57,7 @@ class ErrorTest extends TestCase
                 EnvironmentBuilder::create()
                     ->addHeader('Accept', 'application/json')
             ),
-            new Response,
+            new Response(),
             $exception
         );
 
@@ -71,10 +72,10 @@ class ErrorTest extends TestCase
 
         $this->assertEquals($httpResponseCode, $response->getStatusCode(), $assertText);
         $this->assertEquals('application/json', $response->getHeader('Content-type')[0], $assertText);
-        
+
         // Parse the body content
         $json = json_decode($response->getBody(), true);
-        
+
         if (!is_a($exception, '\Serato\SwsApp\Http\Rest\Exception\AbstractException')) {
             // Unhandled exceptions can output a stack trace to the client
             // when $displayErrorDetals = true.

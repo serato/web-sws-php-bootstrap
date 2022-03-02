@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Test\Http\Rest\Exception;
 
 use Serato\SwsApp\Test\TestCase;
@@ -15,7 +16,7 @@ class ExceptionTest extends TestCase
     public function testClientUserGrantsException()
     {
         try {
-            throw new ClientUserGrantsException;
+            throw new ClientUserGrantsException();
         } catch (ClientUserGrantsException $e) {
             $this->assertEquals($e->getHttpResponseCode(), 403);
             $this->assertEquals($e->getCode(), 2000);
@@ -25,7 +26,7 @@ class ExceptionTest extends TestCase
     public function testExpiredAccessTokenException()
     {
         try {
-            throw new ExpiredAccessTokenException;
+            throw new ExpiredAccessTokenException();
         } catch (ExpiredAccessTokenException $e) {
             $this->assertEquals($e->getHttpResponseCode(), 401);
             $this->assertEquals($e->getCode(), 2002);
@@ -35,7 +36,7 @@ class ExceptionTest extends TestCase
     public function testInvalidAccessTokenException()
     {
         try {
-            throw new InvalidAccessTokenException;
+            throw new InvalidAccessTokenException();
         } catch (InvalidAccessTokenException $e) {
             $this->assertEquals($e->getHttpResponseCode(), 403);
             $this->assertEquals($e->getCode(), 2001);

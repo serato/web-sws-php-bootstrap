@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Slim\Middleware\AccessScopes;
 
 use Aws\Sdk;
@@ -106,7 +107,6 @@ class AccessToken extends AbstractAccessScopesMiddleware
                     $scopes
                 );
 
-
                 $refreshTokenId = '';
 
                 # Need to gracefully handle tokens that don't have the 'rtid' claim because there will
@@ -123,9 +123,9 @@ class AccessToken extends AbstractAccessScopesMiddleware
                     ->withAttribute(self::USER_EMAIL_VERIFIED, $accessToken->getClaim('email_verified'))
                     ->withAttribute(self::REFRESH_TOKEN_ID, $refreshTokenId);
             } catch (TokenExpiredException $e) {
-                throw new ExpiredAccessTokenException;
+                throw new ExpiredAccessTokenException(null, $request);
             } catch (Exception $e) {
-                throw new InvalidAccessTokenException;
+                throw new InvalidAccessTokenException(null, $request);
             }
         }
         return $next($request, $response);
@@ -163,7 +163,8 @@ class AccessToken extends AbstractAccessScopesMiddleware
     {
         $scopes = [];
 
-        if (is_array($accessToken->getClaim('scopes')) &&
+        if (
+            is_array($accessToken->getClaim('scopes')) &&
             isset($accessToken->getClaim('scopes')[$this->webServiceName])
         ) {
             $scopes = $accessToken->getClaim('scopes')[$this->webServiceName];

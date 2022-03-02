@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Slim\Middleware;
 
 use Serato\SwsApp\AccessLogWriter;
@@ -32,7 +33,7 @@ class AccessLog
      *
      * @return Response
      */
-    public function __invoke(Request $request, Response $response, callable $next) : Response
+    public function __invoke(Request $request, Response $response, callable $next): Response
     {
         $response = $next($request, $response);
         $this->accessLogWriter->log($request, $response);

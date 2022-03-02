@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Test\Propel\Sqlite\InMemory;
 
 use Serato\SwsApp\Test\TestCase;
@@ -12,10 +13,10 @@ use Serato\SwsApp\Test\Propel\Model\License;
  */
 class BuilderTest extends TestCase
 {
-    const SCHEMA_DIR            = __DIR__ . '/../../../resources/propel/schemas';
-    const JSON_DATA_DIR         = __DIR__ . '/' . '../../../resources/propel/data';
-    const MODEL_NAMESPACE       = '\Serato\SwsApp\Test\Propel\Model\\';
-    const COMMON_TABLE_NAMES    = ['LicenseType', 'ProductType'];
+    private const SCHEMA_DIR            = __DIR__ . '/../../../resources/propel/schemas';
+    private const JSON_DATA_DIR         = __DIR__ . '/' . '../../../resources/propel/data';
+    private const MODEL_NAMESPACE       = '\Serato\SwsApp\Test\Propel\Model\\';
+    private const COMMON_TABLE_NAMES    = ['LicenseType', 'ProductType'];
 
     public function testCreateDb()
     {
@@ -23,7 +24,7 @@ class BuilderTest extends TestCase
         // Create two databases/connections
         $conns['conn1'] = Builder::createDatabase([self::SCHEMA_DIR], 'conn1');
         $conns['conn2'] = Builder::createDatabase([self::SCHEMA_DIR], 'conn2');
-        
+
         // Import data, but only into one database
         foreach (self::COMMON_TABLE_NAMES as $name) {
             Builder::importJsonDataFile(
@@ -43,7 +44,7 @@ class BuilderTest extends TestCase
     public function testReadWriteDefaultDb()
     {
         Builder::createDatabase([self::SCHEMA_DIR]);
-        
+
         foreach (self::COMMON_TABLE_NAMES as $name) {
             Builder::importJsonDataFile(
                 self::MODEL_NAMESPACE . $name,
@@ -56,7 +57,7 @@ class BuilderTest extends TestCase
         $this->assertEquals(count(LicenseTypeQuery::create()->find()), 0);
 
         $this->assertEquals(count(LicenseQuery::create()->find()), 0);
-        $license = new License;
+        $license = new License();
         $license->setId('1223');
         $license->save();
         $this->assertEquals(count(LicenseQuery::create()->find()), 1);

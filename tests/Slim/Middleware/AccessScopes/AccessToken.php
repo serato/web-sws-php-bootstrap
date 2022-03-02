@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Test\Slim\Middleware\AccessScopes;
 
 use Serato\Jwt\AccessToken as JwtAccessToken;
@@ -11,10 +12,10 @@ class AccessToken extends JwtAccessToken
     /**
      */
     final public function create(
-        array   $audience,
-        int     $expires,
-        array   $customClaims
-    ) : AccessToken {
+        array $audience,
+        int $expires,
+        array $customClaims
+    ): AccessToken {
         $this->createTokenWithKms(
             'my-kms-master-key-id',
             $customClaims['app_id'],

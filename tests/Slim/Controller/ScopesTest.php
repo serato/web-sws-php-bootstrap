@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Test\Slim\Controller;
 
 use Serato\SwsApp\Test\TestCase;

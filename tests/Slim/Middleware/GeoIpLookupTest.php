@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Test\Slim\Middleware;
 
 use Serato\SwsApp\Test\TestCase;
@@ -98,7 +99,7 @@ class GeoIpLookupTest extends TestCase
     private function getRequestViaMiddleware($remoteIp = null, $xForwardedIp = null): Request
     {
         $middleware = new GeoIpLookup(realpath(__DIR__ . '/../../../GeoLite2-City.mmdb'));
-        $emptyMiddleware = new EmptyWare;
+        $emptyMiddleware = new EmptyWare();
 
         $env = EnvironmentBuilder::create();
 
@@ -111,7 +112,7 @@ class GeoIpLookupTest extends TestCase
 
         $response = $middleware(
             Request::createFromEnvironmentBuilder($env),
-            new Response,
+            new Response(),
             $emptyMiddleware
         );
 

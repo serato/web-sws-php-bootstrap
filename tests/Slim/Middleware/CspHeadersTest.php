@@ -1,4 +1,5 @@
 <?php
+
 namespace Serato\SwsApp\Test\Slim\Middleware;
 
 use Serato\SwsApp\Test\TestCase;
@@ -15,10 +16,10 @@ class CspHeadersTest extends TestCase
 {
     public function test()
     {
-        $middleware = new CspHeaders;
-        $emptyMiddleware = new EmptyWare;
+        $middleware = new CspHeaders();
+        $emptyMiddleware = new EmptyWare();
 
-        $response = new Response;
+        $response = new Response();
         $response->getBody()->write($this->getHtmlBody());
 
         $response = $middleware(
