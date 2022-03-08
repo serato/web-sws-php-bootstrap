@@ -8,6 +8,8 @@ use Serato\SwsApp\Exception\InvalidRequestParametersException;
 use Rakit\Validation\RuleNotFoundException;
 use Serato\SwsApp\Validation\RequestValidation;
 use Serato\SwsApp\Test\TestCase;
+use Rakit\Validation\Rules\Numeric;
+use Serato\SwsApp\Http\Rest\Exception\UnsupportedContentTypeException;
 use Mockery;
 
 class RequestValidationTest extends TestCase
@@ -18,13 +20,15 @@ class RequestValidationTest extends TestCase
      * @param array $requestBody
      * @param array $rules
      * @param string|null $errorExpected
-     * 
+     *
      * @group validation
      */
     public function testRest(
         array $requestBody,
         array $rules,
-        ?string $errorExpected = null
+        ?string $errorExpected = null,
+        array $customRules = [],
+        array $exceptions = []
     ): void {
         if (!is_null($errorExpected)) {
             $this->expectException($errorExpected);
@@ -37,9 +41,11 @@ class RequestValidationTest extends TestCase
 
         $validation->validateRequestData(
             $requestMock,
-            $rules
+            $rules,
+            $customRules,
+            $exceptions
         );
-        
+
         // phpunit >= 6.4 complain This test did not perform any assertions
         // put this to avoid the error.
         $this->assertTrue(true);
@@ -90,6 +96,35 @@ class RequestValidationTest extends TestCase
                 ],
                 'errorExpected' => RuleNotFoundException::class,
             ],
+            // custom rule
+            [
+                'body' => [
+                    'paramName' => '1'
+                ],
+                'rules' => [
+                    'paramName' => 'required|is_numberic'
+                ],
+                'errorExpected' => null,
+                'customRules' => [
+                    'is_numberic' => new Numeric()
+                ]
+                ],
+            // custom exception
+            [
+                'body' => [
+                    'paramName' => 'invalid-number'
+                ],
+                'rules' => [
+                    'paramName' => 'required|is_numberic'
+                ],
+                'errorExpected' => UnsupportedContentTypeException::class,
+                'customRules' => [
+                    'is_numberic' => new Numeric()
+                ],
+                'customException' => [
+                    'is_numberic' => UnsupportedContentTypeException::class
+                ]
+            ]
         ];
     }
 }

@@ -11,16 +11,30 @@ use Rakit\Validation\Validator;
  * Class RequestValidation
  * @package App\Validation\RequestValidation
  */
-class RequestValidation
+class RequestValidation implements RequestValidationInterface
 {
     /**
      * @param Request $request
      * @param array $validationRules
+     * @param array $customRules
+     * @param array $exceptions
      */
-    public function validateRequestData(Request $request, array $validationRules): void
-    {
+    public function validateRequestData(
+        Request $request,
+        array $validationRules,
+        array $customRules = [],
+        array $exceptions = []
+    ): void {
         $requestBody = $request->getParsedBody();
         $validator   = new Validator();
+
+        // Add custom validation rules
+        if (!empty($customRules)) {
+            foreach ($customRules as $key => $customRule) {
+                $validator->addValidator($key, $customRule);
+            }
+        }
+
         $validation  = $validator->make($requestBody, $validationRules);
 
         // set aliases
@@ -40,6 +54,12 @@ class RequestValidation
             if (!empty($error['required'])) {
                 $required[] = $key;
                 continue;
+            }
+
+            foreach ($exceptions as $exceptionKey => $exception) {
+                if (!empty($error[$exceptionKey])) {
+                    throw new $exception();
+                }
             }
 
             $invalid[] = implode('. ', $error);
