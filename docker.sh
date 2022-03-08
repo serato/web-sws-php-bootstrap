@@ -19,8 +19,8 @@ then
 fi
 cd /home
 php /home/composer-setup.php --filename=composer
+php -r "rename('/home/composer', '/usr/local/bin/composer');"
 php -r "unlink('/home/composer-setup.php');"
-ln -sf /home/composer /usr/local/bin/composer
 
 # Create an AWS IAM credentials file (used for integration testing)
 # Provide a AWS IAM access key ID to docker-compose via the AWS_ACCESS_KEY_ID environment variable.
