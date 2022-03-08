@@ -20,7 +20,9 @@ class RequestValidationTest extends TestCase
      * @param array $requestBody
      * @param array $rules
      * @param string|null $errorExpected
-     *
+     * @param array $customRules
+     * @param array $exceptions
+     * 
      * @group validation
      */
     public function testRest(
