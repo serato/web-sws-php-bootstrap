@@ -32,8 +32,11 @@ class RequestValidationTest extends TestCase
         array $customRules = [],
         array $exceptions = []
     ): void {
+
         if (!is_null($errorExpected)) {
             $this->expectException($errorExpected);
+        } else {
+            $this->expectNotToPerformAssertions();
         }
 
         $validation  = new RequestValidation();
@@ -47,10 +50,6 @@ class RequestValidationTest extends TestCase
             $customRules,
             $exceptions
         );
-
-        // phpunit >= 6.4 complain This test did not perform any assertions
-        // put this to avoid the error.
-        $this->assertTrue(true);
     }
 
     /**
