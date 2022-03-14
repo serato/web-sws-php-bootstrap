@@ -32,7 +32,6 @@ class RequestValidationTest extends TestCase
         array $customRules = [],
         array $exceptions = []
     ): void {
-
         if (!is_null($errorExpected)) {
             $this->expectException($errorExpected);
         } else {
