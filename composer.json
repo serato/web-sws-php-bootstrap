@@ -6,7 +6,7 @@
 	"require": {
 		"php": "^7.1",
 		"slim/slim": "^3.0.0",
-		"serato/jwt": "^1.0.0",
+		"serato/jwt": "^2.0.0",
 		"aws/aws-sdk-php": "^3.0",
 		"propel/propel": "2.0.0-alpha8",
 		"willdurand/negotiation": "~2.2.0",

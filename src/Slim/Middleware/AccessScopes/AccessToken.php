@@ -53,6 +53,13 @@ class AccessToken extends AbstractAccessScopesMiddleware
     protected $cache;
 
     /**
+     * Memcached connection
+     * 
+     * @var \Memcached
+     */
+    protected $memcached;
+
+    /**
      * @param Sdk                       $awsSdk             AWS SDK v3.x
      * @param LoggerInterface           $logger             PSR-3 logger interface
      * @param CacheItemPoolInterface    $cache              PSR-6 cache item pool
@@ -63,11 +70,13 @@ class AccessToken extends AbstractAccessScopesMiddleware
         Sdk $awsSdk,
         LoggerInterface $logger,
         CacheItemPoolInterface $cache,
+        \Memcached $memcached,
         string $webServiceName
     ) {
         $this->awsSdk = $awsSdk;
         $this->logger = $logger;
         $this->cache = $cache;
+        $this->memcached = $memcached;
         $this->webServiceName = $webServiceName;
     }
 
@@ -96,7 +105,7 @@ class AccessToken extends AbstractAccessScopesMiddleware
             $accessToken = new JwtAccessToken($this->getAwsSdk());
             try {
                 $accessToken->parseTokenString((string)$tokenString, $this->cache);
-                $accessToken->validate($this->webServiceName);
+                $accessToken->validate($this->webServiceName, $this->memcached);
 
                 $scopes = $this->getAccessTokenScopes($accessToken);
 
