@@ -16,5 +16,4 @@ use Serato\SwsApp\Test\Propel\Model\Base\License as BaseLicense;
  */
 class License extends BaseLicense
 {
-
 }

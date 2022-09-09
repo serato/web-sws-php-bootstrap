@@ -54,7 +54,7 @@ class AccessToken extends AbstractAccessScopesMiddleware
 
     /**
      * Memcached connection
-     * 
+     *
      * @var \Memcached
      */
     protected $memcached;

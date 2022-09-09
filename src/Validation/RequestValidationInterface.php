@@ -15,7 +15,7 @@ interface RequestValidationInterface
      * @param array $validationRules
      * @param array $customRules
      * @param array $exceptions
-     * 
+     *
      */
     public function validateRequestData(
         Request $request,

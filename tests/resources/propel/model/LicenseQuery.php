@@ -16,5 +16,4 @@ use Serato\SwsApp\Test\Propel\Model\Base\LicenseQuery as BaseLicenseQuery;
  */
 class LicenseQuery extends BaseLicenseQuery
 {
-
 }

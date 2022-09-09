@@ -17,7 +17,7 @@ class AccessControlAllowOriginTest extends TestCase
     /**
      * Create a Request object with no value provided for the `Origin` header.
      * Create an empty Response object.
-     * 
+     *
      * Execute the middleware and get the returned Response object.
      *
      * Confirm that the Response object has:
@@ -40,7 +40,7 @@ class AccessControlAllowOriginTest extends TestCase
     /**
      * Create a Request object with a value provided for the `Origin` header.
      * Create an empty Response object.
-     * 
+     *
      * Execute the middleware and get the returned Response object.
      *
      * Confirm that the Response object has:
@@ -69,7 +69,7 @@ class AccessControlAllowOriginTest extends TestCase
     /**
      * Create a Request object with a value provided for the `Origin` header.
      * Create a Response object with a `Vary` header that contains an initial value.
-     * 
+     *
      * Execute the middleware and get the returned Response object.
      *
      * Confirm that the Response object has:
@@ -86,7 +86,7 @@ class AccessControlAllowOriginTest extends TestCase
 
         $request = Request::createFromEnvironmentBuilder(EnvironmentBuilder::create())
                         ->withHeader('Origin', $origin);
-        
+
         $response = new Response();
         $response = $middleware(
             $request,
