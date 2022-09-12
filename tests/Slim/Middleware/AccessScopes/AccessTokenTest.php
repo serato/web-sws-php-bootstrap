@@ -11,6 +11,8 @@ use Serato\Slimulator\Request;
 use Serato\Slimulator\Authorization\BearerToken;
 use Slim\Http\Response;
 use Aws\Sdk;
+use Mockery;
+use Mockery\MockInterface;
 
 /**
  * Unit tests for Serato\SwsApp\Slim\Middleware\AccessScopes\AccessToken
@@ -32,6 +34,7 @@ class AccessTokenTest extends TestCase
             $this->getAwsSdk(),
             $this->getLogger(),
             $this->getFileSystemCachePool(),
+            $this->getMockMemcached(),
             self::WEBSERVICE_NAME
         );
         $nextMiddleware = new EmptyWare();
@@ -59,10 +62,20 @@ class AccessTokenTest extends TestCase
             [self::WEBSERVICE_NAME]
         );
 
+        $rtid = $token->getClaim(AccessTokenMiddleware::REFRESH_TOKEN_ID);
+        $mockMemcached = $this->getMockMemcached();
+
+        // Mock cache miss
+        $mockMemcached
+            ->shouldReceive('get')
+            ->withArgs(['r-' . $rtid])
+            ->andReturn(false);
+
         $middleware = new AccessTokenMiddleware(
             $awsSdk,
             $this->getLogger(),
             $this->getFileSystemCachePool(),
+            $mockMemcached,
             self::WEBSERVICE_NAME
         );
 
@@ -96,6 +109,54 @@ class AccessTokenTest extends TestCase
     }
 
     /**
+     * Call the middleware with an otherwise valid token. ie. The token:
+     * - Includes the provided webservice name with it's `aud` claim
+     * - Is not expired
+     *
+     * However its parent refresh token has been invalidated i.e. it exists in memcache.
+     *
+     * @expectedException \Serato\SwsApp\Http\Rest\Exception\ExpiredAccessTokenException
+     */
+    public function testMiddlewareWithValidAccessTokenWithInvalidRefreshToken()
+    {
+        $awsSdk = $this->getAwsSdkWithKmsResults();
+
+        $token = $this->getAccessToken(
+            $awsSdk,
+            time() + 300,
+            [self::WEBSERVICE_NAME]
+        );
+
+        $rtid = $token->getClaim(AccessTokenMiddleware::REFRESH_TOKEN_ID);
+        $mockMemcached = $this->getMockMemcached();
+
+        // Mock cache hit
+        $mockMemcached
+            ->shouldReceive('get')
+            ->withArgs(['r-' . $rtid])
+            ->andReturn($rtid);
+
+        $middleware = new AccessTokenMiddleware(
+            $awsSdk,
+            $this->getLogger(),
+            $this->getFileSystemCachePool(),
+            $mockMemcached,
+            self::WEBSERVICE_NAME
+        );
+
+        $nextMiddleware = new EmptyWare();
+
+        $response = $middleware(
+            Request::createFromEnvironmentBuilder(
+                EnvironmentBuilder::create()
+                    ->setAuthorization(BearerToken::create((string)$token))
+            ),
+            new Response(),
+            $nextMiddleware
+        );
+    }
+
+    /**
      * Create an Access Token that does NOT have ab 'rtid' claim and ensure that that Request
      * object contains an empty string value for the 'rtid' custom attribute.
      *
@@ -122,6 +183,7 @@ class AccessTokenTest extends TestCase
             $awsSdk,
             $this->getLogger(),
             $this->getFileSystemCachePool(),
+            $this->getMockMemcached(),
             self::WEBSERVICE_NAME
         );
 
@@ -181,6 +243,7 @@ class AccessTokenTest extends TestCase
             $awsSdk,
             $this->getLogger(),
             $this->getFileSystemCachePool(),
+            $this->getMockMemcached(),
             self::WEBSERVICE_NAME . ' invalidate'
         );
 
@@ -211,6 +274,7 @@ class AccessTokenTest extends TestCase
             $awsSdk,
             $this->getLogger(),
             $this->getFileSystemCachePool(),
+            $this->getMockMemcached(),
             self::WEBSERVICE_NAME
         );
 
@@ -222,6 +286,16 @@ class AccessTokenTest extends TestCase
             new Response(),
             new EmptyWare()
         );
+    }
+
+    /**
+     * Returns a mocked memcache instance
+     *
+     * @return \Memcached&MockInterface
+     */
+    private function getMockMemcached()
+    {
+        return Mockery::mock(\Memcached::class);
     }
 
     private function getAccessToken(Sdk $awsSdk, int $expiry, array $audience, ?array $claims = null)

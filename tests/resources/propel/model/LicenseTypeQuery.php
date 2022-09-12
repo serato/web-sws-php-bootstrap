@@ -16,5 +16,4 @@ use Serato\SwsApp\Test\Propel\Model\Base\LicenseTypeQuery as BaseLicenseTypeQuer
  */
 class LicenseTypeQuery extends BaseLicenseTypeQuery
 {
-
 }

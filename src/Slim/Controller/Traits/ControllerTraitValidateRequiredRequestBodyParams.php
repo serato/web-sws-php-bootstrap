@@ -11,7 +11,6 @@ use Psr\Http\Message\ResponseInterface as Response;
  */
 trait ControllerTraitValidateRequiredRequestBodyParams
 {
-
     /**
      * Array of required named parameters for PUT and POST requests
      *

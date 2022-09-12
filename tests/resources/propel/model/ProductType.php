@@ -16,5 +16,4 @@ use Serato\SwsApp\Test\Propel\Model\Base\ProductType as BaseProductType;
  */
 class ProductType extends BaseProductType
 {
-
 }

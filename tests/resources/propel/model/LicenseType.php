@@ -16,5 +16,4 @@ use Serato\SwsApp\Test\Propel\Model\Base\LicenseType as BaseLicenseType;
  */
 class LicenseType extends BaseLicenseType
 {
-
 }

@@ -16,5 +16,4 @@ use Serato\SwsApp\Test\Propel\Model\Base\ProductQuery as BaseProductQuery;
  */
 class ProductQuery extends BaseProductQuery
 {
-
 }
