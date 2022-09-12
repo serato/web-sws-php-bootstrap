@@ -64,6 +64,7 @@ class AccessToken extends AbstractAccessScopesMiddleware
      * @param LoggerInterface           $logger             PSR-3 logger interface
      * @param CacheItemPoolInterface    $cache              PSR-6 cache item pool
      * @param string                    $webServiceName     Name of the host web application
+     * @param \Memcached                $memcached          Memcache connection
      *
      */
     public function __construct(
