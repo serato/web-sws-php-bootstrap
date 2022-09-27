@@ -2,7 +2,6 @@
 
 namespace Serato\SwsApp\Slim\Middleware;
 
-use Slim\Http\Body;
 use Slim\Handlers\AbstractHandler;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -29,14 +28,19 @@ class GeoIpLookup extends AbstractHandler
     /* @var string */
     private $geoLiteDbPath;
 
+    /* @var string */
+    private $realIpHeader;
+
     /**
      * Constructs the object
      *
      * @param string $geoLiteDbPath     Path to a GeoLite2 database file
+     * @param string $realIpHeader      Name of the HTTP header that contains the client's real IP address
      */
-    public function __construct(string $geoLiteDbPath)
+    public function __construct(string $geoLiteDbPath, string $realIpHeader = '')
     {
         $this->geoLiteDbPath = $geoLiteDbPath;
+        $this->realIpHeader = $realIpHeader === '' ? 'X-Forwarded-For' : $realIpHeader;
     }
 
     /**
@@ -50,9 +54,13 @@ class GeoIpLookup extends AbstractHandler
      */
     public function __invoke(Request $request, Response $response, callable $next): Response
     {
-        $ip = $request->getServerParam('HTTP_X_FORWARDED_FOR', '');
+        $ip = $request->getHeaderLine($this->realIpHeader);
+
         if ($ip === '') {
             $ip = $request->getServerParam('REMOTE_ADDR', '');
+        } else {
+            // Some client IP headers, like 'CloudFront-Viewer-Address', include a port number
+            $ip = explode(':', $ip)[0];
         }
 
         $request = $request
