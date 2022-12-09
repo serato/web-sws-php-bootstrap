@@ -22,5 +22,5 @@ interface RequestValidationInterface
         array $validationRules,
         array $customRules = [],
         array $exceptions = []
-    ): void;
+    ): array;
 }
