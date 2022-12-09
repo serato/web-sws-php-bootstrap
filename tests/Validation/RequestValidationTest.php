@@ -2,18 +2,28 @@
 
 namespace Serato\SwsApp\Test\Validation;
 
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Serato\SwsApp\Exception\MissingRequiredParametersException;
-use Serato\SwsApp\Exception\InvalidRequestParametersException;
-use Rakit\Validation\RuleNotFoundException;
-use Serato\SwsApp\Validation\RequestValidation;
-use Serato\SwsApp\Test\TestCase;
-use Rakit\Validation\Rules\Numeric;
-use Serato\SwsApp\Http\Rest\Exception\UnsupportedContentTypeException;
 use Mockery;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Rakit\Validation\RuleNotFoundException;
+use Rakit\Validation\Rules\Numeric;
+use Serato\SwsApp\Exception\InvalidRequestParametersException;
+use Serato\SwsApp\Exception\MissingRequiredParametersException;
+use Serato\SwsApp\Http\Rest\Exception\UnsupportedContentTypeException;
+use Serato\SwsApp\Test\TestCase;
+use Serato\SwsApp\Validation\RequestValidation;
 
 class RequestValidationTest extends TestCase
 {
+
+
+    protected $validation;
+    protected $requestMock;
+
+    protected function setUp()
+    {
+        $this->validation = new RequestValidation();
+        $this->requestMock = Mockery::mock(Request::class);
+    }
     /**
      * @dataProvider dataProvider
      *
@@ -22,7 +32,7 @@ class RequestValidationTest extends TestCase
      * @param string|null $errorExpected
      * @param array $customRules
      * @param array $exceptions
-     *
+     * @param array|null $expectedRequest
      * @group validation
      */
     public function testRest(
@@ -30,26 +40,54 @@ class RequestValidationTest extends TestCase
         array $rules,
         ?string $errorExpected = null,
         array $customRules = [],
-        array $exceptions = []
-    ): void {
+        array $exceptions = [],
+        ?array $expectedRequest = null
+    ): void
+    {
+        $this->requestMock->shouldReceive('getParsedBody')
+            ->andReturn($requestBody);
+
         if (!is_null($errorExpected)) {
             $this->expectException($errorExpected);
         } else {
             $this->expectNotToPerformAssertions();
         }
 
-        $validation  = new RequestValidation();
-        $requestMock = Mockery::mock(Request::class);
-        $requestMock->shouldReceive('getParsedBody')
-            ->andReturn($requestBody);
-
-        $validation->validateRequestData(
-            $requestMock,
+        $this->validation->validateRequestData(
+            $this->requestMock,
             $rules,
             $customRules,
             $exceptions
         );
+
+
     }
+
+    /**
+     * @dataProvider defaultDataProvider
+     *
+     * @param array $requestBody
+     * @param array $rules
+     * @param array|null $expectedRequest
+     * @group validation
+     */
+    public function testRestDefailtDataPopulation(
+        array $requestBody,
+        array $rules,
+        ?array $expectedRequest = null
+    )
+    {
+        $this->requestMock->shouldReceive('getParsedBody')
+            ->andReturn($requestBody);
+        $preprocessedRequest = $this->validation->validateRequestData(
+            $this->requestMock,
+            $rules
+        );
+        if (!is_null($expectedRequest)) {
+            $this->assertEqualsCanonicalizing($expectedRequest, $preprocessedRequest);
+        }
+    }
+
 
     /**
      * @return array
@@ -108,7 +146,7 @@ class RequestValidationTest extends TestCase
                 'customRules' => [
                     'is_numberic' => new Numeric()
                 ]
-                ],
+            ],
             // custom exception
             [
                 'body' => [
@@ -124,6 +162,27 @@ class RequestValidationTest extends TestCase
                 'customException' => [
                     'is_numberic' => UnsupportedContentTypeException::class
                 ]
+            ],
+
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function defaultDataProvider(): array
+    {
+        return [
+            //preprocess data with default values
+            [
+                'body' => [
+                    'paramName' => null,
+                ],
+                'rules' => [
+                    'paramName' => 'default:value1|required|in:value1,value2,value3'
+                ],
+                'expectedRequest' => ['paramName' => 'value1']
+
             ]
         ];
     }
