@@ -15,8 +15,14 @@ use Serato\SwsApp\Validation\RequestValidation;
 class RequestValidationTest extends TestCase
 {
 
-
+    /**
+     * @var RequestValidation
+     */
     protected $validation;
+
+    /**
+     * @var Request
+     */
     protected $requestMock;
 
     protected function setUp()
@@ -35,13 +41,12 @@ class RequestValidationTest extends TestCase
      * @param array|null $expectedRequest
      * @group validation
      */
-    public function testRest(
+    public function testValidateRequestData(
         array $requestBody,
         array $rules,
         ?string $errorExpected = null,
         array $customRules = [],
-        array $exceptions = [],
-        ?array $expectedRequest = null
+        array $exceptions = []
     ): void
     {
         $this->requestMock->shouldReceive('getParsedBody')
@@ -71,7 +76,7 @@ class RequestValidationTest extends TestCase
      * @param array|null $expectedRequest
      * @group validation
      */
-    public function testRestDefailtDataPopulation(
+    public function testRestDefaultDataPopulation(
         array $requestBody,
         array $rules,
         ?array $expectedRequest = null
