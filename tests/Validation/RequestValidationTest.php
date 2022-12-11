@@ -38,7 +38,6 @@ class RequestValidationTest extends TestCase
      * @param string|null $errorExpected
      * @param array $customRules
      * @param array $exceptions
-     * @param array|null $expectedRequest
      * @group validation
      */
     public function testValidateRequestData(
