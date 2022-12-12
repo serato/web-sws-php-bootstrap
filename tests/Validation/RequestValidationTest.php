@@ -168,7 +168,7 @@ class RequestValidationTest extends TestCase
                 'errorExpected' => InvalidRequestParametersException::class,
                 'customRules' => [],
                 'customException' => [],
-                'expectedResult' => []
+                'expectedResult' => null
             ]
         ];
     }
