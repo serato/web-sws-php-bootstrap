@@ -14,7 +14,6 @@ use Serato\SwsApp\Validation\RequestValidation;
 
 class RequestValidationTest extends TestCase
 {
-
     /**
      * @var RequestValidation
      */
@@ -30,6 +29,7 @@ class RequestValidationTest extends TestCase
         $this->validation = new RequestValidation();
         $this->requestMock = Mockery::mock(Request::class);
     }
+
     /**
      * @dataProvider dataProvider
      *
@@ -63,8 +63,6 @@ class RequestValidationTest extends TestCase
             $customRules,
             $exceptions
         );
-
-
     }
 
     /**
@@ -91,7 +89,6 @@ class RequestValidationTest extends TestCase
             $this->assertEqualsCanonicalizing($expectedRequest, $preprocessedRequest);
         }
     }
-
 
     /**
      * @return array
