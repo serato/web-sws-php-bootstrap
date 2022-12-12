@@ -2,18 +2,34 @@
 
 namespace Serato\SwsApp\Test\Validation;
 
-use Psr\Http\Message\ServerRequestInterface as Request;
-use Serato\SwsApp\Exception\MissingRequiredParametersException;
-use Serato\SwsApp\Exception\InvalidRequestParametersException;
-use Rakit\Validation\RuleNotFoundException;
-use Serato\SwsApp\Validation\RequestValidation;
-use Serato\SwsApp\Test\TestCase;
-use Rakit\Validation\Rules\Numeric;
-use Serato\SwsApp\Http\Rest\Exception\UnsupportedContentTypeException;
 use Mockery;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Rakit\Validation\RuleNotFoundException;
+use Rakit\Validation\Rules\Numeric;
+use Serato\SwsApp\Exception\InvalidRequestParametersException;
+use Serato\SwsApp\Exception\MissingRequiredParametersException;
+use Serato\SwsApp\Http\Rest\Exception\UnsupportedContentTypeException;
+use Serato\SwsApp\Test\TestCase;
+use Serato\SwsApp\Validation\RequestValidation;
 
 class RequestValidationTest extends TestCase
 {
+    /**
+     * @var RequestValidation
+     */
+    protected $validation;
+
+    /**
+     * @var Request
+     */
+    protected $requestMock;
+
+    protected function setUp()
+    {
+        $this->validation = new RequestValidation();
+        $this->requestMock = Mockery::mock(Request::class);
+    }
+
     /**
      * @dataProvider dataProvider
      *
@@ -22,33 +38,36 @@ class RequestValidationTest extends TestCase
      * @param string|null $errorExpected
      * @param array $customRules
      * @param array $exceptions
-     *
+     * @param array $expectedResult - expected result after processing the request.
      * @group validation
      */
-    public function testRest(
+    public function testValidateRequestData(
         array $requestBody,
         array $rules,
         ?string $errorExpected = null,
         array $customRules = [],
-        array $exceptions = []
+        array $exceptions = [],
+        ?array $expectedResult = null
     ): void {
+        $this->requestMock->shouldReceive('getParsedBody')
+            ->andReturn($requestBody);
+
         if (!is_null($errorExpected)) {
             $this->expectException($errorExpected);
-        } else {
+        } elseif (is_null($expectedResult)) {
             $this->expectNotToPerformAssertions();
         }
 
-        $validation  = new RequestValidation();
-        $requestMock = Mockery::mock(Request::class);
-        $requestMock->shouldReceive('getParsedBody')
-            ->andReturn($requestBody);
-
-        $validation->validateRequestData(
-            $requestMock,
+        $preprocessedRequest = $this->validation->validateRequestData(
+            $this->requestMock,
             $rules,
             $customRules,
             $exceptions
         );
+
+        if (!is_null($expectedResult)) {
+            $this->assertEqualsCanonicalizing($expectedResult, $preprocessedRequest);
+        }
     }
 
     /**
@@ -108,7 +127,7 @@ class RequestValidationTest extends TestCase
                 'customRules' => [
                     'is_numberic' => new Numeric()
                 ]
-                ],
+            ],
             // custom exception
             [
                 'body' => [
@@ -124,6 +143,43 @@ class RequestValidationTest extends TestCase
                 'customException' => [
                     'is_numberic' => UnsupportedContentTypeException::class
                 ]
+            ],
+            //preprocess data with default values
+            [
+                'body' => [
+                    'paramName' => null,
+                ],
+                'rules' => [
+                    'paramName' => 'default:value1|in:value1,value2,value3'
+                ],
+                'errorExpected' => null,
+                'customRules' => [],
+                'customException' => [],
+                'expectedResult' => ['paramName' => 'value1']
+            ],
+            //preprocess data with empty body
+            [
+                'body' => [],
+                'rules' => [
+                    'paramName' => 'default:value1|in:value1,value2,value3'
+                ],
+                'errorExpected' => null,
+                'customRules' => [],
+                'customException' => [],
+                'expectedResult' => ['paramName' => 'value1']
+            ],
+            //preprocess data with garbage values
+            [
+                'body' => [
+                    'paramName' => 'garbage value',
+                ],
+                'rules' => [
+                    'paramName' => 'default:value1|in:value1,value2,value3'
+                ],
+                'errorExpected' => InvalidRequestParametersException::class,
+                'customRules' => [],
+                'customException' => [],
+                'expectedResult' => null
             ]
         ];
     }

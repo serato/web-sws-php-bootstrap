@@ -24,7 +24,7 @@ class RequestValidation implements RequestValidationInterface
         array $validationRules,
         array $customRules = [],
         array $exceptions = []
-    ): void {
+    ): array {
         $requestBody = $request->getParsedBody();
         $validator   = new Validator();
 
@@ -44,7 +44,7 @@ class RequestValidation implements RequestValidationInterface
 
         $validation->validate();
         if (!$validation->fails()) {
-            return;
+            return $validation->getValidatedData();
         }
 
         $required = [];

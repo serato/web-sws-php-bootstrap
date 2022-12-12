@@ -20,7 +20,7 @@
 		"symfony/property-access": "^4.4"
 	},
 	"require-dev": {
-		"phpunit/phpunit": "~7.0",
+		"phpunit/phpunit": "^7.5.20",
 		"squizlabs/php_codesniffer": "~3.6",
 		"monolog/monolog": "^1.21.0",
 		"serato/slimulator": "^1.0.0",
