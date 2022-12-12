@@ -15,7 +15,7 @@
 		"symfony/console": "^3.0.0",
 		"ramsey/uuid": "^3.0.0",
 		"symfony/event-dispatcher": "^4.4",
-		"symfony/serializer": "^4.4",
+		"symfony/serializer": "^4.4.19",
 		"symfony/property-access": "^4.4"
 	},
 	"require-dev": {
