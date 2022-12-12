@@ -157,6 +157,17 @@ class RequestValidationTest extends TestCase
                 'customException' => [],
                 'expectedResult' => ['paramName' => 'value1']
             ],
+            //preprocess data with empty body
+            [
+                'body' => [],
+                'rules' => [
+                    'paramName' => 'default:value1|in:value1,value2,value3'
+                ],
+                'errorExpected' => null,
+                'customRules' => [],
+                'customException' => [],
+                'expectedResult' => ['paramName' => 'value1']
+            ],
             //preprocess data with garbage values
             [
                 'body' => [
