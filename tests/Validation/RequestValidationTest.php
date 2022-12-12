@@ -38,6 +38,7 @@ class RequestValidationTest extends TestCase
      * @param string|null $errorExpected
      * @param array $customRules
      * @param array $exceptions
+     * @param array $expectedResult - expected result after processing the request.
      * @group validation
      */
     public function testValidateRequestData(
@@ -45,7 +46,8 @@ class RequestValidationTest extends TestCase
         array $rules,
         ?string $errorExpected = null,
         array $customRules = [],
-        array $exceptions = []
+        array $exceptions = [],
+        ?array $expectedResult = null
     ): void
     {
         $this->requestMock->shouldReceive('getParsedBody')
@@ -53,40 +55,19 @@ class RequestValidationTest extends TestCase
 
         if (!is_null($errorExpected)) {
             $this->expectException($errorExpected);
-        } else {
+        } else if(is_null($expectedResult)){
             $this->expectNotToPerformAssertions();
         }
 
-        $this->validation->validateRequestData(
+        $preprocessedRequest = $this->validation->validateRequestData(
             $this->requestMock,
             $rules,
             $customRules,
             $exceptions
         );
-    }
 
-    /**
-     * @dataProvider defaultDataProvider
-     *
-     * @param array $requestBody
-     * @param array $rules
-     * @param array|null $expectedRequest
-     * @group validation
-     */
-    public function testRestDefaultDataPopulation(
-        array $requestBody,
-        array $rules,
-        ?array $expectedRequest = null
-    )
-    {
-        $this->requestMock->shouldReceive('getParsedBody')
-            ->andReturn($requestBody);
-        $preprocessedRequest = $this->validation->validateRequestData(
-            $this->requestMock,
-            $rules
-        );
-        if (!is_null($expectedRequest)) {
-            $this->assertEqualsCanonicalizing($expectedRequest, $preprocessedRequest);
+        if (!is_null($expectedResult)) {
+            $this->assertEqualsCanonicalizing($expectedResult, $preprocessedRequest);
         }
     }
 
@@ -164,16 +145,6 @@ class RequestValidationTest extends TestCase
                     'is_numberic' => UnsupportedContentTypeException::class
                 ]
             ],
-
-        ];
-    }
-
-    /**
-     * @return array
-     */
-    public function defaultDataProvider(): array
-    {
-        return [
             //preprocess data with default values
             [
                 'body' => [
@@ -182,8 +153,10 @@ class RequestValidationTest extends TestCase
                 'rules' => [
                     'paramName' => 'default:value1|required|in:value1,value2,value3'
                 ],
-                'expectedRequest' => ['paramName' => 'value1']
-
+                'errorExpected' => null,
+                'customRules' => [],
+                'customException' => [],
+                'expectedResult' => ['paramName' => 'value1']
             ]
         ];
     }
