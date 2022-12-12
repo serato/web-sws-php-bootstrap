@@ -150,7 +150,7 @@ class RequestValidationTest extends TestCase
                     'paramName' => null,
                 ],
                 'rules' => [
-                    'paramName' => 'default:value1|required|in:value1,value2,value3'
+                    'paramName' => 'default:value1|in:value1,value2,value3'
                 ],
                 'errorExpected' => null,
                 'customRules' => [],
@@ -163,12 +163,12 @@ class RequestValidationTest extends TestCase
                     'paramName' => 'garbage value',
                 ],
                 'rules' => [
-                    'paramName' => 'default:value1|required|in:value1,value2,value3'
+                    'paramName' => 'default:value1|in:value1,value2,value3'
                 ],
                 'errorExpected' => InvalidRequestParametersException::class,
                 'customRules' => [],
                 'customException' => [],
-                'expectedResult' => ['paramName' => 'value1']
+                'expectedResult' => []
             ]
         ];
     }
