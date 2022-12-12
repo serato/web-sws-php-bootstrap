@@ -48,14 +48,13 @@ class RequestValidationTest extends TestCase
         array $customRules = [],
         array $exceptions = [],
         ?array $expectedResult = null
-    ): void
-    {
+    ): void {
         $this->requestMock->shouldReceive('getParsedBody')
             ->andReturn($requestBody);
 
         if (!is_null($errorExpected)) {
             $this->expectException($errorExpected);
-        } else if(is_null($expectedResult)){
+        } elseif (is_null($expectedResult)) {
             $this->expectNotToPerformAssertions();
         }
 
