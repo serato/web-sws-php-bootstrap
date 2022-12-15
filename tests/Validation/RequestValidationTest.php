@@ -33,7 +33,7 @@ class RequestValidationTest extends TestCase
     /**
      * @dataProvider dataProvider
      *
-     * @param array $requestBody
+     * @param array|null $requestBody
      * @param array $rules
      * @param string|null $errorExpected
      * @param array $customRules
@@ -42,7 +42,7 @@ class RequestValidationTest extends TestCase
      * @group validation
      */
     public function testValidateRequestData(
-        array $requestBody,
+        ?array $requestBody,
         array $rules,
         ?string $errorExpected = null,
         array $customRules = [],
@@ -180,6 +180,37 @@ class RequestValidationTest extends TestCase
                 'customRules' => [],
                 'customException' => [],
                 'expectedResult' => null
+            ],
+            // null body, no rules
+            [
+                'body' => null,
+                'rules' => [],
+                'errorExpected' => null,
+                'customRules' => [],
+                'customException' => [],
+                'expectedResult' => null
+            ],
+            // null body, required param
+            [
+                'body' => null,
+                'rules' => [
+                    'paramName' => 'required'
+                ],
+                'errorExpected' => MissingRequiredParametersException::class,
+                'customRules' => [],
+                'customException' => [],
+                'expectedResult' => null
+            ],
+            // null body, default param
+            [
+                'body' => null,
+                'rules' => [
+                    'paramName' => 'default:value1|in:value1,value2,value3'
+                ],
+                'errorExpected' => null,
+                'customRules' => [],
+                'customException' => [],
+                'expectedResult' => ['paramName' => 'value1']
             ]
         ];
     }

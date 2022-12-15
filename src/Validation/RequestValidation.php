@@ -25,7 +25,7 @@ class RequestValidation implements RequestValidationInterface
         array $customRules = [],
         array $exceptions = []
     ): array {
-        $requestBody = $request->getParsedBody();
+        $requestBody = $request->getParsedBody() ?? [];
         $validator   = new Validator();
 
         // Add custom validation rules
