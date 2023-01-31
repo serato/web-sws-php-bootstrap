@@ -33,8 +33,8 @@ class VaryHeaderTest extends TestCase
             new EmptyWare()
         );
 
-        $this->assertTrue(in_array('Origin', $response->getHeader('Vary')));
-        $this->assertTrue(in_array('Accept-Encoding', $response->getHeader('Vary')));
+        $this->assertNotFalse(strpos($response->getHeaderLine('Vary'), 'Origin'));
+        $this->assertNotFalse(strpos($response->getHeaderLine('Vary'), 'Accept-Encoding'));
     }
 
     /**
@@ -60,8 +60,8 @@ class VaryHeaderTest extends TestCase
             new EmptyWare()
         );
 
-        $this->assertTrue(in_array($varyInitialValue, $response->getHeader('Vary')));
-        $this->assertTrue(in_array('Origin', $response->getHeader('Vary')));
-        $this->assertTrue(in_array('Accept-Encoding', $response->getHeader('Vary')));
+        $this->assertNotFalse(strpos($response->getHeaderLine('Vary'), $varyInitialValue));
+        $this->assertNotFalse(strpos($response->getHeaderLine('Vary'), 'Origin'));
+        $this->assertNotFalse(strpos($response->getHeaderLine('Vary'), 'Accept-Encoding'));
     }
 }
