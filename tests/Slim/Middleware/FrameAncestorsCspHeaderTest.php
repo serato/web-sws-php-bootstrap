@@ -9,7 +9,6 @@ use Serato\Slimulator\Request;
 use Slim\Http\Response;
 use Serato\SwsApp\Slim\Middleware\FrameAncestorsCspHeader;
 
-
 /**
  * Class FrameAncestorsCspHeaderTest
  * @package Serato\SwsApp\Test\Slim\Middleware
