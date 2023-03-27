@@ -10,6 +10,7 @@ use Slim\Handlers\AbstractHandler;
  * Class FrameAncestorsCspHeader
  *
  * Adds a CSP header with frame-ancestors rule, which gets merged with the other CSP rules by a browser.
+ * Applications where this middleware is used, can't be framed inside a frame or iframe tag.
  *
  * @package App\Middleware
  */
