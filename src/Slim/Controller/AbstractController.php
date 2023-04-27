@@ -8,14 +8,15 @@ use Serato\SwsApp\Exception\AbstractException as ClientException;
 use Psr\Log\LoggerInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-
+use Serato\SwsApp\Validation\HtmlInjectionValidation;
 /**
  * Abstract Controller
  *
  * Base controller class from which all controllers should extend.
  */
 abstract class AbstractController
-{
+{   
+    use HtmlInjectionValidation;
     private const DEFAULT_CACHE_CONTROL = 'no-cache';
 
     /**
@@ -81,6 +82,7 @@ abstract class AbstractController
         # Capture Etag values from Request headers
         $this->setIfNoneMatchEtags($request);
         $this->setIfMatchEtags($request);
+        $this->validateForHtmlInjection($request->getParsedBody());
 
         $response = $this->execute($request, $response, $args);
 

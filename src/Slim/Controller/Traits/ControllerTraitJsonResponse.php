@@ -3,6 +3,7 @@
 namespace Serato\SwsApp\Slim\Controller\Traits;
 
 use Psr\Http\Message\ResponseInterface as Response;
+use Serato\SwsApp\Validation\HtmlInjectionValidation;
 
 /**
  * Adds functionality to a `Serato\SwsApp\Slim\Controller\AbstractController` instance
@@ -10,6 +11,7 @@ use Psr\Http\Message\ResponseInterface as Response;
  */
 trait ControllerTraitJsonResponse
 {
+    use HtmlInjectionValidation
     /**
      * Response body to be JSON encoded and sent to the client
      *
@@ -50,6 +52,9 @@ trait ControllerTraitJsonResponse
             $this->jsonResponseBody,
             JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES
         );
+        //this also has a issue of encoding tags that are not html. 
+        //if we use this, we have to make sure nothing is broken in all the apps that use sws library
+        $content = $this->encodeToPreventHtmlInjection($content);
 
         $etag = self::formatEtagValue(md5($content));
 
