@@ -4,6 +4,7 @@ namespace Serato\SwsApp\Validation;
 
 use Serato\SwsApp\Exception\MissingRequiredParametersException;
 use Serato\SwsApp\Exception\InvalidRequestParametersException;
+use Serato\SwsApp\Exception\InvalidTagRequestParametersException;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Rakit\Validation\Validator;
 
@@ -71,6 +72,9 @@ class RequestValidation implements RequestValidationInterface
 
         if (!empty($invalid)) {
             $errors = implode('. ', $invalid);
+            if (strpos($errors, 'not valid format') !== false) {
+                throw new InvalidTagRequestParametersException($errors, $request);
+            }
             throw new InvalidRequestParametersException($errors, $request);
         }
     }

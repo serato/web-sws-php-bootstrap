@@ -7,6 +7,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Rakit\Validation\RuleNotFoundException;
 use Rakit\Validation\Rules\Numeric;
 use Serato\SwsApp\Exception\InvalidRequestParametersException;
+use Serato\SwsApp\Exception\InvalidTagRequestParametersException;
 use Serato\SwsApp\Exception\MissingRequiredParametersException;
 use Serato\SwsApp\Http\Rest\Exception\UnsupportedContentTypeException;
 use Serato\SwsApp\Test\TestCase;
@@ -114,6 +115,16 @@ class RequestValidationTest extends TestCase
                     'paramName' => 'invalid'
                 ],
                 'errorExpected' => RuleNotFoundException::class,
+            ],
+            // invalid params contains html tags
+            [
+                'body' => [
+                    'paramName' => '<a>'
+                ],
+                'rules' => [
+                  'paramName' => 'regex:/^(?:(?!<[a-zA-Z])[\s\S])*$/'
+                ],
+                'errorExpected' => InvalidTagRequestParametersException::class,
             ],
             // custom rule
             [
