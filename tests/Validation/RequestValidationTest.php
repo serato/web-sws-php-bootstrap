@@ -122,7 +122,7 @@ class RequestValidationTest extends TestCase
                     'paramName' => '<a>'
                 ],
                 'rules' => [
-                  'paramName' => 'regex:/^(?:(?!<[^>]*$)[^<])*$/'
+                  'paramName' => RequestValidation::NO_HTML_TAG_RULE
                 ],
                 'errorExpected' => InvalidTagRequestParametersException::class,
             ],
