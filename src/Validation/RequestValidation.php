@@ -15,7 +15,7 @@ use Rakit\Validation\Validator;
 class RequestValidation implements RequestValidationInterface
 {
     /**
-      * Regex validation rule for parames without HTML tags.
+      * Regex validation rule for params without HTML tags.
       * @var string
     */
     public const NO_HTML_TAG_RULE = 'regex:/^(?:(?!<[^>]*$)[^<])*$/';
