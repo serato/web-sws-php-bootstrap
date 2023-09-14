@@ -15,6 +15,12 @@ use Rakit\Validation\Validator;
 class RequestValidation implements RequestValidationInterface
 {
     /**
+      * Regex validation rule for parames without HTML tags.
+      * @var string
+    */
+    public const NO_HTML_TAG_RULE = 'regex:/^(?:(?!<[^>]*$)[^<])*$/';
+
+    /**
      * @param Request $request
      * @param array $validationRules
      * @param array $customRules
@@ -38,8 +44,12 @@ class RequestValidation implements RequestValidationInterface
 
         $validation  = $validator->make($requestBody, $validationRules);
 
+        $paramsContainHtmlTag = false;
         // set aliases
         foreach ($validationRules as $ruleKey => $ruleVal) {
+            if ($ruleVal === self::NO_HTML_TAG_RULE) {
+                $paramsContainHtmlTag = true;
+            }
             $validation->setAlias($ruleKey, '`' . $ruleKey . '`');
         }
 
@@ -69,10 +79,9 @@ class RequestValidation implements RequestValidationInterface
         if (!empty($required)) {
             throw new MissingRequiredParametersException('', $request, $required);
         }
-
         if (!empty($invalid)) {
             $errors = implode('. ', $invalid);
-            if (strpos($errors, 'not valid format') !== false) {
+            if ($paramsContainHtmlTag) {
                 throw new InvalidTagRequestParametersException($errors, $request);
             }
             throw new InvalidRequestParametersException($errors, $request);
