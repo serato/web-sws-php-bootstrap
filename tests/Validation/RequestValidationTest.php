@@ -127,6 +127,36 @@ class RequestValidationTest extends TestCase
                 ],
                 'errorExpected' => InvalidTagRequestParametersException::class
             ],
+            // invalid params contains html tags throw InvalidTagRequestParametersException 2
+            [
+                'body' => [
+                    'paramName' => '<a>test</a>'
+                ],
+                'rules' => [
+                    'paramName' => RequestValidation::NO_HTML_TAG_RULE
+                ],
+                'errorExpected' => InvalidTagRequestParametersException::class
+            ],
+            // invalid params contains html tags throw InvalidTagRequestParametersException 3
+            [
+                'body' => [
+                    'paramName' => '<fake></fake>'
+                ],
+                'rules' => [
+                    'paramName' => RequestValidation::NO_HTML_TAG_RULE
+                ],
+                'errorExpected' => InvalidTagRequestParametersException::class
+            ],
+            // invalid params contains html tags throw InvalidTagRequestParametersException 4
+            [
+                'body' => [
+                    'paramName' => 'test</a>'
+                ],
+                'rules' => [
+                    'paramName' => RequestValidation::NO_HTML_TAG_RULE
+                ],
+                'errorExpected' => InvalidTagRequestParametersException::class
+            ],
             // invalid params contains invalid format throws InvalidRequestParametersException
             [
                 'body' => [

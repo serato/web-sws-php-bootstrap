@@ -53,6 +53,7 @@ class RequestValidation implements RequestValidationInterface
             }
             $validation->setAlias($ruleKey, '`' . $ruleKey . '`');
         }
+        // add a customRule and customException when checking one param without html tag
         if ($paramsContainHtmlTag) {
             $customRules[self::NO_HTML_TAG_RULE] = new Regex();
             if (!isset($exceptions['regex'])) {
