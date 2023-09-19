@@ -6,6 +6,7 @@ use Mockery;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Rakit\Validation\RuleNotFoundException;
 use Rakit\Validation\Rules\Numeric;
+use Rakit\Validation\Rules\Regex;
 use Serato\SwsApp\Exception\InvalidRequestParametersException;
 use Serato\SwsApp\Exception\InvalidTagRequestParametersException;
 use Serato\SwsApp\Exception\MissingRequiredParametersException;
@@ -116,15 +117,49 @@ class RequestValidationTest extends TestCase
                 ],
                 'errorExpected' => RuleNotFoundException::class,
             ],
-            // invalid params contains html tags
+            // invalid params contains html tags throw InvalidTagRequestParametersException
             [
                 'body' => [
-                    'paramName' => '<a>'
+                    'paramName' => '<br>'
                 ],
                 'rules' => [
-                  'paramName' => RequestValidation::NO_HTML_TAG_RULE
+                    'paramName' => RequestValidation::NO_HTML_TAG_RULE
                 ],
-                'errorExpected' => InvalidTagRequestParametersException::class,
+                'errorExpected' => InvalidTagRequestParametersException::class
+            ],
+            // invalid params contains invalid format throws InvalidRequestParametersException
+            [
+                'body' => [
+                    'paramName' => '<br>'
+                ],
+                'rules' => [
+                    'paramName' => 'regex:/^a/'
+                ],
+                'errorExpected' => InvalidRequestParametersException::class,
+                'customRules' => [
+                    'regex:/^a/' => new Regex()
+                ],
+                'customException' => [
+                    'regex' => InvalidRequestParametersException::class
+                ]
+            ],
+            // invalid params contains invalid format and html tags throws InvalidRequestParametersException
+            [
+                'body' => [
+                    'paramName' => '<br>',
+                    'paramName2' => '<a>'
+                ],
+                'rules' => [
+                    'paramName' => 'regex:/^a/', // any string start with `a`
+                    'paramName2' => RequestValidation::NO_HTML_TAG_RULE
+                ],
+                'errorExpected' => InvalidRequestParametersException::class,
+                'customRules' => [
+                    'regex:/^a/' => new Regex()
+                ],
+                'customException' => [
+                    'regex' => InvalidRequestParametersException::class
+                ]
             ],
             // custom rule
             [
@@ -139,6 +174,24 @@ class RequestValidationTest extends TestCase
                     'is_numberic' => new Numeric()
                 ]
             ],
+            // custom rule and invalid params contains html tags not excepting errors
+            [
+                'body' => [
+                    'paramName' => '1',
+                    'paramNam2' => '<a>'
+                ],
+                'rules' => [
+                    'paramName' => 'required|is_numberic',
+                    'paramName2' => RequestValidation::NO_HTML_TAG_RULE
+                ],
+                'errorExpected' => null,
+                'customRules' => [
+                    'is_numberic' => new Numeric()
+                ],
+                'customException' => [
+                    'is_numberic' => UnsupportedContentTypeException::class
+                ]
+            ],
             // custom exception
             [
                 'body' => [
@@ -146,6 +199,24 @@ class RequestValidationTest extends TestCase
                 ],
                 'rules' => [
                     'paramName' => 'required|is_numberic'
+                ],
+                'errorExpected' => UnsupportedContentTypeException::class,
+                'customRules' => [
+                    'is_numberic' => new Numeric()
+                ],
+                'customException' => [
+                    'is_numberic' => UnsupportedContentTypeException::class
+                ]
+            ],
+            // custom exception and invalid params contains html tags throws UnsupportedContentTypeException
+            [
+                'body' => [
+                    'paramName' => 'invalid-number',
+                    'paramName2' => '<br>'
+                ],
+                'rules' => [
+                    'paramName' => 'required|is_numberic',
+                    'paramName2' => RequestValidation::NO_HTML_TAG_RULE
                 ],
                 'errorExpected' => UnsupportedContentTypeException::class,
                 'customRules' => [

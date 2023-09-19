@@ -7,6 +7,7 @@ use Serato\SwsApp\Exception\InvalidRequestParametersException;
 use Serato\SwsApp\Exception\InvalidTagRequestParametersException;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Rakit\Validation\Validator;
+use Rakit\Validation\Rules\Regex;
 
 /**
  * Class RequestValidation
@@ -52,7 +53,12 @@ class RequestValidation implements RequestValidationInterface
             }
             $validation->setAlias($ruleKey, '`' . $ruleKey . '`');
         }
-
+        if ($paramsContainHtmlTag) {
+            $customRules[self::NO_HTML_TAG_RULE] = new Regex();
+            if (!isset($exceptions['regex'])) {
+                $exceptions['regex'] = InvalidTagRequestParametersException::class;
+            }
+        }
         $validation->validate();
         if (!$validation->fails()) {
             return $validation->getValidatedData();
@@ -81,9 +87,6 @@ class RequestValidation implements RequestValidationInterface
         }
         if (!empty($invalid)) {
             $errors = implode('. ', $invalid);
-            if ($paramsContainHtmlTag) {
-                throw new InvalidTagRequestParametersException($errors, $request);
-            }
             throw new InvalidRequestParametersException($errors, $request);
         }
     }
