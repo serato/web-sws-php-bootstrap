@@ -117,6 +117,16 @@ class RequestValidationTest extends TestCase
                 ],
                 'errorExpected' => RuleNotFoundException::class,
             ],
+            // valid params without html tags throw no error
+            [
+                'body' => [
+                    'paramName' => 'br'
+                ],
+                'rules' => [
+                    'paramName' => RequestValidation::NO_HTML_TAG_RULE
+                ],
+                'errorExpected' => null
+            ],
             // invalid params contains html tags throw InvalidTagRequestParametersException
             [
                 'body' => [
@@ -197,11 +207,11 @@ class RequestValidationTest extends TestCase
                     'paramName' => '1'
                 ],
                 'rules' => [
-                    'paramName' => 'required|is_numberic'
+                    'paramName' => 'required|is_numeric'
                 ],
                 'errorExpected' => null,
                 'customRules' => [
-                    'is_numberic' => new Numeric()
+                    'is_numeric' => new Numeric()
                 ]
             ],
             // custom rule and invalid params contains html tags not excepting errors
@@ -211,15 +221,15 @@ class RequestValidationTest extends TestCase
                     'paramNam2' => '<a>'
                 ],
                 'rules' => [
-                    'paramName' => 'required|is_numberic',
+                    'paramName' => 'required|is_numeric',
                     'paramName2' => RequestValidation::NO_HTML_TAG_RULE
                 ],
                 'errorExpected' => null,
                 'customRules' => [
-                    'is_numberic' => new Numeric()
+                    'is_numeric' => new Numeric()
                 ],
                 'customException' => [
-                    'is_numberic' => UnsupportedContentTypeException::class
+                    'is_numeric' => UnsupportedContentTypeException::class
                 ]
             ],
             // custom exception
@@ -228,14 +238,14 @@ class RequestValidationTest extends TestCase
                     'paramName' => 'invalid-number'
                 ],
                 'rules' => [
-                    'paramName' => 'required|is_numberic'
+                    'paramName' => 'required|is_numeric'
                 ],
                 'errorExpected' => UnsupportedContentTypeException::class,
                 'customRules' => [
-                    'is_numberic' => new Numeric()
+                    'is_numeric' => new Numeric()
                 ],
                 'customException' => [
-                    'is_numberic' => UnsupportedContentTypeException::class
+                    'is_numeric' => UnsupportedContentTypeException::class
                 ]
             ],
             // custom exception and invalid params contains html tags throws UnsupportedContentTypeException
@@ -245,15 +255,34 @@ class RequestValidationTest extends TestCase
                     'paramName2' => '<br>'
                 ],
                 'rules' => [
-                    'paramName' => 'required|is_numberic',
+                    'paramName' => 'required|is_numeric',
                     'paramName2' => RequestValidation::NO_HTML_TAG_RULE
                 ],
                 'errorExpected' => UnsupportedContentTypeException::class,
                 'customRules' => [
-                    'is_numberic' => new Numeric()
+                    'is_numeric' => new Numeric()
                 ],
                 'customException' => [
-                    'is_numberic' => UnsupportedContentTypeException::class
+                    'is_numeric' => UnsupportedContentTypeException::class
+                ]
+            ],
+            // custom exception and invalid params contains html tags throws InvalidTagRequestParametersException 
+            // (params order change)
+            [
+                'body' => [
+                    'paramName' => '<br>',
+                    'paramName2' => 'invalid-number',
+                ],
+                'rules' => [
+                    'paramName' => RequestValidation::NO_HTML_TAG_RULE,
+                    'paramName2' => 'required|is_numeric',
+                ],
+                'errorExpected' => InvalidTagRequestParametersException::class,
+                'customRules' => [
+                    'is_numeric' => new Numeric()
+                ],
+                'customException' => [
+                    'is_numeric' => InvalidTagRequestParametersException::class
                 ]
             ],
             //preprocess data with default values
