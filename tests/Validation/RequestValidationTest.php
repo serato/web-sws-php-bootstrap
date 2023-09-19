@@ -266,7 +266,7 @@ class RequestValidationTest extends TestCase
                     'is_numeric' => UnsupportedContentTypeException::class
                 ]
             ],
-            // custom exception and invalid params contains html tags throws InvalidTagRequestParametersException 
+            // custom exception and invalid params contains html tags throws InvalidTagRequestParametersException
             // (params order change)
             [
                 'body' => [
