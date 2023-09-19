@@ -282,7 +282,7 @@ class RequestValidationTest extends TestCase
                     'is_numeric' => new Numeric()
                 ],
                 'customException' => [
-                    'is_numeric' => InvalidTagRequestParametersException::class
+                    'is_numeric' => UnsupportedContentTypeException::class
                 ]
             ],
             //preprocess data with default values
