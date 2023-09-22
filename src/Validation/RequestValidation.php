@@ -4,7 +4,7 @@ namespace Serato\SwsApp\Validation;
 
 use Serato\SwsApp\Exception\MissingRequiredParametersException;
 use Serato\SwsApp\Exception\InvalidRequestParametersException;
-use Serato\SwsApp\Exception\InvalidTagRequestParametersException;
+use Serato\SwsApp\Exception\BadRequestContainHTMLTagsException;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Rakit\Validation\Validator;
 use Rakit\Validation\Rules\Regex;
@@ -26,7 +26,6 @@ class RequestValidation implements RequestValidationInterface
       * @var string
     */
     public const NO_HTML_TAG_REGEX = '/^(?:(?!<[^>]*$)[^<])*$/';
-  
 
     /**
      * @param Request $request
@@ -42,6 +41,15 @@ class RequestValidation implements RequestValidationInterface
     ): array {
         $requestBody = $request->getParsedBody() ?? [];
         $validator   = new Validator();
+
+        // Add a custom validation rule and exceptions when the `no_html_tag` validation rule is specified for a param.
+        // to prevent the need to include the Rakit Regex class in other services.
+        if (in_array(self::NO_HTML_TAG_RULE, $validationRules)) {
+            $noHtmlTagRule = new Regex();
+            $noHtmlTagRule->setParameter('regex', RequestValidation::NO_HTML_TAG_REGEX);
+            $customRules[self::NO_HTML_TAG_RULE] = $noHtmlTagRule;
+            $exceptions[self::NO_HTML_TAG_RULE] = BadRequestContainHTMLTagsException::class;
+        }
 
         // Add custom validation rules
         if (!empty($customRules)) {
@@ -65,8 +73,6 @@ class RequestValidation implements RequestValidationInterface
         $required = [];
         $invalid  = [];
         $errors   = $validation->errors()->toArray();
-        // var_dump($errors);
-        // die;
         foreach ($errors as $key => $error) {
             if (!empty($error['required'])) {
                 $required[] = $key;

@@ -8,7 +8,7 @@ use Rakit\Validation\RuleNotFoundException;
 use Rakit\Validation\Rules\Numeric;
 use Rakit\Validation\Rules\Regex;
 use Serato\SwsApp\Exception\InvalidRequestParametersException;
-use Serato\SwsApp\Exception\InvalidTagRequestParametersException;
+use Serato\SwsApp\Exception\BadRequestContainHTMLTagsException;
 use Serato\SwsApp\Exception\MissingRequiredParametersException;
 use Serato\SwsApp\Http\Rest\Exception\UnsupportedContentTypeException;
 use Serato\SwsApp\Test\TestCase;
@@ -77,14 +77,8 @@ class RequestValidationTest extends TestCase
      */
     public function dataProvider(): array
     {
-        $noHtmlTagRule = new Regex();
-        $noHtmlTagRule->setParameter('regex', RequestValidation::NO_HTML_TAG_REGEX);
-
         $paramStartWithARule = new Regex();
         $paramStartWithARule->setParameter('regex', '/^a/');
-        // var_dump($noHtmlTagRule->getParameters());
-        // die;
-
         return [
             // no errors
             [
@@ -133,15 +127,19 @@ class RequestValidationTest extends TestCase
                 'rules' => [
                     'paramName' =>  RequestValidation::NO_HTML_TAG_RULE
                 ],
-                'errorExpected' => null,
-                'customRules' => [
-                    'no_html_tag' =>  $noHtmlTagRule
-                ],
-                'customException' => [
-                    'no_html_tag' => InvalidTagRequestParametersException::class
-                ]
+                'errorExpected' => null
             ],
-            // invalid params contains html tags throw InvalidTagRequestParametersException
+            // invalid params with html tags but no `no_html_tag` specified not throw error
+            [
+              'body' => [
+                  'paramName' => '<br>'
+              ],
+              'rules' => [
+                  'paramName' => 'required'
+              ],
+              'errorExpected' => null
+            ],
+            // invalid params contains html tags throw BadRequestContainHTMLTagsException
             [
                 'body' => [
                     'paramName' => '<br>'
@@ -149,15 +147,9 @@ class RequestValidationTest extends TestCase
                 'rules' => [
                     'paramName' => RequestValidation::NO_HTML_TAG_RULE
                 ],
-                'errorExpected' => InvalidTagRequestParametersException::class,
-                'customRules' => [
-                    'no_html_tag' =>  $noHtmlTagRule
-                ],
-                'customException' => [
-                    'no_html_tag' => InvalidTagRequestParametersException::class
-                ]
+                'errorExpected' => BadRequestContainHTMLTagsException::class,
             ],
-            // invalid params contains html tags throw InvalidTagRequestParametersException 2
+            // invalid params contains html tags throw BadRequestContainHTMLTagsException 2
             [
                 'body' => [
                     'paramName' => '<a>test</a>'
@@ -165,15 +157,9 @@ class RequestValidationTest extends TestCase
                 'rules' => [
                     'paramName' => RequestValidation::NO_HTML_TAG_RULE
                 ],
-                'errorExpected' => InvalidTagRequestParametersException::class,
-                'customRules' => [
-                    'no_html_tag' =>  $noHtmlTagRule
-                ],
-                'customException' => [
-                    'no_html_tag' => InvalidTagRequestParametersException::class
-                ]
+                'errorExpected' => BadRequestContainHTMLTagsException::class
             ],
-            // invalid params contains html tags throw InvalidTagRequestParametersException 3
+            // invalid params contains html tags throw BadRequestContainHTMLTagsException 3
             [
                 'body' => [
                     'paramName' => '<fake></fake>'
@@ -181,15 +167,9 @@ class RequestValidationTest extends TestCase
                 'rules' => [
                     'paramName' => RequestValidation::NO_HTML_TAG_RULE
                 ],
-                'errorExpected' => InvalidTagRequestParametersException::class,
-                'customRules' => [
-                    'no_html_tag' =>  $noHtmlTagRule
-                ],
-                'customException' => [
-                    'no_html_tag' => InvalidTagRequestParametersException::class
-                ]
+                'errorExpected' => BadRequestContainHTMLTagsException::class
             ],
-            // invalid params contains html tags throw InvalidTagRequestParametersException 4
+            // invalid params contains html tags throw BadRequestContainHTMLTagsException 4
             [
                 'body' => [
                     'paramName' => 'test</a>'
@@ -197,13 +177,7 @@ class RequestValidationTest extends TestCase
                 'rules' => [
                     'paramName' => RequestValidation::NO_HTML_TAG_RULE
                 ],
-                'errorExpected' => InvalidTagRequestParametersException::class,
-                'customRules' => [
-                    'no_html_tag' =>  $noHtmlTagRule
-                ],
-                'customException' => [
-                    'no_html_tag' => InvalidTagRequestParametersException::class
-                ]
+                'errorExpected' => BadRequestContainHTMLTagsException::class
             ],
             // invalid params contains invalid format throws InvalidRequestParametersException
             [
@@ -233,12 +207,10 @@ class RequestValidationTest extends TestCase
                 ],
                 'errorExpected' => InvalidRequestParametersException::class,
                 'customRules' => [
-                  'start_with_a' => $paramStartWithARule,
-                  'no_html_tag' =>  $noHtmlTagRule
+                  'start_with_a' => $paramStartWithARule
                 ],
                 'customException' => [
-                    'start_with_a' => InvalidRequestParametersException::class,
-                    'no_html_tag' => InvalidTagRequestParametersException::class
+                    'start_with_a' => InvalidRequestParametersException::class
                 ]
             ],
             // custom rule
@@ -266,12 +238,10 @@ class RequestValidationTest extends TestCase
                 ],
                 'errorExpected' => null,
                 'customRules' => [
-                    'is_numeric' => new Numeric(),
-                    'no_html_tag' =>  $noHtmlTagRule
+                    'is_numeric' => new Numeric()
                 ],
                 'customException' => [
-                    'is_numeric' => UnsupportedContentTypeException::class,
-                    'no_html_tag' => InvalidTagRequestParametersException::class
+                    'is_numeric' => UnsupportedContentTypeException::class
                 ]
             ],
             // custom exception
@@ -302,15 +272,13 @@ class RequestValidationTest extends TestCase
                 ],
                 'errorExpected' => UnsupportedContentTypeException::class,
                 'customRules' => [
-                    'is_numeric' => new Numeric(),
-                    'no_html_tag' =>  $noHtmlTagRule
+                    'is_numeric' => new Numeric()
                 ],
                 'customException' => [
                     'is_numeric' => UnsupportedContentTypeException::class,
-                    'no_html_tag' => InvalidTagRequestParametersException::class
                 ]
             ],
-            // custom exception and invalid params contains html tags throws InvalidTagRequestParametersException
+            // custom exception and invalid params contains html tags throws BadRequestContainHTMLTagsException
             // (params order changed)
             [
                 'body' => [
@@ -321,13 +289,11 @@ class RequestValidationTest extends TestCase
                     'paramName' => RequestValidation::NO_HTML_TAG_RULE,
                     'paramName2' => 'required|is_numeric',
                 ],
-                'errorExpected' => InvalidTagRequestParametersException::class,
+                'errorExpected' => BadRequestContainHTMLTagsException::class,
                 'customRules' => [
-                    'no_html_tag' =>  $noHtmlTagRule,
                     'is_numeric' => new Numeric()
                 ],
                 'customException' => [
-                    'no_html_tag' => InvalidTagRequestParametersException::class,
                     'is_numeric' => UnsupportedContentTypeException::class
                 ]
             ],
