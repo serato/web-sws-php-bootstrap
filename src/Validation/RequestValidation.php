@@ -81,7 +81,7 @@ class RequestValidation implements RequestValidationInterface
 
             foreach ($exceptions as $exceptionKey => $exception) {
                 if (!empty($error[$exceptionKey])) {
-                    throw new $exception('', $request);
+                    throw new $exception($error[$exceptionKey], $request);
                 }
             }
 
