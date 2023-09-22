@@ -16,10 +16,17 @@ use Rakit\Validation\Rules\Regex;
 class RequestValidation implements RequestValidationInterface
 {
     /**
+      * Validation rule name for params without HTML tags.
+      * @var string
+    */
+    public const NO_HTML_TAG_RULE = 'no_html_tag';
+
+    /**
       * Regex validation rule for params without HTML tags.
       * @var string
     */
-    public const NO_HTML_TAG_RULE = 'regex:/^(?:(?!<[^>]*$)[^<])*$/';
+    public const NO_HTML_TAG_REGEX = '/^(?:(?!<[^>]*$)[^<])*$/';
+  
 
     /**
      * @param Request $request
@@ -45,21 +52,11 @@ class RequestValidation implements RequestValidationInterface
 
         $validation  = $validator->make($requestBody, $validationRules);
 
-        $paramsContainHtmlTag = false;
         // set aliases
         foreach ($validationRules as $ruleKey => $ruleVal) {
-            if ($ruleVal === self::NO_HTML_TAG_RULE) {
-                $paramsContainHtmlTag = true;
-            }
             $validation->setAlias($ruleKey, '`' . $ruleKey . '`');
         }
-        // add a customRule and customException when checking one param without html tag
-        if ($paramsContainHtmlTag) {
-            $customRules[self::NO_HTML_TAG_RULE] = new Regex();
-            if (!isset($exceptions['regex'])) {
-                $exceptions['regex'] = InvalidTagRequestParametersException::class;
-            }
-        }
+
         $validation->validate();
         if (!$validation->fails()) {
             return $validation->getValidatedData();
@@ -68,6 +65,8 @@ class RequestValidation implements RequestValidationInterface
         $required = [];
         $invalid  = [];
         $errors   = $validation->errors()->toArray();
+        // var_dump($errors);
+        // die;
         foreach ($errors as $key => $error) {
             if (!empty($error['required'])) {
                 $required[] = $key;
