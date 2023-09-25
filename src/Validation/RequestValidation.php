@@ -8,6 +8,7 @@ use Serato\SwsApp\Exception\BadRequestContainHTMLTagsException;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Rakit\Validation\Validator;
 use Rakit\Validation\Rules\Regex;
+use Serato\SwsApp\Validation\Rules\NoHtmlTag;
 
 /**
  * Class RequestValidation
@@ -15,18 +16,6 @@ use Rakit\Validation\Rules\Regex;
  */
 class RequestValidation implements RequestValidationInterface
 {
-    /**
-      * Validation rule name for params without HTML tags.
-      * @var string
-    */
-    public const NO_HTML_TAG_RULE = 'no_html_tag';
-
-    /**
-      * Regex validation rule for params without HTML tags.
-      * @var string
-    */
-    public const NO_HTML_TAG_REGEX = '/^(?:(?!<[^>]*$)[^<])*$/';
-
     /**
      * @param Request $request
      * @param array $validationRules
@@ -42,13 +31,10 @@ class RequestValidation implements RequestValidationInterface
         $requestBody = $request->getParsedBody() ?? [];
         $validator   = new Validator();
 
-        // Add a custom validation rule and exceptions when the `no_html_tag` validation rule is specified for a param.
-        // to prevent the need to include the Rakit Regex class in other services.
-        if (in_array(self::NO_HTML_TAG_RULE, $validationRules)) {
-            $noHtmlTagRule = new Regex();
-            $noHtmlTagRule->setParameter('regex', RequestValidation::NO_HTML_TAG_REGEX);
-            $customRules[self::NO_HTML_TAG_RULE] = $noHtmlTagRule;
-            $exceptions[self::NO_HTML_TAG_RULE] = BadRequestContainHTMLTagsException::class;
+        // Register NoHtmlTag rule and set it's exception into BadRequestContainHTMLTagsException
+        if (in_array(NoHtmlTag::NO_HTML_TAG_RULE, $validationRules)) {
+            $validator->addValidator(NoHtmlTag::NO_HTML_TAG_RULE, new NoHtmlTag());
+            $exceptions[NoHtmlTag::NO_HTML_TAG_RULE] = BadRequestContainHTMLTagsException::class;
         }
 
         // Add custom validation rules

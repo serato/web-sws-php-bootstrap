@@ -7,6 +7,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Rakit\Validation\RuleNotFoundException;
 use Rakit\Validation\Rules\Numeric;
 use Rakit\Validation\Rules\Regex;
+use Serato\SwsApp\Validation\Rules\NoHtmlTag;
 use Serato\SwsApp\Exception\InvalidRequestParametersException;
 use Serato\SwsApp\Exception\BadRequestContainHTMLTagsException;
 use Serato\SwsApp\Exception\MissingRequiredParametersException;
@@ -125,7 +126,7 @@ class RequestValidationTest extends TestCase
                     'paramName' => 'br'
                 ],
                 'rules' => [
-                    'paramName' =>  RequestValidation::NO_HTML_TAG_RULE
+                    'paramName' =>  NoHtmlTag::NO_HTML_TAG_RULE
                 ],
                 'errorExpected' => null
             ],
@@ -145,7 +146,7 @@ class RequestValidationTest extends TestCase
                     'paramName' => '<br>'
                 ],
                 'rules' => [
-                    'paramName' => RequestValidation::NO_HTML_TAG_RULE
+                    'paramName' => NoHtmlTag::NO_HTML_TAG_RULE,
                 ],
                 'errorExpected' => BadRequestContainHTMLTagsException::class,
             ],
@@ -155,7 +156,7 @@ class RequestValidationTest extends TestCase
                     'paramName' => '<a>test</a>'
                 ],
                 'rules' => [
-                    'paramName' => RequestValidation::NO_HTML_TAG_RULE
+                    'paramName' => NoHtmlTag::NO_HTML_TAG_RULE
                 ],
                 'errorExpected' => BadRequestContainHTMLTagsException::class
             ],
@@ -165,7 +166,7 @@ class RequestValidationTest extends TestCase
                     'paramName' => '<fake></fake>'
                 ],
                 'rules' => [
-                    'paramName' => RequestValidation::NO_HTML_TAG_RULE
+                    'paramName' => NoHtmlTag::NO_HTML_TAG_RULE
                 ],
                 'errorExpected' => BadRequestContainHTMLTagsException::class
             ],
@@ -175,7 +176,7 @@ class RequestValidationTest extends TestCase
                     'paramName' => 'test</a>'
                 ],
                 'rules' => [
-                    'paramName' => RequestValidation::NO_HTML_TAG_RULE
+                    'paramName' => NoHtmlTag::NO_HTML_TAG_RULE
                 ],
                 'errorExpected' => BadRequestContainHTMLTagsException::class
             ],
@@ -203,7 +204,7 @@ class RequestValidationTest extends TestCase
                 ],
                 'rules' => [
                     'paramName' => 'start_with_a',
-                    'paramName2' => RequestValidation::NO_HTML_TAG_RULE
+                    'paramName2' => NoHtmlTag::NO_HTML_TAG_RULE
                 ],
                 'errorExpected' => InvalidRequestParametersException::class,
                 'customRules' => [
@@ -234,7 +235,7 @@ class RequestValidationTest extends TestCase
                 ],
                 'rules' => [
                     'paramName' => 'required|is_numeric',
-                    'paramName2' => RequestValidation::NO_HTML_TAG_RULE
+                    'paramName2' => NoHtmlTag::NO_HTML_TAG_RULE
                 ],
                 'errorExpected' => null,
                 'customRules' => [
@@ -268,7 +269,7 @@ class RequestValidationTest extends TestCase
                 ],
                 'rules' => [
                     'paramName' => 'required|is_numeric',
-                    'paramName2' => RequestValidation::NO_HTML_TAG_RULE
+                    'paramName2' => NoHtmlTag::NO_HTML_TAG_RULE
                 ],
                 'errorExpected' => UnsupportedContentTypeException::class,
                 'customRules' => [
@@ -286,7 +287,7 @@ class RequestValidationTest extends TestCase
                     'paramName2' => 'invalid-number',
                 ],
                 'rules' => [
-                    'paramName' => RequestValidation::NO_HTML_TAG_RULE,
+                    'paramName' => NoHtmlTag::NO_HTML_TAG_RULE,
                     'paramName2' => 'required|is_numeric',
                 ],
                 'errorExpected' => BadRequestContainHTMLTagsException::class,
