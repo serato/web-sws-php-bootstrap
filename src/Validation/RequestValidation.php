@@ -31,11 +31,11 @@ class RequestValidation implements RequestValidationInterface
         $requestBody = $request->getParsedBody() ?? [];
         $validator   = new Validator();
 
-        // Register NoHtmlTag rule and set it's exception into BadRequestContainHTMLTagsException
-        if (in_array(NoHtmlTag::NO_HTML_TAG_RULE, $validationRules)) {
-            $validator->addValidator(NoHtmlTag::NO_HTML_TAG_RULE, new NoHtmlTag());
-            $exceptions[NoHtmlTag::NO_HTML_TAG_RULE] = BadRequestContainHTMLTagsException::class;
-        }
+        // add custom validators
+        $validator->addValidator(NoHtmlTag::NO_HTML_TAG_RULE, new NoHtmlTag());
+
+        // add custom exceptions
+        $exceptions[NoHtmlTag::NO_HTML_TAG_RULE] = BadRequestContainHTMLTagsException::class;
 
         // Add custom validation rules
         if (!empty($customRules)) {
