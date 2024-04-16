@@ -36,5 +36,6 @@
 			"Serato\\SwsApp\\Test\\": "tests/",
 			"Serato\\SwsApp\\Test\\Propel\\Model\\": "tests/resources/propel/model"
 		}
-	}
+	},
+	"minimum-stability": "dev"
 }
