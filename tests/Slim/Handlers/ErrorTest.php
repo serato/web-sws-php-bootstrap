@@ -16,8 +16,9 @@ use Exception;
  */
 class ErrorTest extends TestCase
 {
-    private const APP_NAME = 'My Web App';
+    private const string APP_NAME = 'My Web App';
 
+    #[\Override]
     public function setUp()
     {
         parent::setUp();
@@ -26,6 +27,7 @@ class ErrorTest extends TestCase
         }
     }
 
+    #[\Override]
     public function tearDown()
     {
         parent::setUp();
@@ -123,8 +125,8 @@ class ErrorTest extends TestCase
         return [
             ['\Exception', 500, true],
             ['\Exception', 500, false],
-            ['\Serato\SwsApp\Http\Rest\Exception\ExpiredAccessTokenException', 401, true],
-            ['\Serato\SwsApp\Http\Rest\Exception\ExpiredAccessTokenException', 401, true]
+            [\Serato\SwsApp\Http\Rest\Exception\ExpiredAccessTokenException::class, 401, true],
+            [\Serato\SwsApp\Http\Rest\Exception\ExpiredAccessTokenException::class, 401, true]
         ];
     }
 }

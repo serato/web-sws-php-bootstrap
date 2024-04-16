@@ -12,6 +12,7 @@ class ShowMissingCredentialsCommand extends AbstractCommand
     /**
      * {@inheritdoc}
      */
+    #[\Override]
     protected function configure()
     {
         parent::configure();
@@ -31,6 +32,7 @@ class ShowMissingCredentialsCommand extends AbstractCommand
     /**
      * {@inheritdoc}
      */
+    #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->getCommonOptions($input);

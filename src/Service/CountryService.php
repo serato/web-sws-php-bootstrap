@@ -8,10 +8,7 @@ namespace Serato\SwsApp\Service;
  */
 class CountryService implements CountryServiceInterface
 {
-    /**
-     * @param string $countryCode
-     * @return string|null
-     */
+    #[\Override]
     public static function getCountryNameWithCountryCode(string $countryCode): ?string
     {
         $countryCode = static::sanitizeString($countryCode);
@@ -21,10 +18,8 @@ class CountryService implements CountryServiceInterface
     /**
      * This method is a temporary solution.
      * We should refactor our database to store country code instead of country name.
-     *
-     * @param string $countryName
-     * @return string|null
      */
+    #[\Override]
     public static function getCountryCodeWithCountryName(string $countryName): ?string
     {
         $countries   = static::sanitizeArrayOfStrings(static::COUNTRIES);
@@ -37,6 +32,7 @@ class CountryService implements CountryServiceInterface
     /**
      * @return string[]
      */
+    #[\Override]
     public static function getCountries(): array
     {
         return static::COUNTRIES;
@@ -45,10 +41,9 @@ class CountryService implements CountryServiceInterface
     /**
      * Retrieves the code for a given region of the specified country
      *
-     * @param string $countryCode
-     * @param string $regionName
      * @return string
      */
+    #[\Override]
     public static function getCountryRegionCode(string $countryCode, string $regionName): ?string
     {
         $countryCode = static::sanitizeString($countryCode);
@@ -88,12 +83,8 @@ class CountryService implements CountryServiceInterface
         return $countryRegions[$regionName];
     }
 
-    /**
-     * @param string $countryCode
-     * @param string $regionCode
-     *
-     * @return string|null
-     */
+    
+    #[\Override]
     public static function getCountryRegionName(string $countryCode, string $regionCode): ?string
     {
         $countryCode = static::sanitizeString($countryCode);
@@ -112,21 +103,11 @@ class CountryService implements CountryServiceInterface
         return empty(static::REGION[$countryCode][$regionCode]) ? null : static::REGION[$countryCode][$regionCode];
     }
 
-    /**
-     * @param array $arrayToSanitize
-     * @return array
-     */
     protected static function sanitizeArrayOfStrings(array $arrayToSanitize): array
     {
-        return array_map(function (string $value) {
-            return static::sanitizeString($value);
-        }, $arrayToSanitize);
+        return array_map(fn(string $value) => static::sanitizeString($value), $arrayToSanitize);
     }
 
-    /**
-     * @param string $countryName
-     * @return string
-     */
     protected static function sanitizeString(string $countryName): string
     {
         $countryName = str_replace(' ', '', $countryName);

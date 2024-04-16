@@ -38,8 +38,6 @@ abstract class AbstractBuilder
      *
      * @param array    $schemaDirs     An array of directory paths that contain Propel schema files
      * @param string   $dbName         Name of connection
-     *
-     * @return ConnectionWrapper
      */
     abstract public static function createDatabase(array $schemaDirs, string $dbName = 'default'): ConnectionWrapper;
 
@@ -85,14 +83,12 @@ abstract class AbstractBuilder
      * the contents of each file as an item in an array
      *
      * @param array $schemaDirs     List of directories to read
-     *
-     * @return array
      */
     protected static function readSchemaXmlFiles(array $schemaDirs): array
     {
         $schemas = [];
         foreach ($schemaDirs as $schemaDir) {
-            foreach (glob(rtrim($schemaDir, '/') . '/*.xml') as $path) {
+            foreach (glob(rtrim((string) $schemaDir, '/') . '/*.xml') as $path) {
                 $schemas[] = file_get_contents(realpath($path));
             }
         }
@@ -114,7 +110,7 @@ abstract class AbstractBuilder
                 defaultPhpNamingMethod="underscore">';
         foreach ($schemas as $schema) {
             $database = new SimpleXMLElement($schema);
-            $ns = "\\\\" . (string)$database->attributes()['namespace'];
+            $ns = "\\\\" . $database->attributes()['namespace'];
             foreach ($database->table as $table) {
                 $table->addAttribute('namespace', $ns);
                 $xml .= $table->asXML();

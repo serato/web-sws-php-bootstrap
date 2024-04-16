@@ -13,9 +13,6 @@ class CountryServiceTest extends TestCase
 {
     /**
      * @dataProvider getCountryNameWithCountryCodeProvider
-     *
-     * @param string $countryCode
-     * @param string $expectedCountryName
      */
     public function testGetCountryNameWithCountryCode(string $countryCode, string $expectedCountryName): void
     {
@@ -33,10 +30,6 @@ class CountryServiceTest extends TestCase
 
     /**
      * @dataProvider getRegionCodeDataProvider
-     *
-     * @param string $countryCode
-     * @param string $regionName
-     * @param string|null $regionCode
      */
     public function testGetCountryRegionCode(string $countryCode, string $regionName, ?string $regionCode): void
     {
@@ -46,10 +39,6 @@ class CountryServiceTest extends TestCase
 
     /**
      * @dataProvider getGetRegionNameDataProvider
-     *
-     * @param string $countryCode
-     * @param string $regionCode
-     * @param string|null $regionName
      */
     public function testGetCountryRegionName(string $countryCode, string $regionCode, ?string $regionName): void
     {
@@ -59,9 +48,6 @@ class CountryServiceTest extends TestCase
 
     /**
      * @dataProvider getGetCountryCodeWithCountryNameDataProvider
-     *
-     * @param string $countryName
-     * @param string|null $expectedCountryCode
      */
     public function testGetCountryCodeWithCountryName(string $countryName, ?string $expectedCountryCode): void
     {
@@ -270,9 +256,6 @@ class CountryServiceTest extends TestCase
         ];
     }
 
-    /**
-     * @return array
-     */
     public function getCountryNameWithCountryCodeProvider(): array
     {
         return [

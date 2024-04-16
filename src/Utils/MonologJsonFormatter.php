@@ -10,10 +10,6 @@ class MonologJsonFormatter extends JsonFormatter
     public const SIMPLE_DATE = "Y-m-d H:i:s";
 
     protected $dateFormat;
-    /**
-     * @param int $batchMode
-     * @param bool $appendNewline
-     */
     public function __construct(
         int $batchMode = parent::BATCH_MODE_JSON,
         bool $appendNewline = true,
@@ -26,6 +22,7 @@ class MonologJsonFormatter extends JsonFormatter
     /**
      * Formats the record and adds the Date to it
      */
+    #[\Override]
     public function format(array $record): string
     {
         $dateTime = '';

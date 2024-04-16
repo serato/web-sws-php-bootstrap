@@ -51,16 +51,15 @@ class ClientAppBasicAuth extends AbstractAccessScopesMiddleware
      *
      * @param Request $request The most recent Request object
      * @param Response $response The most recent Response object
-     * @param callable $next
      */
     public function __invoke(Request $request, Response $response, callable $next)
     {
         $server_params = $request->getServerParams();
         if (isset($server_params['PHP_AUTH_USER']) && isset($server_params['PHP_AUTH_PW'])) {
-            foreach ($this->clientAppData as $k => $appData) {
+            foreach ($this->clientAppData as $appData) {
                 if (
                     $appData['id'] == $server_params['PHP_AUTH_USER'] &&
-                    password_verify($server_params['PHP_AUTH_PW'], $appData['password_hash'])
+                    password_verify((string) $server_params['PHP_AUTH_PW'], (string) $appData['password_hash'])
                 ) {
                     if (isset($appData['name'])) {
                         # There may be no per-service scopes defined for a given application (that's valid and

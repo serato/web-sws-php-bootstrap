@@ -19,7 +19,7 @@ abstract class AbstractRouteTest extends TestCase
     /**
      * @var null|ContainerInterface
      */
-    protected $container = null;
+    protected $container;
 
     /**
      * @todo consider returning a DTO collection
@@ -36,9 +36,6 @@ abstract class AbstractRouteTest extends TestCase
      */
     abstract public function getRoutes(): array;
 
-    /**
-     * @return ContainerInterface
-     */
     abstract protected function getContainer(): ContainerInterface;
 
     /**
@@ -56,9 +53,7 @@ abstract class AbstractRouteTest extends TestCase
 
             foreach ($methods as $method) {
                 // trying to find the route in the list of valid routes
-                $filteredRoutes = array_filter($this->getRoutes(), function ($route, $key) use ($pattern, $method) {
-                    return $route['pattern'] === $pattern && $route['method'] === $method;
-                }, ARRAY_FILTER_USE_BOTH);
+                $filteredRoutes = array_filter($this->getRoutes(), fn($route, $key) => $route['pattern'] === $pattern && $route['method'] === $method, ARRAY_FILTER_USE_BOTH);
 
                 // If this line fails, it means the route you just added/changed was not added to the getRoutes method.
                 $errorMessage = sprintf(
@@ -111,10 +106,6 @@ abstract class AbstractRouteTest extends TestCase
         }
     }
 
-    /**
-     * @param string $expectedController
-     * @param string $actualController
-     */
     private function compareRoutes(string $expectedController, string $actualController): void
     {
         /**
@@ -136,10 +127,6 @@ abstract class AbstractRouteTest extends TestCase
         $this->assertNotEmpty($controller);
     }
 
-    /**
-     * @param string $callableFullNamespace
-     * @return string
-     */
     private function getClassNameFromString(string $callableFullNamespace): string
     {
         $explodedCallableFullNamespace = explode('\\', $callableFullNamespace);

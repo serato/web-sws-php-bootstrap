@@ -67,7 +67,7 @@ trait PsrQueryCacheBehaviorTrait
      * @param mixed     $value      Item to cache
      * @param int       $lifetime   Cache TTL in seconds
      */
-    public function cacheStore($key, $value, $lifetime = 600)
+    public function cacheStore($key, mixed $value, $lifetime = 600)
     {
         if ($this->getQueryCache() !== null) {
             $item = $this->getQueryCache()->getItem($key);

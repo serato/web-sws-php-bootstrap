@@ -13,12 +13,7 @@ use Rakit\Validation\Validator;
  */
 class RequestValidation implements RequestValidationInterface
 {
-    /**
-     * @param Request $request
-     * @param array $validationRules
-     * @param array $customRules
-     * @param array $exceptions
-     */
+    #[\Override]
     public function validateRequestData(
         Request $request,
         array $validationRules,
@@ -29,10 +24,8 @@ class RequestValidation implements RequestValidationInterface
         $validator   = new Validator();
 
         // Add custom validation rules
-        if (!empty($customRules)) {
-            foreach ($customRules as $key => $customRule) {
-                $validator->addValidator($key, $customRule);
-            }
+        foreach ($customRules as $key => $customRule) {
+            $validator->addValidator($key, $customRule);
         }
 
         $validation  = $validator->make($requestBody, $validationRules);

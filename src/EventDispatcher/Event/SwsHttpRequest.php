@@ -20,6 +20,7 @@ class SwsHttpRequest extends AbstractEvent
     /**
      * {@inheritDoc}
      */
+    #[\Override]
     protected function getArrayKeys(): array
     {
         return ['request', 'response'];

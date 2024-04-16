@@ -20,8 +20,8 @@ use Psr\Cache\CacheItemPoolInterface;
 
 class ClientAppData
 {
-    private const CACHE_KEY = 'SWS-App-Request-ClientAppData';
-    private const CACHE_EXPIRY_TIME = 3600; // seconds
+    private const string CACHE_KEY = 'SWS-App-Request-ClientAppData';
+    private const int CACHE_EXPIRY_TIME = 3600; // seconds
 
     /**
      * AWS SDK client
@@ -60,8 +60,6 @@ class ClientAppData
      * Returns a new ClientAppData object.
      *
      * @param CacheItemPoolInterface    $psrCache   PSR-6 cache item pool
-     *
-     * @return ClientAppData
      */
     public static function create(CacheItemPoolInterface $psrCache): ClientAppData
     {
@@ -72,7 +70,6 @@ class ClientAppData
      * Load client app data from a file
      *
      * @param string    $filePath   Path to file
-     * @return array
      * @throws Exception
      */
     public function loadFromFile(string $filePath): array
@@ -98,8 +95,6 @@ class ClientAppData
      * @param Sdk       $aws            AWS client
      * @param string    $bucketName     Name of S3 bucket
      * @param string    $key            Path of S3 object
-     *
-     * @return array
      */
     public function loadFromS3Object(Sdk $aws, string $bucketName, string $key): array
     {
@@ -117,8 +112,6 @@ class ClientAppData
 
     /**
      * Determine if most recent load of data came from the cache
-     *
-     * @return bool
      */
     public function isCacheHit(): bool
     {
@@ -129,7 +122,6 @@ class ClientAppData
      * Parse file contents into an array
      *
      * @param string $json JSON string data
-     * @return array
      * @throws Exception
      */
     private function parseJsonString(string $json): array

@@ -19,27 +19,23 @@ use Datetime;
 final class StatusController extends AbstractController
 {
     /**
-     * Path to file containing most recent git commit hash
-     *
-     * @var string
-     */
-    protected $gitCommitFilePath;
-
-    /**
      * Constructs the controller
      *
      * @param LoggerInterface   $logger   A PSR-3 logger interface
      * @param string    $gitCommitFilePath  Path to file containing most recent git commit hash
      */
-    public function __construct(LoggerInterface $logger, string $gitCommitFilePath)
+    public function __construct(LoggerInterface $logger, /**
+     * Path to file containing most recent git commit hash
+     */
+    protected string $gitCommitFilePath)
     {
         parent::__construct($logger);
-        $this->gitCommitFilePath = $gitCommitFilePath;
     }
 
     /**
      * {@inheritdoc}
      */
+    #[\Override]
     protected function execute(Request $request, Response $response, array $args): Response
     {
         $negotiator = new Negotiator();
@@ -112,8 +108,6 @@ final class StatusController extends AbstractController
 
     /**
      * Read the Git commit hash from a file
-     *
-     * @return string
      */
     private function getGitCommitHash(): string
     {
@@ -174,9 +168,7 @@ EOT;
                 $record->country->name . ' (' . $record->country->isoCode . ')',
                 $record->continent->name
             ],
-            function ($val) {
-                return $val !== null && $val !== '';
-            }
+            fn($val) => $val !== null && $val !== ''
         );
     }
 }

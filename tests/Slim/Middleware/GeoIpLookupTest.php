@@ -91,12 +91,8 @@ class GeoIpLookupTest extends TestCase
     /**
      * Returns a Request instance that has been created by running a mock request
      * through the GeoIpLookup middleware.
-     *
-     * @param mixed $remoteIp
-     * @param mixed $xForwardedIp
-     * @return Request
      */
-    private function getRequestViaMiddleware($remoteIp = null, $xForwardedIp = null): Request
+    private function getRequestViaMiddleware(mixed $remoteIp = null, mixed $xForwardedIp = null): Request
     {
         $middleware = new GeoIpLookup(realpath(__DIR__ . '/../../../GeoLite2-City.mmdb'));
         $emptyMiddleware = new EmptyWare();
@@ -110,7 +106,7 @@ class GeoIpLookupTest extends TestCase
             $env = $env->setXForwardedForIpAddress($xForwardedIp);
         }
 
-        $response = $middleware(
+        $middleware(
             Request::createFromEnvironmentBuilder($env),
             new Response(),
             $emptyMiddleware

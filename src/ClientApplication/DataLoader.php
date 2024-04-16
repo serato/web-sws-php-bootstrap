@@ -19,25 +19,16 @@ use Serato\SwsApp\ClientApplication\Exception\MissingApplicationPasswordHash;
 
 class DataLoader
 {
-    private const CACHE_EXPIRY_TIME = 3600; // seconds
-    private const ENVIRONMENTS = ['dev', 'test', 'production'];
-    private const S3_BUCKET_NAME = 'sws.clientapps';
-    private const S3_BASE_PATH = 'v2';
-    private const COMMON_APP_DATA_NAME = 'apps.json';
-    private const ENV_CREDENTIALS_NAME_PATTERN = 'credentials.__env__.json';
-    private const CREDENTIALS_ENV_PLACEHOLDER = '__env__';
+    private const int CACHE_EXPIRY_TIME = 3600; // seconds
+    private const array ENVIRONMENTS = ['dev', 'test', 'production'];
+    private const string S3_BUCKET_NAME = 'sws.clientapps';
+    private const string S3_BASE_PATH = 'v2';
+    private const string COMMON_APP_DATA_NAME = 'apps.json';
+    private const string ENV_CREDENTIALS_NAME_PATTERN = 'credentials.__env__.json';
+    private const string CREDENTIALS_ENV_PLACEHOLDER = '__env__';
 
     /** @var string */
     private $env;
-
-    /** @var array */
-    private $loadEnv = [];
-
-    /** @var AwsSdk */
-    private $awsSdk;
-
-    /** @var CacheItemPoolInterface */
-    private $psrCache;
 
     /** @var string */
     private $localDirPath;
@@ -53,8 +44,8 @@ class DataLoader
      */
     public function __construct(
         string $env,
-        AwsSdk $awsSdk,
-        CacheItemPoolInterface $psrCache,
+        private readonly AwsSdk $awsSdk,
+        private readonly CacheItemPoolInterface $psrCache,
         string $localDirPath = null
     ) {
         if (!in_array($env, self::ENVIRONMENTS)) {
@@ -65,8 +56,6 @@ class DataLoader
         }
 
         $this->env = $env;
-        $this->awsSdk = $awsSdk;
-        $this->psrCache = $psrCache;
 
         if ($localDirPath !== null) {
             $this->localDirPath = realpath($localDirPath);
@@ -77,13 +66,6 @@ class DataLoader
                 throw new Exception("Invalid directory path '" . $this->localDirPath . "'. Path is not a directory.");
             }
         }
-
-        // Load all environment data in `dev` environment
-        if ($this->env === 'dev') {
-            $this->loadEnv = self::ENVIRONMENTS;
-        } else {
-            $this->loadEnv = [$this->env];
-        }
     }
 
     /**
@@ -91,7 +73,6 @@ class DataLoader
      *
      * @param string $env           Application environment. Defaults to value passed to constructor
      * @param boolean $useCache     Determines whether or not to look in the cache.
-     * @return array
      */
     public function getApp(string $env = null, bool $useCache = true): array
     {
@@ -110,8 +91,6 @@ class DataLoader
 
     /**
      * Returns a data config item. Will look in the cache for the item if `$useCache = true`.
-     *
-     * @return array
      */
     public function getItem(string $name, bool $useCache = true): array
     {
@@ -124,9 +103,6 @@ class DataLoader
 
     /**
      * Returns the name of an environment-specific credentials object
-     *
-     * @param string $env
-     * @return string
      */
     public function getCredentialsObjectName(string $env): string
     {
@@ -139,8 +115,6 @@ class DataLoader
 
     /**
      * Load application data from a file in a local directory.
-     *
-     * @return array
      */
     private function loadFromLocalDirectory(string $name): array
     {
@@ -160,14 +134,12 @@ class DataLoader
     /**
      * Load application data from cache if available.
      * If not, fetch from S3 and save to cache.
-     *
-     * @return array
      */
     private function loadFromCache(string $name, bool $useCache = true): array
     {
         $s3ObjectName = self::S3_BASE_PATH . '/' . $name;
 
-        $cacheKey = str_replace(['\\', '/'], '_', __CLASS__ . '--' . self::S3_BUCKET_NAME . '--' . $s3ObjectName);
+        $cacheKey = str_replace(['\\', '/'], '_', self::class . '--' . self::S3_BUCKET_NAME . '--' . $s3ObjectName);
 
         // Read from cache, if specified
         if ($useCache) {
@@ -194,7 +166,6 @@ class DataLoader
     /**
      * Load application data from S3
      *
-     * @return array
      * @throws InvalidFileContentsException
      */
     private function loadFromS3(string $s3ObjectName): array
@@ -216,9 +187,6 @@ class DataLoader
     /**
      * Merges environment specific credentials
      *
-     * @param array $commonData
-     * @param array $credentialsData
-     * @return array
      *
      * @throws MissingApplicationIdException
      * @throws MissingApplicationPasswordHash

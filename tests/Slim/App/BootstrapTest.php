@@ -11,7 +11,7 @@ use Serato\SwsApp\EventDispatcher\Subscriber\LogToFileSubscriber;
  */
 class BootstrapTest extends TestCase
 {
-    private const CONTAINER_ITEM = 'A string of text';
+    private const string CONTAINER_ITEM = 'A string of text';
 
     public function testSmokeTest()
     {
@@ -20,9 +20,7 @@ class BootstrapTest extends TestCase
         $this->assertTrue(is_a($bootstrap->createApp(), '\Slim\App'));
         $this->assertTrue(is_a($bootstrap->getContainer(), '\Psr\Container\ContainerInterface'));
 
-        $bootstrap->register('mykey', function () {
-            return self::CONTAINER_ITEM;
-        });
+        $bootstrap->register('mykey', fn() => self::CONTAINER_ITEM);
         $this->assertEquals(self::CONTAINER_ITEM, $bootstrap->getContainer()['mykey']);
     }
 

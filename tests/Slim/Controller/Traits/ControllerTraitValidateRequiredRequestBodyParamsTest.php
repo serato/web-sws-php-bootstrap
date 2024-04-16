@@ -43,15 +43,9 @@ class ControllerTraitValidateRequiredRequestBodyParamsTest extends TestCase
             ->expects($this->once())
             ->method('handleMissingRequestBodyParams')
             ->with(
-                $this->callback(function ($arg) {
-                    return is_a($arg, '\Serato\Slimulator\Request');
-                }),
-                $this->callback(function ($arg) {
-                    return is_a($arg, '\Slim\Http\Response');
-                }),
-                $this->callback(function ($arg) {
-                    return is_array($arg);
-                })
+                $this->callback(fn($arg) => is_a($arg, '\Serato\Slimulator\Request')),
+                $this->callback(fn($arg) => is_a($arg, '\Slim\Http\Response')),
+                $this->callback(fn($arg) => is_array($arg))
             )
             ->willReturn($missingRequiredParams);
 

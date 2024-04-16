@@ -126,20 +126,12 @@ class Error extends SlimError
 
         $contentType = $this->determineContentType($request);
 
-        switch ($contentType) {
-            case 'application/json':
-                $output = $this->renderJsonErrorMessage($exception);
-                break;
-            case 'text/xml':
-            case 'application/xml':
-                $output = $this->renderXmlErrorMessage($exception);
-                break;
-            case 'text/html':
-                $output = $this->renderHtmlErrorMessage($exception);
-                break;
-            default:
-                throw new UnexpectedValueException('Cannot render unknown content type ' . $contentType);
-        }
+        $output = match ($contentType) {
+            'application/json' => $this->renderJsonErrorMessage($exception),
+            'text/xml', 'application/xml' => $this->renderXmlErrorMessage($exception),
+            'text/html' => $this->renderHtmlErrorMessage($exception),
+            default => throw new UnexpectedValueException('Cannot render unknown content type ' . $contentType),
+        };
 
         if (!is_a($exception, self::BASE_CLASS)) {
             $this->writeToErrorLog($exception);
@@ -170,7 +162,6 @@ class Error extends SlimError
     /**
      * Render HTML error page
      *
-     * @param  \Exception $exception
      *
      * @return string
      */
@@ -208,7 +199,7 @@ class Error extends SlimError
             }
         }
 
-        $output = sprintf(
+        return sprintf(
             "<html><head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'>" .
             "<title>%s</title><style>body{margin:0;padding:30px;font:12px/1.5 Helvetica,Arial,Verdana," .
             "sans-serif;}h1{margin:0;font-size:32px;font-weight:normal;line-height:40px;}strong{" .
@@ -217,16 +208,12 @@ class Error extends SlimError
             $title,
             $html
         );
-
-        return $output;
     }
 
     /**
      * Render JSON error
      *
-     * @param \Exception $exception
      *
-     * @return string
      */
     protected function renderJsonErrorMessage(\Exception $exception): string
     {
@@ -240,7 +227,7 @@ class Error extends SlimError
                 'code' => $exception->getCode(),
             ];
         } elseif ($this->displayErrorDetails) {
-            $json = json_decode(parent::renderJsonErrorMessage($exception), true);
+            $json = json_decode((string) parent::renderJsonErrorMessage($exception), true);
             $json['message'] = $msg;
             return json_encode($json, JSON_PRETTY_PRINT);
         }
@@ -282,13 +269,11 @@ class Error extends SlimError
 
     /**
      * @param \Exception|\Throwable $throwable
-     *
-     * @return array
      */
     private function renderThrowableAsArray($throwable): array
     {
         $error = [];
-        $error['type'] = get_class($throwable);
+        $error['type'] = $throwable::class;
         if ($code = $throwable->getCode()) {
             $error['code'] = $code;
         }

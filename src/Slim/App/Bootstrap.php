@@ -57,8 +57,6 @@ abstract class Bootstrap
 
     /**
      * Get the bootstrapped Slim application instance
-     *
-     * @return App
      */
     public function createApp(): App
     {
@@ -82,9 +80,6 @@ abstract class Bootstrap
 
     /**
      * Run application
-     *
-     * @param boolean $silent
-     * @return Response
      */
     public function run(bool $silent = false): Response
     {
@@ -121,8 +116,6 @@ abstract class Bootstrap
      *
      * @param string    $key   Identifier for the service in the container
      * @param callable  $f     Callable to register in the container
-     *
-     * @return self
      */
     public function register(string $key, callable $f): self
     {
@@ -138,7 +131,6 @@ abstract class Bootstrap
      * @param callable $listener  The listener
      * @param int      $priority  The higher this value, the earlier an event
      *                            listener will be triggered in the chain (defaults to 0)
-     * @return void
      */
     public function addEventListener(string $eventName, callable $listener, int $priority = 0): void
     {
@@ -150,9 +142,6 @@ abstract class Bootstrap
      *
      * The subscriber is asked for all the events it is
      * interested in and added as a listener for these events.
-     *
-     * @param EventSubscriberInterface $subscriber
-     * @return void
      */
     public function addEventSubscriber(EventSubscriberInterface $subscriber): void
     {
@@ -161,8 +150,6 @@ abstract class Bootstrap
 
     /**
      * Get the `Serato\SwsApp\Slim\Middleware\RequestToContainer` instance
-     *
-     * @return RequestToContainerMiddleware
      */
     private function getRequestToContainerMiddleware(): RequestToContainerMiddleware
     {
@@ -171,8 +158,6 @@ abstract class Bootstrap
 
     /**
      * Get the Slim application instance
-     *
-     * @return App
      */
     protected function getApp(): App
     {

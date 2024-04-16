@@ -42,8 +42,6 @@ abstract class AbstractController
 
     /**
      * Get the logger interface
-     *
-     * @return LoggerInterface
      */
     public function getLogger(): LoggerInterface
     {
@@ -57,8 +55,6 @@ abstract class AbstractController
      * @param  Request     $request            Request interface
      * @param  Response    $response           Response interface
      * @param  array       $args               Request args
-     *
-     * @return Response
      */
     public function __invoke(Request $request, Response $response, array $args): Response
     {
@@ -105,7 +101,7 @@ abstract class AbstractController
     {
         $contentType = $request->getContentType();
         if ($contentType) {
-            $contentTypeParts = preg_split('/\s*[;,]\s*/', $contentType);
+            $contentTypeParts = preg_split('/\s*[;,]\s*/', (string) $contentType);
             return strtolower($contentTypeParts[0]);
         }
         return null;
@@ -114,8 +110,6 @@ abstract class AbstractController
     /**
      * Returns an array of Etags contained within an `If-None-Match` HTTP
      * request header.
-     *
-     * @return array
      */
     protected function getIfNoneMatchEtags(): array
     {
@@ -125,8 +119,6 @@ abstract class AbstractController
     /**
      * Returns an array of Etags contained within an `If-Match` HTTP
      * request header.
-     *
-     * @return array
      */
     protected function getIfMatchEtags(Request $request): array
     {
@@ -163,10 +155,6 @@ abstract class AbstractController
 
     /**
      * Formats a string into a value suitible for use in an HTTP ETag header.
-     *
-     * @param string $val
-     * @param boolean $weakValidation
-     * @return string
      */
     protected static function formatEtagValue(string $val, bool $weakValidation = true): string
     {
@@ -179,8 +167,6 @@ abstract class AbstractController
      * @param Request       $request            Request interface
      * @param array         $uriArgs            Name/value pairs of dynamic URI parameters
      * @param bool          $catchClientErrors  When true catch client errors and invoke the error handler
-     *
-     * @return Response
      */
     public function mockInvoke(
         Request $request,
@@ -210,8 +196,6 @@ abstract class AbstractController
      * @param  Request     $request            Request interface
      * @param  Response    $response           Response interface
      * @param  array       $args               Request URI args
-     *
-     * @return Response
      */
     abstract protected function execute(
         Request $request,

@@ -16,8 +16,9 @@ use Exception;
  */
 class PhpErrorTest extends TestCase
 {
-    private const APP_NAME = 'My Web App';
+    private const string APP_NAME = 'My Web App';
 
+    #[\Override]
     public function setUp()
     {
         parent::setUp();
@@ -26,6 +27,7 @@ class PhpErrorTest extends TestCase
         }
     }
 
+    #[\Override]
     public function tearDown()
     {
         parent::setUp();

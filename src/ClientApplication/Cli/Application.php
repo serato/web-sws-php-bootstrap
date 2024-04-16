@@ -15,15 +15,6 @@ class Application extends BaseApplication
     public const NAME = 'Serato Client Application Data CLI';
     public const VERSION = '0.1';
 
-    /** @var string */
-    private $env;
-
-    /** @var AwsSdk */
-    private $awsSdk;
-
-    /** @var CacheItemPoolInterface */
-    private $psrCache;
-
     /**
      * Constructs the object
      *
@@ -38,14 +29,11 @@ class Application extends BaseApplication
     public function __construct(
         string $name,
         string $version,
-        string $env,
-        AwsSdk $awsSdk,
-        CacheItemPoolInterface $psrCache
+        private readonly string $env,
+        private readonly AwsSdk $awsSdk,
+        private readonly CacheItemPoolInterface $psrCache
     ) {
         parent::__construct($name, $version);
-        $this->env = $env;
-        $this->awsSdk = $awsSdk;
-        $this->psrCache = $psrCache;
         $this->loadCommands();
     }
 
@@ -55,7 +43,6 @@ class Application extends BaseApplication
      * @param string                    $env        Application environment
      * @param AwsSdk                    $awsSdk     AWS SDK
      * @param CacheItemPoolInterface    psrCache    PSR-6 cache item pool
-     * @return self
      */
     public static function create(string $env, AwsSdk $awsSdk, CacheItemPoolInterface $psrCache): self
     {

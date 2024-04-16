@@ -40,8 +40,6 @@ abstract class AbstractEvent extends GenericEvent
      *
      * Any attempt to set an array key to the object that does not exist in
      * this list will result in an exception.
-     *
-     * @return array
      */
     abstract protected function getArrayKeys(): array;
 
@@ -49,8 +47,6 @@ abstract class AbstractEvent extends GenericEvent
      * Returns the event name.
      *
      * This is the name that instances of this event should always be dispatched with.
-     *
-     * @return string
      */
     public static function getEventName(): string
     {
@@ -60,6 +56,7 @@ abstract class AbstractEvent extends GenericEvent
     /**
      * {@inheritDoc}
      */
+    #[\Override]
     public function offsetSet($key, $value)
     {
         if (!in_array($key, $this->getArrayKeys())) {

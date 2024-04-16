@@ -23,7 +23,8 @@
 		"symfony/cache": "^6.3",
 		"enlightn/security-checker": "^1.4",
 		"mockery/mockery": "^1.3",
-		"propel/propel": "2.0.0-beta3"
+		"propel/propel": "2.0.0-beta3",
+		"rector/rector": "^1.0"
 	},
 	"autoload": {
 		"psr-4": {

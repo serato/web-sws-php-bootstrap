@@ -40,7 +40,6 @@ trait ControllerTraitJsonResponse
      * sets a `Content-type application/json` response header.
      *
      * @param  Response    $response           Response interface
-     * @return Response
      */
     protected function writeJsonBody(Response $response): Response
     {

@@ -15,8 +15,6 @@ abstract class AbstractAccessScopesMiddleware extends AbstractRequestWithAttribu
      * @param string    $appId      Client application ID
      * @param string    $appName    Client application name
      * @param array     $scopes     Permitted scopes of access
-     *
-     * @return Request
      */
     protected function setClientAppRequestAttributes(
         Request $request,

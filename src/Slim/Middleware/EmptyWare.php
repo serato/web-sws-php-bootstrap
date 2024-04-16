@@ -33,8 +33,6 @@ class EmptyWare extends AbstractHandler
      *
      * @param Request   $request   The most recent Request object
      * @param Response  $response  The most recent Response object
-     *
-     * @return Response
      */
     public function __invoke(Request $request, Response $response): Response
     {
@@ -46,8 +44,6 @@ class EmptyWare extends AbstractHandler
 
     /**
      * Get the Request Interface
-     *
-     * @return Request
      */
     public function getRequestInterface(): Request
     {
@@ -56,8 +52,6 @@ class EmptyWare extends AbstractHandler
 
     /**
      * Get the Response Interface
-     *
-     * @return Response
      */
     public function getResponseInterface(): Response
     {

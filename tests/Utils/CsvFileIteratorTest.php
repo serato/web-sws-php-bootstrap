@@ -15,7 +15,7 @@ class CsvFileIteratorTest extends TestCase
      */
     public function testFileNotFound()
     {
-        $csv = new CsvFileIterator(__DIR__ . '/../resources/nosuchfile.csv');
+        new CsvFileIterator(__DIR__ . '/../resources/nosuchfile.csv');
         $this->assertTrue(true);
     }
 

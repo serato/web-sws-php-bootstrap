@@ -14,26 +14,20 @@ class JsonSchemaViewerController extends AbstractController
 {
     public const SCHEMAS_LIST_NAMED_ROUTE = 'schemasList';
 
-    private const HTML_VIEW = 'html';
-    private const JSON_VIEW = 'json';
-    private const JSONLIST_VIEW = 'jsonlist';
+    private const string HTML_VIEW = 'html';
+    private const string JSON_VIEW = 'json';
+    private const string JSONLIST_VIEW = 'jsonlist';
 
-    private const STYLE_SHEET = 'github-gist.css';
+    private const string STYLE_SHEET = 'github-gist.css';
 
     /* @var RouterInterface */
     private $router;
-
-    /* @var string */
-    private $appName;
 
     /* @var string */
     private $schemaDirectoryPath;
 
     /* @var string */
     private $stylesDirectoryPath;
-
-    /* @var ?string */
-    private $namedRoute;
 
     /**
      * Construct the controller
@@ -48,17 +42,15 @@ class JsonSchemaViewerController extends AbstractController
     public function __construct(
         LoggerInterface $logger,
         RouterInterface $router,
-        string $appName,
+        private readonly string $appName,
         string $schemaDirectoryPath,
         string $stylesDirectoryPath,
-        ?string $namedRoute = null
+        private ?string $namedRoute = null
     ) {
         parent::__construct($logger);
         $this->router = $router;
-        $this->appName = $appName;
         $this->schemaDirectoryPath = rtrim($schemaDirectoryPath, '/');
         $this->stylesDirectoryPath = rtrim($stylesDirectoryPath, '/');
-        $this->namedRoute = $namedRoute;
     }
 
     /**
@@ -69,9 +61,8 @@ class JsonSchemaViewerController extends AbstractController
      * @param  Request     $request            Request interface
      * @param  Response    $response           Response interface
      * @param  array       $args               Request URI args
-     *
-     * @return Response
      */
+    #[\Override]
     public function execute(Request $request, Response $response, array $args): Response
     {
         $baseUri = $this->router->pathFor($this->getNamedRoute());
@@ -135,8 +126,6 @@ class JsonSchemaViewerController extends AbstractController
 
     /**
      * Sets the named route for the base URI that the controller is mapped to
-     *
-     * @return string
      */
     public function setNamedRoute(string $namedRoute): void
     {
@@ -145,14 +134,12 @@ class JsonSchemaViewerController extends AbstractController
 
     /**
      * Returns the named route for the base URI that the controller is mapped to
-     *
-     * @return string
      */
     public function getNamedRoute(): string
     {
         # This function MUST return self::SCHEMAS_LIST_NAMED_ROUTE if no value is
         # explicitly set for $this->namedRoute to maintain backwards compatibility.
-        return $this->namedRoute === null ? self::SCHEMAS_LIST_NAMED_ROUTE : $this->namedRoute;
+        return $this->namedRoute ?? self::SCHEMAS_LIST_NAMED_ROUTE;
     }
 
     private function makeFileListHtml(string $baseUri): string
@@ -169,9 +156,8 @@ class JsonSchemaViewerController extends AbstractController
                     "</small></li>\n";
         }
         $str .= "</ul>\n";
-        $str .= "<p><a href=\"$baseUri/" . self::JSONLIST_VIEW . "\" target=\"_blank\">View list as JSON</p>";
 
-        return $str;
+        return $str . ("<p><a href=\"$baseUri/" . self::JSONLIST_VIEW . "\" target=\"_blank\">View list as JSON</p>");
     }
 
     private function makeJsonFileHtml(string $baseUri, string $fileName, string $json): string
@@ -182,8 +168,7 @@ class JsonSchemaViewerController extends AbstractController
         $str = "<h2>$fileName</h2>\n";
         $str .= "<p><a href=\"$baseUri\">Back</a></p>\n";
         $str .= "<pre class=\"hljs {$hl->language}\">" . $this->makeJsonDocLinks($baseUri, $hl->value) . "</pre>\n";
-        $str .= "<p><a href=\"$baseUri\">Back</a></p>\n";
-        return $str;
+        return $str . "<p><a href=\"$baseUri\">Back</a></p>\n";
     }
 
     private function makeJsonDocLinks(string $baseUri, string $body): string
@@ -191,7 +176,7 @@ class JsonSchemaViewerController extends AbstractController
         preg_match_all('/".*\.json/', $body, $matches);
 
         foreach ($matches[0] as $match) {
-            $jsonFileName = substr($match, strrpos($match, '"') + 1);
+            $jsonFileName = substr((string) $match, strrpos((string) $match, '"') + 1);
             $jsonLink = '<a href="' . $baseUri . '/' . self::HTML_VIEW . '/' . $jsonFileName . '">' .
                         $jsonFileName . '</a>';
             $body = str_replace($jsonFileName, $jsonLink, $body);

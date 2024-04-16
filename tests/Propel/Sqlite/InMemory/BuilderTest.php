@@ -13,10 +13,10 @@ use Serato\SwsApp\Test\Propel\Model\License;
  */
 class BuilderTest extends TestCase
 {
-    private const SCHEMA_DIR            = __DIR__ . '/../../../resources/propel/schemas';
-    private const JSON_DATA_DIR         = __DIR__ . '/' . '../../../resources/propel/data';
-    private const MODEL_NAMESPACE       = '\Serato\SwsApp\Test\Propel\Model\\';
-    private const COMMON_TABLE_NAMES    = ['LicenseType', 'ProductType'];
+    private const string SCHEMA_DIR            = __DIR__ . '/../../../resources/propel/schemas';
+    private const string JSON_DATA_DIR         = __DIR__ . '/' . '../../../resources/propel/data';
+    private const string MODEL_NAMESPACE       = '\Serato\SwsApp\Test\Propel\Model\\';
+    private const array COMMON_TABLE_NAMES    = ['LicenseType', 'ProductType'];
 
     public function testCreateDb()
     {

@@ -26,9 +26,6 @@ class GeoIpLookup extends AbstractHandler
     public const GEOIP_RECORD = 'geoIpRecord';
 
     /* @var string */
-    private $geoLiteDbPath;
-
-    /* @var string */
     private $realIpHeader;
 
     /**
@@ -37,9 +34,8 @@ class GeoIpLookup extends AbstractHandler
      * @param string $geoLiteDbPath     Path to a GeoLite2 database file
      * @param string $realIpHeader      Name of the HTTP header that contains the client's real IP address
      */
-    public function __construct(string $geoLiteDbPath, string $realIpHeader = '')
+    public function __construct(private readonly string $geoLiteDbPath, string $realIpHeader = '')
     {
-        $this->geoLiteDbPath = $geoLiteDbPath;
         $this->realIpHeader = $realIpHeader === '' ? 'X-Forwarded-For' : $realIpHeader;
     }
 
@@ -72,7 +68,6 @@ class GeoIpLookup extends AbstractHandler
 
     /**
      * @param string    $ipAddress     IP address
-     * @return City
      */
     private function getGeoIpCityRecord(string $ipAddress): City
     {
@@ -80,7 +75,7 @@ class GeoIpLookup extends AbstractHandler
 
         try {
             return $reader->city($ipAddress);
-        } catch (Exception $e) {
+        } catch (Exception) {
             return new City([]);
         }
     }

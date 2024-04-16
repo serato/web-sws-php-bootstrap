@@ -44,7 +44,6 @@ class PhpError extends SlimPhpError
     /**
      * Render HTML error page
      *
-     * @param \Throwable $error
      *
      * @return string
      */
@@ -53,20 +52,19 @@ class PhpError extends SlimPhpError
         return str_replace(
             'Slim Application Error',
             $this->applicationName . ' - Application Error',
-            parent::renderHtmlErrorMessage($error)
+            (string) parent::renderHtmlErrorMessage($error)
         );
     }
 
     /**
      * Render JSON error
      *
-     * @param \Throwable $error
      *
      * @return string
      */
     protected function renderJsonErrorMessage(\Throwable $error)
     {
-        $json = json_decode(parent::renderJsonErrorMessage($error), true);
+        $json = json_decode((string) parent::renderJsonErrorMessage($error), true);
         $json['message'] = $this->applicationName . ' - Application Error';
         return json_encode($json, JSON_PRETTY_PRINT);
     }
@@ -94,13 +92,11 @@ class PhpError extends SlimPhpError
 
     /**
      * @param \Exception|\Throwable $throwable
-     *
-     * @return array
      */
     private function renderThrowableAsArray($throwable): array
     {
         $error = [];
-        $error['type'] = get_class($throwable);
+        $error['type'] = $throwable::class;
         if ($code = $throwable->getCode()) {
             $error['code'] = $code;
         }

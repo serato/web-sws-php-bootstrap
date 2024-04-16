@@ -17,18 +17,20 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter as FileSystemCachePool;
 
 class TestCase extends PHPUnitTestCase
 {
-    private const FILE_SYSTEM_CACHE_NAMESPACE = 'tests';
+    private const string FILE_SYSTEM_CACHE_NAMESPACE = 'tests';
 
     protected $fileSystemCacheDir;
     protected static $fileSystemCachePool;
 
-    protected function setUp()
+    #[\Override]
+    protected function setUp(): void
     {
         $this->fileSystemCacheDir = sys_get_temp_dir() . '/fs-cache';
         $this->deleteFileSystemCacheDir();
     }
 
-    protected function tearDown()
+    #[\Override]
+    protected function tearDown(): void
     {
         $this->deleteFileSystemCacheDir();
     }
@@ -68,8 +70,6 @@ class TestCase extends PHPUnitTestCase
 
     /**
      * Gets a PSR-6 compliant file system based cache pool
-     *
-     * @return FileSystemCachePool
      */
     protected function getFileSystemCachePool(): FileSystemCachePool
     {
@@ -82,7 +82,7 @@ class TestCase extends PHPUnitTestCase
     protected function deleteFileSystemCacheDir()
     {
         if ($this->fileSystemCacheDir !== null && is_dir($this->fileSystemCacheDir)) {
-            exec('rm -rf ' . escapeshellarg($this->fileSystemCacheDir));
+            exec('rm -rf ' . escapeshellarg((string) $this->fileSystemCacheDir));
         }
     }
 

@@ -35,30 +35,18 @@ class AbstractScopesControllerTest extends TestCase
             ->expects($this->exactly($isValid ? 0 : 1))
             ->method('handleInvalidControllerScopes')
             ->with(
-                $this->callback(function ($arg) {
-                    return is_a($arg, '\Serato\Slimulator\Request');
-                }),
-                $this->callback(function ($arg) {
-                    return is_a($arg, '\Slim\Http\Response');
-                }),
-                $this->callback(function ($arg) {
-                    return is_a($arg, '\Serato\SwsApp\Slim\Controller\Scopes');
-                })
+                $this->callback(fn($arg) => is_a($arg, '\Serato\Slimulator\Request')),
+                $this->callback(fn($arg) => is_a($arg, '\Slim\Http\Response')),
+                $this->callback(fn($arg) => is_a($arg, '\Serato\SwsApp\Slim\Controller\Scopes'))
             );
 
         $controller
             ->expects($this->once())
             ->method('execute')
             ->with(
-                $this->callback(function ($arg) {
-                    return is_a($arg, '\Serato\Slimulator\Request');
-                }),
-                $this->callback(function ($arg) {
-                    return is_a($arg, '\Slim\Http\Response');
-                }),
-                $this->callback(function ($arg) {
-                    return is_array($arg);
-                })
+                $this->callback(fn($arg) => is_a($arg, '\Serato\Slimulator\Request')),
+                $this->callback(fn($arg) => is_a($arg, '\Slim\Http\Response')),
+                $this->callback(fn($arg) => is_array($arg))
             )
             ->willReturn(new Response());
 

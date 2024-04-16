@@ -34,11 +34,11 @@ class PsrMessageNormalizer
     // The maximum size of the Body of message before being omitted
     private const MAX_BODY_SIZE = 1024 * 1024;
 
-    private const REFRESH_TOKEN_SUBSTITUTION_VALUE = 'REFESH_TOKEN';
-    private const PASSWORD_REMOVED_SUBSTITUTION_VALUE = 'PASSWORD_REMOVED';
+    private const string REFRESH_TOKEN_SUBSTITUTION_VALUE = 'REFESH_TOKEN';
+    private const string PASSWORD_REMOVED_SUBSTITUTION_VALUE = 'PASSWORD_REMOVED';
 
     // A list of HTTP headers whose value should be replaced with a placeholder
-    private const HTTP_HEADER_VALUE_REMOVED = [
+    private const array HTTP_HEADER_VALUE_REMOVED = [
         // This is weird PHP thing where it puts the password section of a `Basic` auth header into this
         // header (there's also `Php-Auth-User`, but we keep that because it's the app ID ie. useful).
         'Php-Auth-Pw'
@@ -51,7 +51,7 @@ class PsrMessageNormalizer
     // `application/x-www-form-urlencoded` will only ever have a single item for [path], wheres a content type
     // of `application/json` maybe require a multi-step path to identify the required parameter in the JSON
     // structure to substitute).
-    private const BODY_PARAMETER_SUBSTITUTIONS = [
+    private const array BODY_PARAMETER_SUBSTITUTIONS = [
         [
             # Request parameter by the SWS ID Service `POST /api/v1/tokens/refresh` endpoint
             # http://docs.serato.net/serato/id-serato-com/master/rest-api.html#tokens_refresh_post
@@ -74,25 +74,14 @@ class PsrMessageNormalizer
 
     /**
      * Normalizes a `Psr\Http\Message\ServerRequestInterface` instance
-     *
-     * @param ServerRequestInterface $request
-     * @return array
      */
     public function normalizePsrServerRequestInterface(ServerRequestInterface $request): array
     {
         $callbacks = [
-            'uri' => function ($innerObject) {
-                return $this->normalizeUri($innerObject);
-            },
-            'headers' => function ($innerObject) {
-                return $this->normalizeHttpHeaders($innerObject);
-            },
-            'serverParams' => function ($innerObject) {
-                return $this->normalizeServerParams($innerObject);
-            },
-            'attributes' => function ($innerObject) {
-                return $this->normalizeRequestAttributes($innerObject);
-            },
+            'uri' => fn($innerObject) => $this->normalizeUri($innerObject),
+            'headers' => fn($innerObject) => $this->normalizeHttpHeaders($innerObject),
+            'serverParams' => fn($innerObject) => $this->normalizeServerParams($innerObject),
+            'attributes' => fn($innerObject) => $this->normalizeRequestAttributes($innerObject),
             'body' => function (StreamInterface $body, ServerRequestInterface $httpMessage) {
                 # Determine content type from the `Content-Type` request header.
                 # It may not be set.
@@ -126,15 +115,11 @@ class PsrMessageNormalizer
         ];
 
         $normalizer = $this->createObjectNormalizer($callbacks);
-        $data = $this->normalizePsrMessageInterface(new Serializer([$normalizer]), $request);
-        return $data;
+        return $this->normalizePsrMessageInterface(new Serializer([$normalizer]), $request);
     }
 
     /**
      * Normalizes a `Psr\Http\Message\ResponseInterface` instance
-     *
-     * @param ResponseInterface $response
-     * @return array
      */
     public function normalizePsrResponseInterface(ResponseInterface $response): array
     {
@@ -156,15 +141,11 @@ class PsrMessageNormalizer
         ];
 
         $normalizer = $this->createObjectNormalizer($callbacks);
-        $data = $this->normalizePsrMessageInterface(new Serializer([$normalizer]), $response);
-        return $data;
+        return $this->normalizePsrMessageInterface(new Serializer([$normalizer]), $response);
     }
 
     /**
      * Normalizes a `Psr\Http\Message\UriInterface` instance
-     *
-     * @param UriInterface $uri
-     * @return array
      */
     public function normalizeUri(UriInterface $uri): array
     {
@@ -192,9 +173,6 @@ class PsrMessageNormalizer
      * Currently this is only required for request objects. Something to do with how the
      * Slim request object uses the raw `HTTP_xxx` header name under the hood but the normalized
      * form when using getter method.
-     *
-     * @param array $headers
-     * @return array
      */
     public function normalizeHttpHeaders(array $headers): array
     {
@@ -202,7 +180,7 @@ class PsrMessageNormalizer
         foreach ($headers as $key => $value) {
             // Normalize header names
             $key = strtr(strtolower($key), '_', '-');
-            if (strpos($key, 'http-') === 0) {
+            if (str_starts_with($key, 'http-')) {
                 $key = substr($key, 5);
             }
 
@@ -226,9 +204,9 @@ class PsrMessageNormalizer
                 if (is_array($value)) {
                     $value = $value[0];
                 }
-                if (stripos($value, 'basic ') === 0) {
+                if (stripos((string) $value, 'basic ') === 0) {
                     $value = ['Basic [APP ID + SECRET]'];
-                } elseif (stripos($value, 'bearer ') === 0) {
+                } elseif (stripos((string) $value, 'bearer ') === 0) {
                     $value = ['Bearer [JWT ACCESS TOKEN]'];
                 }
             }
@@ -252,9 +230,6 @@ class PsrMessageNormalizer
      *
      * - Strips out redundant and/or sensitive data.
      * - Restructures data.
-     *
-     * @param array $params
-     * @return array
      */
     public function normalizeServerParams(array $params): array
     {
@@ -286,9 +261,6 @@ class PsrMessageNormalizer
      *
      * These are attributes added to the request object by the web application
      * (typically via middleware).
-     *
-     * @param array $attributes
-     * @return array
      */
     public function normalizeRequestAttributes(array $attributes): array
     {
@@ -305,7 +277,7 @@ class PsrMessageNormalizer
         foreach ($attributes as $k => $v) {
             if (is_object($v) && $v instanceof \Propel\Runtime\ActiveRecord\ActiveRecordInterface) {
                 $attributes[$k] = [
-                    'propelModelName' => get_class($v),
+                    'propelModelName' => $v::class,
                     'primaryKey' => $v->getPrimaryKey()
                 ];
             }
@@ -317,10 +289,7 @@ class PsrMessageNormalizer
      * Normalizes a PSR message body
      *
      * @param StreamInterface $body
-     * @param string|null $contentType
-     * @param int $contentLength
      * @param null|array|object $parsedBody
-     * @return null|array
      */
     public function normalizePsrMessageBody(
         StreamInterface $requestBodyStream,
@@ -374,8 +343,6 @@ class PsrMessageNormalizer
      * It should remain a private method so that we can swap out the underlying normalizer if required.
      *
      * @param Serializer $serializer
-     * @param MessageInterface $message
-     * @return array
      */
     private function normalizePsrMessageInterface(Serializer $serializer, MessageInterface $message): array
     {
@@ -420,8 +387,8 @@ class PsrMessageNormalizer
     private function normalizeHeaderValue($value): array
     {
         if (is_array($value)) {
-            if (count($value) === 1 && strpos($value[0], '; ') !== false) {
-                return explode('; ', $value[0]);
+            if (count($value) === 1 && str_contains((string) $value[0], '; ')) {
+                return explode('; ', (string) $value[0]);
             }
             return $value;
         } else {
@@ -434,9 +401,6 @@ class PsrMessageNormalizer
      *
      * The password will be present various parts of a `Psr\Http\Message\UriInterface` instance when the request
      * uses Basic authentication.
-     *
-     * @param string $uri
-     * @return string
      */
     private function removeUriPassword(string $uri): string
     {
@@ -448,7 +412,7 @@ class PsrMessageNormalizer
         } elseif (count($bits) === 2) {
             $bits[0] = $bits[0] . '://';
         }
-        if (strpos($bits[1], '@') !== false) {
+        if (str_contains($bits[1], '@')) {
             $uriRemoved = $bits[0] . preg_replace(
                 '/:(.+)@/',
                 ':' . self::PASSWORD_REMOVED_SUBSTITUTION_VALUE . '@',
@@ -484,10 +448,6 @@ class PsrMessageNormalizer
         return $bodyRaw;
     }
 
-    /**
-     * @param array $bodyParams
-     * @return array
-     */
     private function stripBodyParams(array $bodyParams): array
     {
         foreach (self::BODY_PARAMETER_SUBSTITUTIONS as $subs) {
@@ -503,8 +463,6 @@ class PsrMessageNormalizer
 
     /**
      * @param array|string $params
-     * @param array $path
-     * @param string $replacement
      * @return array|string
      */
     private function walkBodyParamsPath($params, array $path, string $replacement)

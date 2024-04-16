@@ -19,7 +19,6 @@ class CspHeaders extends AbstractHandler
      *
      * @param Request $request The most recent Request object
      * @param Response $response The most recent Response object
-     * @param callable $next
      *
      * @return callable
      */
@@ -57,7 +56,7 @@ class CspHeaders extends AbstractHandler
                 foreach ($matches[0] as $linkTag) {
                     $responseBody = str_replace(
                         $linkTag,
-                        str_replace('<link', '<link nonce="' . $styleNonce . '"', $linkTag),
+                        str_replace('<link', '<link nonce="' . $styleNonce . '"', (string) $linkTag),
                         $responseBody
                     );
                 }
@@ -76,8 +75,6 @@ class CspHeaders extends AbstractHandler
      *
      * The key of each array item corresponds to a CSP directive name and the value of each
      * item is an array of values for the directive.
-     *
-     * @return array
      */
     protected function getBaseCspSettings(): array
     {
@@ -134,40 +131,10 @@ class CspHeaders extends AbstractHandler
     }
 
     /**
-     * Parses the content within all matching intances of a given tag in a string of content
-     * and returns an array of SHA256 hashes of the content. Empty tags are ignored.
-     *
-     * This function is not currently used, but could be used for hash-based CSP directives.
-     *
-     * @param string $content
-     * @param string $tagName
-     * @return array
-     */
-    private function generateSrcBlockHashes(string $content, string $tagName): array
-    {
-        $contentHash = [];
-
-        preg_match_all('/<' . $tagName . '.*?>(.*?)<\/' . $tagName . '>/s', $content, $matches);
-
-        if (isset($matches[0]) && is_array($matches[0]) && isset($matches[1]) && is_array($matches[1])) {
-            $rawTagBlocks = $matches[0];
-            $tagBlockContents = $matches[1];
-            for ($i = 0; $i < count($rawTagBlocks); $i++) {
-                if ($tagBlockContents[$i] !== '' && $tagBlockContents[$i] !== null) {
-                    // Generate hash of $tagBlockContents[$i]
-                    $contentHash[] = "'sha256-" . base64_encode(hash('sha256', $tagBlockContents[$i], true)) . "'";
-                }
-            }
-        }
-        return $contentHash;
-    }
-
-    /**
      * Flattens an array of CSP settings into a string suitable for use as the value
      * of a `Content-Security-Policy` HTTP header
      *
      * @param array $cspSettings    Array of CSP settings
-     * @return string
      */
     private function makeCspHeaderString(array $cspSettings): string
     {

@@ -14,7 +14,7 @@ class DataLoaderTest extends TestCase
      */
     public function testInvalidEnvironmentName()
     {
-        $dataLoader = new DataLoader('invalidEnvName', $this->getAwsSdk(), $this->getFileSystemCachePool());
+        new DataLoader('invalidEnvName', $this->getAwsSdk(), $this->getFileSystemCachePool());
     }
 
     /**
@@ -92,7 +92,7 @@ class DataLoaderTest extends TestCase
             // Shouldn't get this far
             $this->assertTrue(false);
         } catch (Exception $e) {
-            $this->assertTrue(strpos($e->getMessage(), 'Path does not exist') !== false);
+            $this->assertTrue(str_contains($e->getMessage(), 'Path does not exist'));
         }
     }
 
@@ -108,7 +108,7 @@ class DataLoaderTest extends TestCase
             // Shouldn't get this far
             $this->assertTrue(false);
         } catch (Exception $e) {
-            $this->assertTrue(strpos($e->getMessage(), 'Path is not a directory') !== false);
+            $this->assertTrue(str_contains($e->getMessage(), 'Path is not a directory'));
         }
     }
 
@@ -125,7 +125,7 @@ class DataLoaderTest extends TestCase
             // Shouldn't get this far
             $this->assertTrue(false);
         } catch (Exception $e) {
-            $this->assertTrue(strpos($e->getMessage(), 'File does not contain valid JSON') !== false);
+            $this->assertTrue(str_contains($e->getMessage(), 'File does not contain valid JSON'));
         }
     }
 
@@ -142,7 +142,7 @@ class DataLoaderTest extends TestCase
             // Shouldn't get this far
             $this->assertTrue(false);
         } catch (Exception $e) {
-            $this->assertTrue(strpos($e->getMessage(), 'File does not exist') !== false);
+            $this->assertTrue(str_contains($e->getMessage(), 'File does not exist'));
         }
     }
 
@@ -162,8 +162,6 @@ class DataLoaderTest extends TestCase
      *
      * The array contains two items corresponding to S3 GetObject
      * requests for the `apps.json` file and `credentials.dev.json` file.
-     *
-     * @return array
      */
     private function getAwsMockResponses(string $appsFileName, string $credentialsFileName): array
     {

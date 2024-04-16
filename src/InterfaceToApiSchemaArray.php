@@ -14,22 +14,16 @@ interface InterfaceToApiSchemaArray
      * options that can alter the content or format of the returned array.
      *
      * @param array $options    Formatting options
-     *
-     * @return array
      */
     public function toApiSchemaArray(array $options = []): array;
 
     /**
      * Returns the path to a JSON file containing the schema definition for the model
-     *
-     * @return string
      */
     public function getSchemaFilePath(): string;
 
     /**
      * Returns the name of the schema definition for the model
-     *
-     * @return string
      */
     public function getSchemaDefintion(): string;
 }

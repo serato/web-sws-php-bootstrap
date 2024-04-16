@@ -24,6 +24,7 @@ class RequestValidationTest extends TestCase
      */
     protected $requestMock;
 
+    #[\Override]
     protected function setUp()
     {
         $this->validation = new RequestValidation();
@@ -33,11 +34,6 @@ class RequestValidationTest extends TestCase
     /**
      * @dataProvider dataProvider
      *
-     * @param array|null $requestBody
-     * @param array $rules
-     * @param string|null $errorExpected
-     * @param array $customRules
-     * @param array $exceptions
      * @param array $expectedResult - expected result after processing the request.
      * @group validation
      */
@@ -70,9 +66,6 @@ class RequestValidationTest extends TestCase
         }
     }
 
-    /**
-     * @return array
-     */
     public function dataProvider(): array
     {
         return [

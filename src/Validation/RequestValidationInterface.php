@@ -10,13 +10,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
  */
 interface RequestValidationInterface
 {
-    /**
-     * @param Request $request
-     * @param array $validationRules
-     * @param array $customRules
-     * @param array $exceptions
-     *
-     */
+    
     public function validateRequestData(
         Request $request,
         array $validationRules,

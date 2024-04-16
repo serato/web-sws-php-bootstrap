@@ -35,6 +35,7 @@ class CsvFileIterator implements \Iterator
         fclose($this->file);
     }
 
+    #[\Override]
     public function rewind()
     {
         rewind($this->file);
@@ -42,21 +43,25 @@ class CsvFileIterator implements \Iterator
         $this->key = 0;
     }
 
+    #[\Override]
     public function valid()
     {
         return $this->valid;
     }
 
+    #[\Override]
     public function key()
     {
         return $this->key;
     }
 
+    #[\Override]
     public function current()
     {
         return $this->current;
     }
 
+    #[\Override]
     public function next()
     {
         $this->readLine();

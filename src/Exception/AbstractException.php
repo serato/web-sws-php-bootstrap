@@ -11,15 +11,11 @@ use Psr\Http\Message\RequestInterface as Request;
 
 abstract class AbstractException extends RuntimeException
 {
-    /** @var Request */
-    private $request;
-
-    public function __construct(?string $message = null, Request $request = null)
+    public function __construct(?string $message = null, private readonly ?Request $request = null)
     {
         if ($message !== null && $message !== '') {
             parent::__construct($message);
         }
-        $this->request = $request;
     }
 
     /**

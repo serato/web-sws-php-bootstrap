@@ -15,6 +15,7 @@ class ConfirmPasswordCommand extends AbstractCommand
     /**
      * {@inheritdoc}
      */
+    #[\Override]
     protected function configure()
     {
         parent::configure();
@@ -33,6 +34,7 @@ class ConfirmPasswordCommand extends AbstractCommand
     /**
      * {@inheritdoc}
      */
+    #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->getCommonOptions($input);
@@ -63,14 +65,14 @@ class ConfirmPasswordCommand extends AbstractCommand
         $this->writeInfoHeader($output, 'Confirm Password', ['Application ID' => $appId]);
         $output->writeln(
             "\nPassword match? " .
-            (password_verify($password, $passwordHash) ? "<yes>Yes</yes>" : "<no>No</no>") .
+            (password_verify((string) $password, $passwordHash) ? "<yes>Yes</yes>" : "<no>No</no>") .
             "\n"
         );
     }
 
     private function getPasswordHash(array $appData, string $appId): string
     {
-        foreach ($appData as $name => $data) {
+        foreach ($appData as $data) {
             if ($data['id'] === $appId) {
                 if (!isset($data['password_hash'])) {
                     throw new Exception(

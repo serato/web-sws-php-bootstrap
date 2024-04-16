@@ -35,6 +35,7 @@ class Builder extends AbstractBuilder
     /**
      * {@inheritdoc}
      */
+    #[\Override]
     public static function createDatabase(array $schemaDirs, string $dbName = 'default'): ConnectionWrapper
     {
         // Note: QuickBuilder has a static method QuickBuilder::buildSchema which

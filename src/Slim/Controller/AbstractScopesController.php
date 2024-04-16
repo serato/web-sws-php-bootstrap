@@ -37,9 +37,8 @@ abstract class AbstractScopesController extends AbstractController
      * @param  Request     $request            Request interface
      * @param  Response    $response           Response interface
      * @param  array       $args               Request args
-     *
-     * @return Response
      */
+    #[\Override]
     public function __invoke(Request $request, Response $response, array $args): Response
     {
         $this->checkScopes($request, $response);
@@ -50,7 +49,6 @@ abstract class AbstractScopesController extends AbstractController
     /**
      * Returns the list of scopes requested by the client
      *
-     * @return Scopes
      *
      */
     abstract protected function getControllerScopes(): Scopes;

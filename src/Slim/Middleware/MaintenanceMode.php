@@ -22,9 +22,6 @@ class MaintenanceMode extends AbstractHandler
      */
     protected $maintenanceMode;
 
-    /**
-     * @param bool $maintenanceMode
-     */
     public function __construct(bool $maintenanceMode)
     {
         $this->maintenanceMode = $maintenanceMode;

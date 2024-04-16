@@ -19,8 +19,8 @@ use Mockery\MockInterface;
  */
 class AccessTokenTest extends TestCase
 {
-    private const MOCK_ENCRYPTION_KEY = '123456789abcdefg';
-    private const WEBSERVICE_NAME = 'my.webservice.me';
+    private const string MOCK_ENCRYPTION_KEY = '123456789abcdefg';
+    private const string WEBSERVICE_NAME = 'my.webservice.me';
 
     /**
      * Call the middleware without a token at all.
@@ -38,7 +38,7 @@ class AccessTokenTest extends TestCase
             self::WEBSERVICE_NAME
         );
         $nextMiddleware = new EmptyWare();
-        $response = $middleware(
+        $middleware(
             Request::createFromEnvironmentBuilder(EnvironmentBuilder::create()),
             new Response(),
             $nextMiddleware
@@ -81,7 +81,7 @@ class AccessTokenTest extends TestCase
 
         $nextMiddleware = new EmptyWare();
 
-        $response = $middleware(
+        $middleware(
             Request::createFromEnvironmentBuilder(
                 EnvironmentBuilder::create()
                     ->setAuthorization(BearerToken::create((string)$token))
@@ -146,7 +146,7 @@ class AccessTokenTest extends TestCase
 
         $nextMiddleware = new EmptyWare();
 
-        $response = $middleware(
+        $middleware(
             Request::createFromEnvironmentBuilder(
                 EnvironmentBuilder::create()
                     ->setAuthorization(BearerToken::create((string)$token))
@@ -189,7 +189,7 @@ class AccessTokenTest extends TestCase
 
         $nextMiddleware = new EmptyWare();
 
-        $response = $middleware(
+        $middleware(
             Request::createFromEnvironmentBuilder(
                 EnvironmentBuilder::create()
                     ->setAuthorization(BearerToken::create((string)$token))
@@ -247,7 +247,7 @@ class AccessTokenTest extends TestCase
             self::WEBSERVICE_NAME . ' invalidate'
         );
 
-        $response = $middleware(
+        $middleware(
             Request::createFromEnvironmentBuilder(
                 EnvironmentBuilder::create()
                     ->setAuthorization(BearerToken::create((string)$token))
@@ -278,7 +278,7 @@ class AccessTokenTest extends TestCase
             self::WEBSERVICE_NAME
         );
 
-        $response = $middleware(
+        $middleware(
             Request::createFromEnvironmentBuilder(
                 EnvironmentBuilder::create()
                     ->setAuthorization(BearerToken::create((string)$token))

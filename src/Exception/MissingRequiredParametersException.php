@@ -24,9 +24,7 @@ class MissingRequiredParametersException extends AbstractBadRequestException
     /**
      * MissingRequiredParametersException constructor.
      *
-     * @param string|null $message
      * @param Request|null $request
-     * @param array $missingParams
      */
     public function __construct(?string $message = null, Request $request = null, array $missingParams = [])
     {

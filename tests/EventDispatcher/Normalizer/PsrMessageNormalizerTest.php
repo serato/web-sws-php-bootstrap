@@ -39,13 +39,11 @@ use ReflectionClassConstant;
  */
 class PsrMessageNormalizerTest extends TestCase
 {
-    private const BASIC_AUTH_HEADER_VALUE = 'ZTUzZWU5NDAtYjk1YS00MWJmLTkwYWUtMDEzN2IzNmExNDAwOmJ1bGxfZHVzdA==';
-    private const BEARER_TOKEN_HEADER_VALUE = 'eyJhbGciOiJIUzUxMiIsImNyaXQiOlsiaXNzIiwiYXVkIiwic3ViIiwiZXhwIl0sI';
+    private const string BASIC_AUTH_HEADER_VALUE = 'ZTUzZWU5NDAtYjk1YS00MWJmLTkwYWUtMDEzN2IzNmExNDAwOmJ1bGxfZHVzdA==';
+    private const string BEARER_TOKEN_HEADER_VALUE = 'eyJhbGciOiJIUzUxMiIsImNyaXQiOlsiaXNzIiwiYXVkIiwic3ViIiwiZXhwIl0sI';
 
     /**
      * Smoke tests the `PsrMessageNormalizer::normalizePsrServerRequestInterface` public method.
-     *
-     * @return void
      */
     public function testNormalizePsrServerRequestInterface(): void
     {
@@ -72,8 +70,8 @@ class PsrMessageNormalizerTest extends TestCase
         $this->assertEquals($data['headers']['Accept'][0], $acceptHeader);
         $this->assertEquals($data['headers']['Content-Type'][0], $contentTypeHeader);
         $this->assertTrue(isset($data['headers']['Content-Length'][0]));
-        $this->assertTrue(strpos($data['headers']['Authorization'][0], 'Bearer ') === 0);
-        $this->assertTrue(strpos($data['headers']['Authorization'][0], self::BEARER_TOKEN_HEADER_VALUE) === false);
+        $this->assertTrue(str_starts_with((string) $data['headers']['Authorization'][0], 'Bearer '));
+        $this->assertTrue(!str_contains((string) $data['headers']['Authorization'][0], self::BEARER_TOKEN_HEADER_VALUE));
         $this->assertEquals($data['body']['parsed'], $requestBody);
         $this->assertEquals($data['body']['contentType'], $contentTypeHeader);
         $this->assertTrue(isset($data['body']['raw']));
@@ -115,9 +113,6 @@ class PsrMessageNormalizerTest extends TestCase
      * Tests the `PsrMessageNormalizer::normalizeHttpHeaders` public method.
      *
      * @dataProvider normalizeHttpHeadersProvider
-     *
-     * @param array $denormalizedHeaders
-     * @return void
      */
     public function testNormalizeHttpHeaders(array $denormalizedHeaders): void
     {
@@ -128,7 +123,7 @@ class PsrMessageNormalizerTest extends TestCase
             foreach ($value as $item) {
                 # Asserts that no header value array items contain a `; ` separator.
                 $this->assertFalse(
-                    strpos($item, '; '),
+                    strpos((string) $item, '; '),
                     "Header `$name`, value item `$item` does not contain `; ` delimiter"
                 );
                 # Asserts that no header value array items contain sensitive data.
@@ -136,7 +131,7 @@ class PsrMessageNormalizerTest extends TestCase
                 # senstive authentication-related values
                 foreach ([self::BASIC_AUTH_HEADER_VALUE, self::BEARER_TOKEN_HEADER_VALUE] as $sensitive) {
                     $this->assertFalse(
-                        strpos($item, $sensitive),
+                        strpos((string) $item, $sensitive),
                         "Header `$name`, value item `$item` does not contain sensitive data"
                     );
                 }
@@ -250,12 +245,8 @@ class PsrMessageNormalizerTest extends TestCase
      * ';' character(s), as the value.
      *
      * @dataProvider normalizeHeaderValueProvider
-     *
-     * @param mixed $raw
-     * @param array $normalized
-     * @return void
      */
-    public function testNormalizeHeaderValue($raw, array $normalized): void
+    public function testNormalizeHeaderValue(mixed $raw, array $normalized): void
     {
         $normalizer = new PsrMessageNormalizer();
         $method = new ReflectionMethod($normalizer, 'normalizeHeaderValue');
@@ -314,11 +305,6 @@ class PsrMessageNormalizerTest extends TestCase
      * with a placeholder.
      *
      * @dataProvider removeUriPasswordProvider
-     *
-     * @param string $password
-     * @param string $raw
-     * @param string $clean
-     * @return void
      */
     public function testRemoveUriPassword(string $password, string $raw, string $clean): void
     {
@@ -326,7 +312,7 @@ class PsrMessageNormalizerTest extends TestCase
         $method = new ReflectionMethod($normalizer, 'removeUriPassword');
         $method->setAccessible(true);
         $this->assertEquals($method->invoke($normalizer, $raw), $clean);
-        $this->assertEquals(0, substr_count($method->invoke($normalizer, $raw), $password));
+        $this->assertEquals(0, substr_count((string) $method->invoke($normalizer, $raw), $password));
     }
 
     public function removeUriPasswordProvider()
@@ -393,11 +379,6 @@ class PsrMessageNormalizerTest extends TestCase
      * These paths and substitutions are specified in `PsrMessageNormalizer::BODY_PARAMETER_SUBSTITUTIONS`.
      *
      * @dataProvider stripRawBodyParamsProvider
-     *
-     * @param string $contentType
-     * @param string $dirty
-     * @param string $clean
-     * @return void
      */
     public function testStripRawBodyParams(string $contentType, string $dirty, string $clean): void
     {
@@ -474,10 +455,6 @@ class PsrMessageNormalizerTest extends TestCase
      * These paths and substitutions are specified in `PsrMessageNormalizer::BODY_PARAMETER_SUBSTITUTIONS`.
      *
      * @dataProvider stripBodyParamsProvider
-     *
-     * @param array $dirty
-     * @param array $clean
-     * @return void
      */
     public function testStripBodyParams(array $dirty, array $clean): void
     {
@@ -530,8 +507,6 @@ class PsrMessageNormalizerTest extends TestCase
     }
 
     /**
-     * @param array $keys
-     * @param string $value
      * @return array|string
      */
     private function createBodyArray(array $keys, string $value, array $extraData)

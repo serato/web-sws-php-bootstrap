@@ -25,13 +25,6 @@ use Psr\Cache\CacheItemPoolInterface;
 class AccessToken extends AbstractAccessScopesMiddleware
 {
     /**
-     * AWS Sdk
-     *
-     * @var Sdk
-     */
-    private $awsSdk;
-
-    /**
      * Web Service Name
      *
      * @var string
@@ -68,13 +61,15 @@ class AccessToken extends AbstractAccessScopesMiddleware
      *
      */
     public function __construct(
-        Sdk $awsSdk,
+        /**
+         * AWS Sdk
+         */
+        private readonly Sdk $awsSdk,
         LoggerInterface $logger,
         CacheItemPoolInterface $cache,
         \Memcached $memcached,
         string $webServiceName
     ) {
-        $this->awsSdk = $awsSdk;
         $this->logger = $logger;
         $this->cache = $cache;
         $this->memcached = $memcached;
@@ -86,7 +81,6 @@ class AccessToken extends AbstractAccessScopesMiddleware
      *
      * @param Request $request The most recent Request object
      * @param Response $response The most recent Response object
-     * @param callable $next
      *
      * @throws ExpiredAccessTokenException
      * @throws InvalidAccessTokenException
@@ -94,8 +88,6 @@ class AccessToken extends AbstractAccessScopesMiddleware
      */
     public function __invoke(Request $request, Response $response, callable $next)
     {
-        $tokenString = null;
-
         // Look the token string in the `Authorization` header
         $tokenString = $this->getTokenStringFromAuthHeader($request);
 
@@ -123,7 +115,7 @@ class AccessToken extends AbstractAccessScopesMiddleware
                 # in-flight tokens that don't have this claim prior to when this functionality was added.
                 try {
                     $refreshTokenId = $accessToken->getClaim('rtid');
-                } catch (InvalidArgumentException $e) {
+                } catch (InvalidArgumentException) {
                     // Ignore for this claim
                 }
 
@@ -132,9 +124,9 @@ class AccessToken extends AbstractAccessScopesMiddleware
                     ->withAttribute(self::USER_EMAIL, $accessToken->getClaim('email'))
                     ->withAttribute(self::USER_EMAIL_VERIFIED, $accessToken->getClaim('email_verified'))
                     ->withAttribute(self::REFRESH_TOKEN_ID, $refreshTokenId);
-            } catch (TokenExpiredException $e) {
+            } catch (TokenExpiredException) {
                 throw new ExpiredAccessTokenException(null, $request);
-            } catch (Exception $e) {
+            } catch (Exception) {
                 throw new InvalidAccessTokenException(null, $request);
             }
         }
@@ -158,15 +150,12 @@ class AccessToken extends AbstractAccessScopesMiddleware
         if (preg_match('/Bearer\s(\S+)/', $authorizationHeader, $matches)) {
             return $matches[1];
         }
-        return;
     }
 
     /**
      * Get `scopes` claim from JWT Access Token
      *
-     * @param JwtAccessToken $accessToken
      *
-     * @return array
      *
      */
     private function getAccessTokenScopes(JwtAccessToken $accessToken): array
@@ -185,8 +174,6 @@ class AccessToken extends AbstractAccessScopesMiddleware
 
     /**
      * Get the AWS Sdk
-     *
-     * @return Sdk
      */
     private function getAwsSdk(): Sdk
     {
@@ -195,8 +182,6 @@ class AccessToken extends AbstractAccessScopesMiddleware
 
     /**
      * Get the logger interface instance
-     *
-     * @return LoggerInterface
      */
     protected function getLogger(): LoggerInterface
     {

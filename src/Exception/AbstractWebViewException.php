@@ -18,12 +18,8 @@ abstract class AbstractWebViewException extends AbstractException
     /* @var array */
     protected $errorMessages = [];
 
-    /* @var string */
-    private $lang;
-
-    public function __construct(?string $lang = 'en', Request $request = null)
+    public function __construct(private readonly ?string $lang = 'en', Request $request = null)
     {
-        $this->lang = $lang;
         parent::__construct('', $request);
     }
 
@@ -34,7 +30,6 @@ abstract class AbstractWebViewException extends AbstractException
      * language equivalent is returned.
      *
      * @param string $lang  ISO language code
-     * @return string
      */
     public function getTranslatedMessage(): string
     {

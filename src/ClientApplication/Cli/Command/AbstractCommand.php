@@ -20,20 +20,8 @@ abstract class AbstractCommand extends Command
     public const OPTION_IGNORE_CACHE = 'ignore-cache';
     public const OPTION_LOCAL_DIRECTORY_PATH = 'local-dir-path';
 
-    /** @var string */
-    private $env;
-
-    /** @var AwsSdk */
-    private $awsSdk;
-
-    /** @var CacheItemPoolInterface */
-    private $psrCache;
-
     /** @var boolean */
     private $useCache = true;
-
-    /** @var DataLoader */
-    private $dataLoader;
 
     /** @var string */
     private $localDirPath;
@@ -47,17 +35,15 @@ abstract class AbstractCommand extends Command
      *
      * @return void
      */
-    public function __construct(string $env, AwsSdk $awsSdk, CacheItemPoolInterface $psrCache)
+    public function __construct(private string $env, private readonly AwsSdk $awsSdk, private readonly CacheItemPoolInterface $psrCache)
     {
         parent::__construct();
-        $this->env = $env;
-        $this->awsSdk = $awsSdk;
-        $this->psrCache = $psrCache;
     }
 
     /**
      * {@inheritdoc}
      */
+    #[\Override]
     protected function configure()
     {
         $this
@@ -86,9 +72,6 @@ abstract class AbstractCommand extends Command
 
     /**
      * Reads common CLI options into class properties
-     *
-     * @param InputInterface $input
-     * @return void
      */
     protected function getCommonOptions(InputInterface $input): void
     {
@@ -105,11 +88,6 @@ abstract class AbstractCommand extends Command
 
     /**
      * Writes meaningful output about the command to the console
-     *
-     * @param OutputInterface $output
-     * @param string $title
-     * @param array $headerInfo
-     * @return void
      */
     protected function writeInfoHeader(OutputInterface $output, string $title, array $headerInfo = []): void
     {
@@ -134,8 +112,8 @@ abstract class AbstractCommand extends Command
             if (strlen($k) > $maxLen['k']) {
                 $maxLen['k'] = strlen($k);
             }
-            if (strlen($v) > $maxLen['v']) {
-                $maxLen['v'] = strlen($v);
+            if (strlen((string) $v) > $maxLen['v']) {
+                $maxLen['v'] = strlen((string) $v);
             }
         }
 
@@ -151,7 +129,7 @@ abstract class AbstractCommand extends Command
         );
         foreach ($rows as $k => $v) {
             $output->writeln(
-                "<header> " . str_pad($k, $maxLen['k'], ' ') . " : " . str_pad($v, $maxLen['v'], ' ') . " </header>"
+                "<header> " . str_pad($k, $maxLen['k'], ' ') . " : " . str_pad((string) $v, $maxLen['v'], ' ') . " </header>"
             );
         }
         $output->writeln(

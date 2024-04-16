@@ -11,8 +11,6 @@ class Scopes
 
     /**
      * Creates a new Scopes instance
-     *
-     * @return self
      */
     public static function create(): self
     {
@@ -21,8 +19,6 @@ class Scopes
 
     /**
      * Returns an array of scopes
-     *
-     * @return array
      */
     public function getScopes(): array
     {
@@ -32,9 +28,7 @@ class Scopes
     /**
      * Adds a scope
      *
-     * @param string $scope
      *
-     * @return self
      */
     public function addScope(string $scope): self
     {
@@ -45,9 +39,7 @@ class Scopes
     /**
      * Adds an array of scopes
      *
-     * @param array $scopes
      *
-     * @return self
      */
     public function addScopes(array $scopes): self
     {

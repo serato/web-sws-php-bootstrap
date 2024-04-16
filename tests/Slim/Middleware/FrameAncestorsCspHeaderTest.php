@@ -15,7 +15,7 @@ use Serato\SwsApp\Slim\Middleware\FrameAncestorsCspHeader;
  */
 class FrameAncestorsCspHeaderTest extends TestCase
 {
-    private const CSP_VALUE = "frame-ancestors 'none'";
+    private const string CSP_VALUE = "frame-ancestors 'none'";
 
     /**
      * Create an Request object and Response object.

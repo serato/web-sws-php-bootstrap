@@ -30,8 +30,6 @@ class AccessLog
      * @param Request           $request   The most recent Request object
      * @param Response          $response  The most recent Response object
      * @param Callable          $next      The next middleware to call
-     *
-     * @return Response
      */
     public function __invoke(Request $request, Response $response, callable $next): Response
     {

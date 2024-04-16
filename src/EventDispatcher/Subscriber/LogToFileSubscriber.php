@@ -19,32 +19,11 @@ class LogToFileSubscriber implements EventSubscriberInterface
     /** @var string */
     private $id;
 
-    /** @var string */
-    private $appName;
-
-    /** @var string */
-    private $env;
-
-    /** @var int */
-    private $stackNumber;
-
-    /** @var string */
-    private $logDirPath;
-
     /**
      * Constructs the object
-     *
-     * @param string $appName
-     * @param string $env
-     * @param integer $stackNumber
-     * @param string $logDirPath
      */
-    public function __construct(string $appName, string $env, int $stackNumber, string $logDirPath)
+    public function __construct(private readonly string $appName, private readonly string $env, private readonly int $stackNumber, private readonly string $logDirPath)
     {
-        $this->appName = $appName;
-        $this->env = $env;
-        $this->stackNumber = $stackNumber;
-        $this->logDirPath = $logDirPath;
         @mkdir($this->logDirPath, 0777, true);
 
         # The `id` value should be included in the contents of all event data written to disk.
@@ -56,6 +35,7 @@ class LogToFileSubscriber implements EventSubscriberInterface
     /**
      * {@inheritDoc}
      */
+    #[\Override]
     public static function getSubscribedEvents(): array
     {
         return [
@@ -65,15 +45,10 @@ class LogToFileSubscriber implements EventSubscriberInterface
 
     /**
      * Handles an `Serato\SwsApp\EventDispatcher\Event\SwsHttpRequest` event
-     *
-     * @param SwsHttpRequest $event
-     * @return void
      */
     public function onSwsHttpRequest(SwsHttpRequest $event): void
     {
-        $prettyJsonFromArray = function (array $data): string {
-            return json_encode($data, JSON_PRETTY_PRINT);
-        };
+        $prettyJsonFromArray = fn(array $data): string => json_encode($data, JSON_PRETTY_PRINT);
 
         $requestFile = fopen($this->logDirPath . date('Y-m-dTH:i:s') . '-request.json', 'a');
         $responseFileName = fopen($this->logDirPath . date('Y-m-dTH:i:s') . '.-response.json', 'a');

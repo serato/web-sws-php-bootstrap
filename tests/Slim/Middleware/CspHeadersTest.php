@@ -51,7 +51,7 @@ class CspHeadersTest extends TestCase
         // Now make sure we have nonce values extracted from the HTML in the CSP header value
         $cspHeaderValue = $headers['Content-Security-Policy'][0];
         foreach ($nonces as $nonce) {
-            $this->assertTrue(strpos($cspHeaderValue, 'nonce-' . $nonce) !== false);
+            $this->assertTrue(str_contains((string) $cspHeaderValue, 'nonce-' . $nonce));
         }
     }
 
