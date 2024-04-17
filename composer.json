@@ -8,7 +8,7 @@
 		"slim/slim": "^4.13.0",
 		"serato/jwt": "dev-feature-php8",
 		"aws/aws-sdk-php": "^3.0",
-		"willdurand/negotiation": "~2.2.0",
+		"willdurand/negotiation": "^3.1.0",
 		"geoip2/geoip2": "^2.0.0",
 		"scrivo/highlight.php": "v9.12.0.4",
 		"symfony/console": "^6.0",
@@ -36,6 +36,5 @@
 			"Serato\\SwsApp\\Test\\": "tests/",
 			"Serato\\SwsApp\\Test\\Propel\\Model\\": "tests/resources/propel/model"
 		}
-	},
-	"minimum-stability": "dev"
+	}
 }
