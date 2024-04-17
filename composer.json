@@ -11,7 +11,7 @@
 		"willdurand/negotiation": "^3.1.0",
 		"geoip2/geoip2": "^2.0.0",
 		"scrivo/highlight.php": "v9.12.0.4",
-		"symfony/console": "^6.0",
+		"symfony/console": "^7.0",
 		"ramsey/uuid": "^3.0.0",
 		"rakit/validation": "^1.4"
 	},
