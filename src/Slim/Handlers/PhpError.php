@@ -20,11 +20,11 @@ class PhpError extends SlimPhpError
      */
     protected $applicationName;
 
-     /**
-     * PSR-3 logger interface
-     *
-     * @var Logger
-     */
+    /**
+    * PSR-3 logger interface
+    *
+    * @var Logger
+    */
     protected $logger;
 
     /**

@@ -48,7 +48,7 @@ class LogToFileSubscriber implements EventSubscriberInterface
      */
     public function onSwsHttpRequest(SwsHttpRequest $event): void
     {
-        $prettyJsonFromArray = fn(array $data): string => json_encode($data, JSON_PRETTY_PRINT);
+        $prettyJsonFromArray = fn (array $data): string => json_encode($data, JSON_PRETTY_PRINT);
 
         $requestFile = fopen($this->logDirPath . date('Y-m-dTH:i:s') . '-request.json', 'a');
         $responseFileName = fopen($this->logDirPath . date('Y-m-dTH:i:s') . '.-response.json', 'a');

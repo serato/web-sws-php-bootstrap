@@ -78,10 +78,10 @@ class PsrMessageNormalizer
     public function normalizePsrServerRequestInterface(ServerRequestInterface $request): array
     {
         $callbacks = [
-            'uri' => fn($innerObject) => $this->normalizeUri($innerObject),
-            'headers' => fn($innerObject) => $this->normalizeHttpHeaders($innerObject),
-            'serverParams' => fn($innerObject) => $this->normalizeServerParams($innerObject),
-            'attributes' => fn($innerObject) => $this->normalizeRequestAttributes($innerObject),
+            'uri' => fn ($innerObject) => $this->normalizeUri($innerObject),
+            'headers' => fn ($innerObject) => $this->normalizeHttpHeaders($innerObject),
+            'serverParams' => fn ($innerObject) => $this->normalizeServerParams($innerObject),
+            'attributes' => fn ($innerObject) => $this->normalizeRequestAttributes($innerObject),
             'body' => function (StreamInterface $body, ServerRequestInterface $httpMessage) {
                 # Determine content type from the `Content-Type` request header.
                 # It may not be set.

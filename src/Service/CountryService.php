@@ -83,7 +83,7 @@ class CountryService implements CountryServiceInterface
         return $countryRegions[$regionName];
     }
 
-    
+
     #[\Override]
     public static function getCountryRegionName(string $countryCode, string $regionCode): ?string
     {
@@ -105,7 +105,7 @@ class CountryService implements CountryServiceInterface
 
     protected static function sanitizeArrayOfStrings(array $arrayToSanitize): array
     {
-        return array_map(fn(string $value) => static::sanitizeString($value), $arrayToSanitize);
+        return array_map(fn (string $value) => static::sanitizeString($value), $arrayToSanitize);
     }
 
     protected static function sanitizeString(string $countryName): string

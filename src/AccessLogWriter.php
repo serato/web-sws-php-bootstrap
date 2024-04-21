@@ -71,7 +71,7 @@ class AccessLogWriter
             if (is_array($request->getParsedBody())) {
                 $logBodyParams = array_filter(
                     $request->getParsedBody(),
-                    fn($key) => in_array($key, $this->bodyParamNames),
+                    fn ($key) => in_array($key, $this->bodyParamNames),
                     ARRAY_FILTER_USE_KEY
                 );
                 if (!empty($logBodyParams)) {

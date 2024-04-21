@@ -53,7 +53,7 @@ abstract class AbstractRouteTest extends TestCase
 
             foreach ($methods as $method) {
                 // trying to find the route in the list of valid routes
-                $filteredRoutes = array_filter($this->getRoutes(), fn($route, $key) => $route['pattern'] === $pattern && $route['method'] === $method, ARRAY_FILTER_USE_BOTH);
+                $filteredRoutes = array_filter($this->getRoutes(), fn ($route, $key) => $route['pattern'] === $pattern && $route['method'] === $method, ARRAY_FILTER_USE_BOTH);
 
                 // If this line fails, it means the route you just added/changed was not added to the getRoutes method.
                 $errorMessage = sprintf(

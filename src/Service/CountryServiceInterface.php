@@ -375,6 +375,6 @@ interface CountryServiceInterface
      */
     public static function getCountryRegionCode(string $countryCode, string $regionName): ?string;
 
-    
+
     public static function getCountryRegionName(string $countryCode, string $regionCode): ?string;
 }

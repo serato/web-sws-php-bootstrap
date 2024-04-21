@@ -27,7 +27,7 @@ final class StatusController extends AbstractController
     public function __construct(LoggerInterface $logger, /**
      * Path to file containing most recent git commit hash
      */
-    protected string $gitCommitFilePath)
+        protected string $gitCommitFilePath)
     {
         parent::__construct($logger);
     }
@@ -168,7 +168,7 @@ EOT;
                 $record->country->name . ' (' . $record->country->isoCode . ')',
                 $record->continent->name
             ],
-            fn($val) => $val !== null && $val !== ''
+            fn ($val) => $val !== null && $val !== ''
         );
     }
 }
