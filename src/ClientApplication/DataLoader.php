@@ -22,8 +22,9 @@ class DataLoader
     private const CACHE_EXPIRY_TIME = 3600; // seconds
     private const ENVIRONMENTS = ['dev', 'test', 'production'];
     private const S3_BUCKET_NAME = 'sws.clientapps';
-    private const S3_BASE_PATH = 'v2';
-    private const COMMON_APP_DATA_NAME = 'apps.json';
+    private const S3_BASE_PATH = 'v3';
+    private const CLIENT_APPS_SECRET_PREFIX = 'sws-client-application';
+    private const COMMON_APP_DATA_NAME = 'client-applications.json';
     private const ENV_CREDENTIALS_NAME_PATTERN = 'credentials.__env__.json';
     private const CREDENTIALS_ENV_PLACEHOLDER = '__env__';
 
@@ -211,6 +212,58 @@ class DataLoader
             );
         }
         return $data;
+    }
+
+    /**
+     * Retrieve application secrets from secrets manager
+     *
+     * @return array
+     * @throws InvalidFileContentsException
+     */
+    private function getSecrets(): array
+    {
+        $secretsManagerClient = $this->awsSdk->createSecretsManager(['version' => '2017-10-17']);
+        
+        $secrets = [];
+        $next = '';
+        while ($next !== null) {
+            $listPayload = [
+                'Filters' => [
+                    [
+                        'Key' => 'name',
+                        'Values' => array_map(
+                            function ($env) {
+                                return $env . '/' . self::CLIENT_APPS_SECRET_PREFIX . '/';
+                            },
+                            self::ENVIRONMENTS
+                        ),
+                    ],
+                ],
+            ];
+
+            if ($next !== '') {
+                $listPayload['NextToken'] = $next;
+            }
+
+            $result = $secretsManagerClient->batchGetSecretValue($listPayload);
+
+            if (isset($result['SecretValues']) && is_array($result['SecretValues'])) {
+                foreach ($result['SecretValues'] as $item) {
+                    $secrets[(string) $item['Name']] = [
+                        'arn' => (string) $item['ARN'],
+                        'secret' => (string) $item['SecretString'],
+                    ];
+                }
+            }
+
+            if (isset($result['NextToken']) && $result['NextToken'] !== '') {
+                $next = $result['NextToken'];
+            } else {
+                $next = null;
+            }
+        };
+
+        return $secrets;
     }
 
     /**
