@@ -101,7 +101,7 @@ class DataLoader
             $env = $this->env;
         }
 
-        return $this->mergeCredentials(
+        return $this->parseClientAppData(
             $this->getItem(self::COMMON_APP_DATA_NAME, $useCache)
         );
     }
@@ -236,7 +236,8 @@ class DataLoader
                         'Key' => 'name',
                         'Values' => array_map(
                             function ($env) use ($appPath) {
-                                return $env . '/' . self::CLIENT_APPS_SECRET_PREFIX . '/' . ($appPath === null ? '' : $appPath);
+                                return $env . '/' . self::CLIENT_APPS_SECRET_PREFIX . '/' .
+                                ($appPath === null ? '' : $appPath);
                             },
                             self::ENVIRONMENTS
                         ),
@@ -276,12 +277,12 @@ class DataLoader
      * @throws MissingApplicationIdException
      * @throws MissingApplicationPasswordHash
      */
-    private function mergeCredentials(array $clientAppsData): array
+    private function parseClientAppData(array $clientAppsData): array
     {
         $data = [];
         foreach ($clientAppsData as $appData) {
             $credentialsData = $this->getSecrets($appData['path']);
-            $appName = $appData['Name'];
+            $appName = $appData['path'];
             $appSecretName = $this->getSecretName($appData['path'], $this->env);
             if (isset($credentialsData[$appSecretName])) {
                 // All apps MUST have `appId`, `appSecret` and `kmsKeyId` keys defined
@@ -308,18 +309,28 @@ class DataLoader
                 $data[$appName]['name'] = $appData['name'];
                 $data[$appName]['description'] = $appData['description'];
                 $data[$appName]['id'] = $credentialsData[$appSecretName]['appId'];
-                $data[$appName]['password_hash'] = password_hash($credentialsData[$appSecretName]['appSecret'], PASSWORD_DEFAULT);;
+                $data[$appName]['password_hash'] = password_hash(
+                    $credentialsData[$appSecretName]['appSecret'],
+                    PASSWORD_DEFAULT
+                );
                 $data[$appName]['forcePasswordReEntryOnLogout'] = $appData['forcePasswordReEntryOnLogout'];
                 $data[$appName]['seasAfterSignIn'] = $appData['seasAfterSignIn'];
-                $data[$appName]['jwt'] =  $this->formatJwt($appData['jwt']);
-                $data[$appName]['jwt']['kms_key_id'] = $credentialsData[$appSecretName]['kmsKeyId'];
-                
-                // Add scopes
-                $data[$appName]['scopes'] = $this->formatScopes($appData['basic_auth_scopes']);
+
+                // Add scopes if present
+                if (isset($appData['scopes'])) {
+                    $data[$appName]['scopes'] = $this->formatScopes($appData['basic_auth_scopes']);
+                }
+
+                if (isset($appData['jwt'])) {
+                    $data[$appName]['jwt'] =  $this->formatJwt($appData['jwt']);
+                    $data[$appName]['jwt']['kms_key_id'] = $credentialsData[$appSecretName]['kmsKeyId'];
+                }
 
                 // Add optional `custom_template_path` item
                 if (isset($appData['custom_template_path'])) {
-                    $data[$appName]['custom_template_path'] = $this->formatCustomTemplatePath($appData['custom_template_path']);
+                    $data[$appName]['custom_template_path'] = $this->formatCustomTemplatePath(
+                        $appData['custom_template_path']
+                    );
                 }
                 // Add optional `restricted_to` item
                 if (isset($credentialsData[$appSecretName]['restricted_to'])) {
@@ -340,12 +351,12 @@ class DataLoader
     {
         return $env . '/' . self::CLIENT_APPS_SECRET_PREFIX . '/' . $secretPath;
     }
-    
+
     private function formatScopes(array $scopes): array
     {
         $formattedScopes = [];
-        foreach( $scopes as $scope) {
-            $formattedScopes[$scope['service'] = $scope['scopes']];
+        foreach ($scopes as $scope) {
+            $formattedScopes[$scope['service']] = $scope['scopes'];
         }
         return $formattedScopes;
     }
@@ -353,12 +364,12 @@ class DataLoader
     private function formatCustomTemplatePath(array $customTemplatePath): array
     {
         $paths = [];
-        foreach( $customTemplatePath['errors'] as $errorPath) {
+        foreach ($customTemplatePath['errors'] as $errorPath) {
             $paths['errors'][$errorPath['http_status_code'] = $errorPath['template_path']];
         }
         return $paths;
     }
-    
+
     private function formatJwt(array $jwt): array
     {
         $formattedJwt = $jwt;
@@ -366,7 +377,7 @@ class DataLoader
         unset($formattedJwt['access']['services']);
         $formattedJwt['access']['default_scopes'] = $this->formatScopes($jwt['access']['default_scopes']);
         $formattedJwt['access']['permissioned_scopes'] = $this->formatScopes($jwt['access']['permissioned_scopes']);
-  
+
         return $formattedJwt;
     }
 }
