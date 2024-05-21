@@ -101,8 +101,9 @@ class DataLoader
             $env = $this->env;
         }
 
-        return $this->parseClientAppData(
-            $this->getItem(self::COMMON_APP_DATA_NAME, $useCache)
+        return $this->mergeCredentials(
+            $this->getItem(self::COMMON_APP_DATA_NAME, $useCache),
+            $this->getSecrets()
         );
     }
 
@@ -277,11 +278,10 @@ class DataLoader
      * @throws MissingApplicationIdException
      * @throws MissingApplicationPasswordHash
      */
-    private function parseClientAppData(array $clientAppsData): array
+    private function mergeCredentials(array $clientAppsData, $credentialsData): array
     {
         $data = [];
         foreach ($clientAppsData as $appData) {
-            $credentialsData = $this->getSecrets($appData['path']);
             $appName = $appData['path'];
             $appSecretName = $this->getSecretName($appData['path'], $this->env);
             if (isset($credentialsData[$appSecretName])) {
