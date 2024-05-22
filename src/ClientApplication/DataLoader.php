@@ -211,11 +211,6 @@ class DataLoader
             }
         }
 
-        // $secret = [
-        //     "appId" => "6ffc0253-7f98-4670-88c4-e924187592b8",
-        //     "appSecret" => "another_gnarly_password",
-        //     "kmsKeyId" => "c459c90b-a475-4f76-ba1b-330292126826"
-        // ];
         $result = $secretsManagerClient->getSecretValue([
             'SecretId' => $this->env . '/' . self::CLIENT_APPS_SECRET_PREFIX . '/' . ($appPath === null ? '' : $appPath)
         ]);
@@ -223,7 +218,6 @@ class DataLoader
         if (isset($result['SecretString'])) {
             $secret = json_decode($result['SecretString'], true);
         }
-        var_dump($secret);
 
         return $secret;
     }
@@ -232,7 +226,6 @@ class DataLoader
      * Merges environment specific credentials
      *
      * @param array $clientAppsData data from client-applications.json
-     * @param array $credentialsData
      * @return array
      *
      * @throws MissingApplicationIdException
@@ -242,7 +235,7 @@ class DataLoader
     {
         $data = [];
         foreach ($clientAppsData as $appData) {
-            $appName = $appData['path'];
+            $parsedData = [];
             $credentialsData = $this->getSecret($appData['path']);
             $appSecretName = $this->getSecretName($appData['path'], $this->env);
             // All apps MUST have `appId`, `appSecret` and `kmsKeyId` keys defined
@@ -265,39 +258,39 @@ class DataLoader
                 );
             }
 
-            // Add common and required data
-            $data[$appName]['name'] = $appData['name'];
-            $data[$appName]['description'] = $appData['description'];
-            $data[$appName]['id'] = $credentialsData['appId'];
-            $data[$appName]['password_hash'] = password_hash($credentialsData['appSecret'], PASSWORD_DEFAULT);;
-            $data[$appName]['forcePasswordReEntryOnLogout'] = $appData['forcePasswordReEntryOnLogout'];
-            $data[$appName]['seasAfterSignIn'] = $appData['seasAfterSignIn'];
+            // Add all data, excluding certain keys
+            $parsedData = $appData;
+            unset($parsedData['path'], $parsedData['basic_auth_scopes'], $parsedData['restricted_to']);
+            $parsedData['id'] = $credentialsData['appId'];
+            $parsedData['password_hash'] = password_hash($credentialsData['appSecret'], PASSWORD_DEFAULT);;
 
-            // Add scopes if present
+            // Format scopes if present
             if (isset($appData['scopes'])) {
-                $data[$appName]['scopes'] = $this->formatScopes($appData['basic_auth_scopes']);
+                $parsedData['scopes'] = $this->parseScopes($appData['basic_auth_scopes']);
             }
 
             if (isset($appData['jwt'])) {
-                $data[$appName]['jwt'] =  $this->formatJwt($appData['jwt']);
-                $data[$appName]['jwt']['kms_key_id'] = $credentialsData['kmsKeyId'];
+                $parsedData['jwt'] =  $this->parseJwt($appData['jwt']);
+                $parsedData['jwt']['kms_key_id'] = $credentialsData['kmsKeyId'];
             }
 
-            // Add optional `custom_template_path` item
+            // Format the optional `custom_template_path` item
             if (isset($appData['custom_template_path'])) {
-                $data[$appName]['custom_template_path'] = $this->formatCustomTemplatePath($appData['custom_template_path']);
+                $parsedData['custom_template_path'] = $this->parseCustomTemplatePath($appData['custom_template_path']);
             }
+
             // Add optional `restricted_to` item
             if (isset($appData['restricted_to'])) {
-                if (!isset($data[$appName]['jwt'])) {
-                    $data[$appName]['jwt'] = [];
+                if (!isset($parsedData['jwt'])) {
+                    $parsedData['jwt'] = [];
                 }
-                if (!isset($data[$appName]['jwt']['access'])) {
-                    $data[$appName]['jwt']['access'] = [];
+                if (!isset($parsedData['jwt']['access'])) {
+                    $parsedData['jwt']['access'] = [];
                 }
-                $data[$appName]['jwt']['access']['restricted_to'] = $appData['restricted_to'];
+                $parsedData['jwt']['access']['restricted_to'] = $appData['restricted_to'];
             }
-            break;
+            array_push($data, $parsedData);
+        }
         return $data;
     }
 
@@ -306,33 +299,57 @@ class DataLoader
         return $env . '/' . self::CLIENT_APPS_SECRET_PREFIX . '/' . $secretPath;
     }
 
-    private function formatScopes(array $scopes): array
+    /**
+     * Return scopes to be in format
+     * 'service' => ['scope']
+     */
+    private function parseScopes(array $scopes): array
     {
-        $formattedScopes = [];
+        $parsedScopes = [];
         foreach ($scopes as $scope) {
-            $formattedScopes[$scope['service']] = $scope['scopes'];
+            $parsedScopes[$scope['service']] = $scope['scopes'];
         }
-        return $formattedScopes;
+        return $parsedScopes;
     }
-
-    private function formatCustomTemplatePath(array $customTemplatePath): array
+    /**
+     * Return custom template paths to be in format
+     * 'errors' => [
+     *      'errorCode' => 'path'
+     * ]
+     */
+    private function parseCustomTemplatePath(array $customTemplatePath): array
     {
-        $paths = [];
+        $parsedPaths = [];
         foreach ($customTemplatePath['errors'] as $errorPath) {
-            $paths['errors'][$errorPath['http_status_code'] = $errorPath['template_path']];
+            $parsedPaths['errors'][$errorPath['http_status_code'] = $errorPath['template_path']];
         }
-        return $paths;
+        return $parsedPaths;
     }
 
-    private function formatJwt(array $jwt): array
+    /**
+     * Return jwt object to be in format
+     * ```
+     * 'access' => [
+     *      'default_audience' => [],
+     *      'default_scopes' => [
+     *          'service' => ['scope']
+     *       ],
+     *      'permissioned_scopes' => [
+     *          'service' => ['scope']
+     *       ],
+     *      <other properties>
+     * ]
+     * ```
+     */
+    private function parseJwt(array $jwt): array
     {
-        $formattedJwt = $jwt;
-        $formattedJwt['access']['default_audience'] = $jwt['services'];
-        unset($formattedJwt['access']['services']);
-        $formattedJwt['access']['default_scopes'] = $this->formatScopes($jwt['access']['default_scopes']);
-        if (isset($formattedJwt['access']['permissioned_scopes'])) {
-            $formattedJwt['access']['permissioned_scopes'] = $this->formatScopes($jwt['access']['permissioned_scopes']);
+        $parsedJwt = $jwt;
+        $parsedJwt['access']['default_audience'] = $jwt['access']['services'];
+        unset($parsedJwt['access']['services']);
+        $parsedJwt['access']['default_scopes'] = $this->parseScopes($jwt['access']['default_scopes']);
+        if (isset($parsedJwt['access']['permissioned_scopes'])) {
+            $parsedJwt['access']['permissioned_scopes'] = $this->parseScopes($jwt['access']['permissioned_scopes']);
         }
-        return $formattedJwt;
+        return $parsedJwt;
     }
 }
