@@ -26,8 +26,6 @@ class DataLoader
     private const S3_BASE_PATH = 'v3';
     private const CLIENT_APPS_SECRET_PREFIX = 'sws-client-application';
     private const COMMON_APP_DATA_NAME = 'client-applications.json';
-    private const ENV_CREDENTIALS_NAME_PATTERN = 'credentials.__env__.json';
-    private const CREDENTIALS_ENV_PLACEHOLDER = '__env__';
 
     /** @var string */
     private $env;
@@ -118,21 +116,6 @@ class DataLoader
         } else {
             return $this->loadFromCache($name, $useCache);
         }
-    }
-
-    /**
-     * Returns the name of an environment-specific credentials object
-     *
-     * @param string $env
-     * @return string
-     */
-    public function getCredentialsObjectName(string $env): string
-    {
-        return str_replace(
-            self::CREDENTIALS_ENV_PLACEHOLDER,
-            $env,
-            self::ENV_CREDENTIALS_NAME_PATTERN
-        );
     }
 
     /**
