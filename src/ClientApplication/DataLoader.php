@@ -200,9 +200,10 @@ class DataLoader
      * @return array
      * @throws InvalidFileContentsException
      */
-    private function getSecrets(?string $appPath = null): array
+    private function getSecret(string $appPath): array
     {
         $secretsManagerClient = $this->awsSdk->createSecretsManager(['version' => '2017-10-17']);
+
         if ($appPath !== null) {
             $appPath = ltrim($appPath, '/');
             if ($appPath === '') {
@@ -210,44 +211,21 @@ class DataLoader
             }
         }
 
-        $secrets = [];
-        $next = '';
-        while ($next !== null) {
-            $listPayload = [
-                'Filters' => [
-                    [
-                        'Key' => 'name',
-                        'Values' => array_map(
-                            function ($env) use ($appPath) {
-                                return $env . '/' . self::CLIENT_APPS_SECRET_PREFIX . '/' .
-                                ($appPath === null ? '' : $appPath);
-                            },
-                            self::ENVIRONMENTS
-                        ),
-                    ],
-                ],
-            ];
+        // $secret = [
+        //     "appId" => "6ffc0253-7f98-4670-88c4-e924187592b8",
+        //     "appSecret" => "another_gnarly_password",
+        //     "kmsKeyId" => "c459c90b-a475-4f76-ba1b-330292126826"
+        // ];
+        $result = $secretsManagerClient->getSecretValue([
+            'SecretId' => $this->env . '/' . self::CLIENT_APPS_SECRET_PREFIX . '/' . ($appPath === null ? '' : $appPath)
+        ]);
 
-            if ($next !== '') {
-                $listPayload['NextToken'] = $next;
-            }
+        if (isset($result['SecretString'])) {
+            $secret = json_decode($result['SecretString'], true);
+        }
+        var_dump($secret);
 
-            $result = $secretsManagerClient->batchGetSecretValue($listPayload);
-
-            if (isset($result['SecretValues']) && is_array($result['SecretValues'])) {
-                foreach ($result['SecretValues'] as $item) {
-                    $secrets[(string) $item['Name']] = json_decode($item['SecretString']);
-                }
-            }
-
-            if (isset($result['NextToken']) && $result['NextToken'] !== '') {
-                $next = $result['NextToken'];
-            } else {
-                $next = null;
-            }
-        };
-
-        return $secrets;
+        return $secret;
     }
 
     /**
@@ -264,69 +242,62 @@ class DataLoader
     {
         $data = [];
         foreach ($clientAppsData as $appData) {
-            $credentialsData = $this->getSecrets($appData['path']);
             $appName = $appData['path'];
+            $credentialsData = $this->getSecret($appData['path']);
             $appSecretName = $this->getSecretName($appData['path'], $this->env);
-            if (isset($credentialsData[$appSecretName])) {
-                // All apps MUST have `appId`, `appSecret` and `kmsKeyId` keys defined
-                if (!isset($credentialsData[$appSecretName]['appId'])) {
-                    throw new MissingApplicationIdException(
-                        'Invalid configuration for application `' . $appSecretName . '` in Secrets Manager `' .
-                        $$appSecretName . '`. Missing required key `appId`.'
-                    );
-                }
-                if (!isset($credentialsData[$appSecretName]['appSecret'])) {
-                    throw new MissingApplicationPasswordHash(
-                        'Invalid configuration for application `' . $appSecretName . '` in credentials file `' .
-                        $$appSecretName . '`. Missing required key `appSecret`.'
-                    );
-                }
-                if (!isset($credentialsData[$appSecretName]['kmsKeyId'])) {
-                    throw new MissingKmsKeyIdException(
-                        'Invalid configuration for application `' . $appSecretName . '` in credentials file `' .
-                        $$appSecretName . '`. Missing required key `kmsKeyId`.'
-                    );
-                }
-
-                // Add common and required data
-                $data[$appName]['name'] = $appData['name'];
-                $data[$appName]['description'] = $appData['description'];
-                $data[$appName]['id'] = $credentialsData[$appSecretName]['appId'];
-                $data[$appName]['password_hash'] = password_hash(
-                    $credentialsData[$appSecretName]['appSecret'],
-                    PASSWORD_DEFAULT
+            // All apps MUST have `appId`, `appSecret` and `kmsKeyId` keys defined
+            if (!isset($credentialsData['appId'])) {
+                throw new MissingApplicationIdException(
+                    'Invalid configuration for application `' . $appSecretName . '` in Secrets Manager `' .
+                    $$appSecretName . '`. Missing required key `appId`.'
                 );
-                $data[$appName]['forcePasswordReEntryOnLogout'] = $appData['forcePasswordReEntryOnLogout'];
-                $data[$appName]['seasAfterSignIn'] = $appData['seasAfterSignIn'];
-
-                // Add scopes if present
-                if (isset($appData['scopes'])) {
-                    $data[$appName]['scopes'] = $this->formatScopes($appData['basic_auth_scopes']);
-                }
-
-                if (isset($appData['jwt'])) {
-                    $data[$appName]['jwt'] =  $this->formatJwt($appData['jwt']);
-                    $data[$appName]['jwt']['kms_key_id'] = $credentialsData[$appSecretName]['kmsKeyId'];
-                }
-
-                // Add optional `custom_template_path` item
-                if (isset($appData['custom_template_path'])) {
-                    $data[$appName]['custom_template_path'] = $this->formatCustomTemplatePath(
-                        $appData['custom_template_path']
-                    );
-                }
-                // Add optional `restricted_to` item
-                if (isset($credentialsData[$appSecretName]['restricted_to'])) {
-                    if (!isset($data[$appName]['jwt'])) {
-                        $data[$appName]['jwt'] = [];
-                    }
-                    if (!isset($data[$appName]['jwt']['access'])) {
-                        $data[$appName]['jwt']['access'] = [];
-                    }
-                    $data[$appName]['jwt']['access']['restricted_to'] = $appData['restricted_to'];
-                }
             }
-        }
+            if (!isset($credentialsData['appSecret'])) {
+                throw new MissingApplicationPasswordHash(
+                    'Invalid configuration for application `' . $appSecretName . '` in credentials file `' .
+                    $$appSecretName . '`. Missing required key `appSecret`.'
+                );
+            }
+            if (!isset($credentialsData['kmsKeyId'])) {
+                throw new MissingKmsKeyIdException(
+                    'Invalid configuration for application `' . $appSecretName . '` in credentials file `' .
+                    $$appSecretName . '`. Missing required key `kmsKeyId`.'
+                );
+            }
+
+            // Add common and required data
+            $data[$appName]['name'] = $appData['name'];
+            $data[$appName]['description'] = $appData['description'];
+            $data[$appName]['id'] = $credentialsData['appId'];
+            $data[$appName]['password_hash'] = password_hash($credentialsData['appSecret'], PASSWORD_DEFAULT);;
+            $data[$appName]['forcePasswordReEntryOnLogout'] = $appData['forcePasswordReEntryOnLogout'];
+            $data[$appName]['seasAfterSignIn'] = $appData['seasAfterSignIn'];
+
+            // Add scopes if present
+            if (isset($appData['scopes'])) {
+                $data[$appName]['scopes'] = $this->formatScopes($appData['basic_auth_scopes']);
+            }
+
+            if (isset($appData['jwt'])) {
+                $data[$appName]['jwt'] =  $this->formatJwt($appData['jwt']);
+                $data[$appName]['jwt']['kms_key_id'] = $credentialsData['kmsKeyId'];
+            }
+
+            // Add optional `custom_template_path` item
+            if (isset($appData['custom_template_path'])) {
+                $data[$appName]['custom_template_path'] = $this->formatCustomTemplatePath($appData['custom_template_path']);
+            }
+            // Add optional `restricted_to` item
+            if (isset($appData['restricted_to'])) {
+                if (!isset($data[$appName]['jwt'])) {
+                    $data[$appName]['jwt'] = [];
+                }
+                if (!isset($data[$appName]['jwt']['access'])) {
+                    $data[$appName]['jwt']['access'] = [];
+                }
+                $data[$appName]['jwt']['access']['restricted_to'] = $appData['restricted_to'];
+            }
+            break;
         return $data;
     }
 
@@ -359,8 +330,9 @@ class DataLoader
         $formattedJwt['access']['default_audience'] = $jwt['services'];
         unset($formattedJwt['access']['services']);
         $formattedJwt['access']['default_scopes'] = $this->formatScopes($jwt['access']['default_scopes']);
-        $formattedJwt['access']['permissioned_scopes'] = $this->formatScopes($jwt['access']['permissioned_scopes']);
-
+        if (isset($formattedJwt['access']['permissioned_scopes'])) {
+            $formattedJwt['access']['permissioned_scopes'] = $this->formatScopes($jwt['access']['permissioned_scopes']);
+        }
         return $formattedJwt;
     }
 }
