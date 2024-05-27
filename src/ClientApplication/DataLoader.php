@@ -265,14 +265,14 @@ class DataLoader
             $parsedData['password_hash'] = password_hash($credentialsData['appSecret'], PASSWORD_DEFAULT);;
 
             // Format scopes if present
-            if (isset($appData['scopes'])) {
+            if (isset($appData['basic_auth_scopes'])) {
                 $parsedData['scopes'] = $this->parseScopes($appData['basic_auth_scopes']);
             }
 
             if (isset($appData['jwt'])) {
                 $parsedData['jwt'] =  $this->parseJwt($appData['jwt']);
-                $parsedData['jwt']['kms_key_id'] = $credentialsData['kmsKeyId'];
             }
+            $parsedData['jwt']['kms_key_id'] = $credentialsData['kmsKeyId'];
 
             // Format the optional `custom_template_path` item
             if (isset($appData['custom_template_path'])) {
@@ -289,8 +289,10 @@ class DataLoader
                 }
                 $parsedData['jwt']['access']['restricted_to'] = $appData['restricted_to'];
             }
+
             array_push($data, $parsedData);
         }
+
         return $data;
     }
 
@@ -311,6 +313,29 @@ class DataLoader
         }
         return $parsedScopes;
     }
+
+    /**
+     * Return permissioned scopes to be in format
+     * 'service' => [
+     *     'scope' => ['group_membership']
+     * ],
+     */
+    private function parsePermissionedScopes(array $permissionedScopes): array
+    {
+        $parsedPermissionedScopes = [];
+        // $scopes = [ 'service' => 'webservice', 'scopes' => [ list of scopes ]]
+        foreach ($permissionedScopes as $serviceScopes) {
+            $userGroups = [];
+
+            // Parse the inner user group scopes
+            // $scope = [ 'scope' => 'scope name', 'group_membership' => [user group names]]
+            foreach ($serviceScopes['scopes'] as $serviceScope) {
+                $userGroups[$serviceScope['scope']] = $serviceScope['group_membership'];
+            }
+            $parsedPermissionedScopes[$serviceScopes['service']] = $userGroups;
+        }
+        return $parsedPermissionedScopes;
+    }
     /**
      * Return custom template paths to be in format
      * 'errors' => [
@@ -319,9 +344,8 @@ class DataLoader
      */
     private function parseCustomTemplatePath(array $customTemplatePath): array
     {
-        $parsedPaths = [];
         foreach ($customTemplatePath['errors'] as $errorPath) {
-            $parsedPaths['errors'][$errorPath['http_status_code'] = $errorPath['template_path']];
+            $parsedPaths['errors'][$errorPath['http_status_code']] = $errorPath['template_path'];
         }
         return $parsedPaths;
     }
@@ -335,7 +359,9 @@ class DataLoader
      *          'service' => ['scope']
      *       ],
      *      'permissioned_scopes' => [
-     *          'service' => ['scope']
+     *          'service' => [
+     *            'scope' => ['group_membership']
+     *          ],
      *       ],
      *      <other properties>
      * ]
@@ -348,7 +374,7 @@ class DataLoader
         unset($parsedJwt['access']['services']);
         $parsedJwt['access']['default_scopes'] = $this->parseScopes($jwt['access']['default_scopes']);
         if (isset($parsedJwt['access']['permissioned_scopes'])) {
-            $parsedJwt['access']['permissioned_scopes'] = $this->parseScopes($jwt['access']['permissioned_scopes']);
+            $parsedJwt['access']['permissioned_scopes'] = $this->parsePermissionedScopes($jwt['access']['permissioned_scopes']);
         }
         return $parsedJwt;
     }
