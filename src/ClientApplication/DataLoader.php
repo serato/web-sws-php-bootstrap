@@ -30,9 +30,6 @@ class DataLoader
     /** @var string */
     private $env;
 
-    /** @var array */
-    private $loadEnv = [];
-
     /** @var AwsSdk */
     private $awsSdk;
 
@@ -76,13 +73,6 @@ class DataLoader
             if (!is_dir($this->localDirPath)) {
                 throw new Exception("Invalid directory path '" . $this->localDirPath . "'. Path is not a directory.");
             }
-        }
-
-        // Load all environment data in `dev` environment
-        if ($this->env === 'dev') {
-            $this->loadEnv = self::ENVIRONMENTS;
-        } else {
-            $this->loadEnv = [$this->env];
         }
     }
 
