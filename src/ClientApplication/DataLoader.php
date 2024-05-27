@@ -213,13 +213,15 @@ class DataLoader
     }
 
     /**
-     * Merges environment specific credentials
+     * Merges environment specific credentials withe the provided client app 
+     * data.
      *
      * @param array $clientAppsData data from client-applications.json
      * @return array
      *
      * @throws MissingApplicationIdException
      * @throws MissingApplicationPasswordHash
+     * @throws MissingKmsKeyIdException
      */
     private function parseClientAppData(array $clientAppsData): array
     {
