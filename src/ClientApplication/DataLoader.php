@@ -9,7 +9,7 @@ use Psr\Cache\CacheItemPoolInterface;
 use Serato\SwsApp\ClientApplication\Exception\InvalidEnvironmentNameException;
 use Serato\SwsApp\ClientApplication\Exception\InvalidFileContentsException;
 use Serato\SwsApp\ClientApplication\Exception\MissingApplicationIdException;
-use Serato\SwsApp\ClientApplication\Exception\MissingApplicationPasswordHash;
+use Serato\SwsApp\ClientApplication\Exception\MissingApplicationPassword;
 use Serato\SwsApp\ClientApplication\Exception\MissingKmsKeyIdException;
 
 /**
@@ -220,7 +220,7 @@ class DataLoader
      * @return array
      *
      * @throws MissingApplicationIdException
-     * @throws MissingApplicationPasswordHash
+     * @throws MissingApplicationPassword
      * @throws MissingKmsKeyIdException
      */
     private function parseClientAppData(array $clientAppsData): array
@@ -238,7 +238,7 @@ class DataLoader
                 );
             }
             if (!isset($credentialsData['appSecret'])) {
-                throw new MissingApplicationPasswordHash(
+                throw new MissingApplicationPassword(
                     'Invalid configuration for application `' . $appSecretName . '` in credentials file `' .
                     $$appSecretName . '`. Missing required key `appSecret`.'
                 );
