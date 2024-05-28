@@ -2,68 +2,77 @@
 
 namespace Serato\SwsApp\Test\ClientApplication;
 
-use Aws\Sdk;
 use Serato\SwsApp\ClientApplication\DataLoader;
 use Serato\SwsApp\Test\TestCase;
 use Exception;
+use Serato\SwsApp\ClientApplication\Exception\InvalidEnvironmentNameException;
+use Serato\SwsApp\ClientApplication\Exception\InvalidFileContentsException;
+use Serato\SwsApp\ClientApplication\Exception\MissingApplicationIdException;
+use Serato\SwsApp\ClientApplication\Exception\MissingApplicationPassword;
+use Serato\SwsApp\ClientApplication\Exception\MissingKmsKeyIdException;
 
 class DataLoaderTest extends TestCase
 {
     /**
-     * @expectedException \Serato\SwsApp\ClientApplication\Exception\InvalidEnvironmentNameException
+     * Test invalid environment name is provided
      */
     public function testInvalidEnvironmentName()
     {
-        $dataLoader = new DataLoader('invalidEnvName', $this->getAwsSdk(), $this->getFileSystemCachePool());
+        $this->expectException(InvalidEnvironmentNameException::class);
+        new DataLoader('invalidEnvName', $this->getAwsSdk(), $this->getFileSystemCachePool());
     }
 
     /**
-     * @expectedException \Serato\SwsApp\ClientApplication\Exception\InvalidFileContentsException
+     * Test importing malformed app data json
      */
     public function testMalformedAppData()
     {
+        $this->expectException(InvalidFileContentsException::class);
         $dataLoader = new DataLoader(
             'dev',
-            $this->getAwsSdk($this->getAwsMockResponses('apps.malformed.json', 'credentials.dev.json')),
+            $this->getAwsSdk($this->getAwsMockResponses('client-applications.malformed.json', 'secrets.json')),
             $this->getFileSystemCachePool()
         );
         $dataLoader->getApp();
     }
 
     /**
-     * @expectedException \Serato\SwsApp\ClientApplication\Exception\InvalidFileContentsException
-     */
-    public function testMalformedCredentialsData()
-    {
-        $dataLoader = new DataLoader(
-            'dev',
-            $this->getAwsSdk($this->getAwsMockResponses('apps.json', 'credentials.malformed.json')),
-            $this->getFileSystemCachePool()
-        );
-        $dataLoader->getApp();
-    }
-
-    /**
-     * @expectedException \Serato\SwsApp\ClientApplication\Exception\MissingApplicationIdException
+     * Test secret credentials is missing App id
      */
     public function testCredentialsMissingAppId()
     {
+        $this->expectException(MissingApplicationIdException::class);
         $dataLoader = new DataLoader(
             'dev',
-            $this->getAwsSdk($this->getAwsMockResponses('apps.json', 'credentials.missing-id.json')),
+            $this->getAwsSdk($this->getAwsMockResponses('client-applications.json', 'secrets.missing-id.json')),
             $this->getFileSystemCachePool()
         );
         $dataLoader->getApp();
     }
 
     /**
-     * @expectedException \Serato\SwsApp\ClientApplication\Exception\MissingApplicationPasswordHash
+     * Test secret credentials is missing App password
      */
-    public function testCredentialsMissingPasswordHash()
+    public function testCredentialsMissingPassword()
     {
+        $this->expectException(MissingApplicationPassword::class);
         $dataLoader = new DataLoader(
             'dev',
-            $this->getAwsSdk($this->getAwsMockResponses('apps.json', 'credentials.missing-password.json')),
+            $this->getAwsSdk($this->getAwsMockResponses('client-applications.json', 'secrets.missing-password.json')),
+            $this->getFileSystemCachePool()
+        );
+        $dataLoader->getApp();
+    }
+
+    /**
+     * Test secret credentials is missing App kms key id
+     */
+    public function testCredentialsMissingKmsKeyId()
+    {
+        $this->expectException(MissingKmsKeyIdException::class);
+        $dataLoader = new DataLoader(
+            'dev',
+            $this->getAwsSdk($this->getAwsMockResponses('client-applications.json', 'secrets.missing-kms-key.json')),
             $this->getFileSystemCachePool()
         );
         $dataLoader->getApp();
@@ -73,7 +82,7 @@ class DataLoaderTest extends TestCase
     {
         $dataLoader = new DataLoader(
             'dev',
-            $this->getAwsSdk($this->getAwsMockResponses('apps.json', 'credentials.dev.json')),
+            $this->getAwsSdk($this->getAwsMockResponses('client-applications.json', 'secrets.json')),
             $this->getFileSystemCachePool()
         );
 
@@ -103,7 +112,7 @@ class DataLoaderTest extends TestCase
                 'dev',
                 $this->getAwsSdk(),
                 $this->getFileSystemCachePool(),
-                rtrim(__DIR__, '/') . '/data/apps.json'
+                rtrim(__DIR__, '/') . '/data/client-applications.json'
             );
             // Shouldn't get this far
             $this->assertTrue(false);
@@ -160,18 +169,20 @@ class DataLoaderTest extends TestCase
     /**
      * Creates an array of mock AWS Result objects.
      *
-     * The array contains two items corresponding to S3 GetObject
-     * requests for the `apps.json` file and `credentials.dev.json` file.
+     * The array contains the responses to S3 GetObject requests for the `client-applications.json` file
+     * and the SecretsManager GetSecretValue for the client app secrets.
      *
      * @return array
      */
-    private function getAwsMockResponses(string $appsFileName, string $credentialsFileName): array
+    private function getAwsMockResponses(string $appsFileName, string $secretsFileName): array
     {
-        # FYI `Serato\SwsApp\ClientApplication\DataLoader` always loads the apps file first
-        return [
-            ['Body' => file_get_contents(__DIR__ . '/data/' . $appsFileName)],
-            ['Body' => file_get_contents(__DIR__ . '/data/' . $credentialsFileName)]
+        $clientAppResponse = [
+            ['Body' => file_get_contents(__DIR__ . '/data/' . $appsFileName)]
         ];
+
+        $secretReponses = json_decode(file_get_contents(__DIR__ . '/data/' . $secretsFileName), true) ?? [];
+
+        return array_merge($clientAppResponse, $secretReponses);
     }
 
     private function assertValidAppData(array $appData): void
