@@ -3,11 +3,6 @@
 namespace Serato\SwsApp\Test;
 
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
-use Slim\Http\Environment;
-use Slim\Http\Uri;
-use Slim\Http\Headers;
-use Slim\Http\Cookies;
-use Slim\Http\UploadedFile;
 use Aws\Sdk;
 use Aws\Result;
 use Aws\MockHandler;
