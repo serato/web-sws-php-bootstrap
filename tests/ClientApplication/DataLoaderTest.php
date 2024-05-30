@@ -110,20 +110,22 @@ class DataLoaderTest extends TestCase
 
     private function assertValidAppData(array $appData): void
     {
-        foreach ($appData as $app => $data) {
-            // Compare array structure with expected structure ignoring the password_hash
-            $arrayDiff = array_diff(
-                $data,
-                DataLoaderTest::EXPECTED_SUCCESSFUL_OUTPUT[$app]['expectedArrayMinusPasswordHash']
+        foreach ($appData as $index => $data) {
+            // Check password_hash
+            $this->assertTrue(isset($data['password_hash']));
+            $this->assertTrue(password_verify(
+                DataLoaderTest::EXPECTED_SUCCESSFUL_OUTPUT[$index]['password'],
+                $data['password_hash']
+            ));
+            // Remove password_hash so we can check the rest of the array
+            unset($data['password_hash']);
+            
+            // Check resulting array with expected array ignoring the password_hash
+            $this->assertEquals( 
+                DataLoaderTest::EXPECTED_SUCCESSFUL_OUTPUT[$index]['expectedArrayMinusPasswordHash'],
+                $data
             );
 
-            // Check password_hash
-            $this->assertEquals(1, count($arrayDiff));
-            $this->assertTrue(isset($arrayDiff['password_hash']));
-            $this->assertTrue(password_verify(
-                DataLoaderTest::EXPECTED_SUCCESSFUL_OUTPUT[$app]['password'],
-                $arrayDiff['password_hash']
-            ));
         }
     }
 
@@ -140,7 +142,6 @@ class DataLoaderTest extends TestCase
                     'access' => [
                         'default_scopes' => [
                             'ecom.serato.com' => ['user-read', 'user-write']
-
                         ],
                         'expires' => 900,
                         'default_audience' => ['ecom.serato.com']
@@ -148,11 +149,11 @@ class DataLoaderTest extends TestCase
                     'refresh' => [
                         'expires' => 31536000
                     ],
-                    'kms_key_id' => 'kmsKeyId1'
+                    'kms_key_id' => 'kms-key-id-1'
                 ],
-                'id' => '1'
+                'id' => 'id-1'
             ],
-            'password' => 'password1'
+            'password' => 'password-1'
         ],
         [
             'expectedArrayMinusPasswordHash' => [
@@ -174,11 +175,11 @@ class DataLoaderTest extends TestCase
                     'refresh' => [
                         'expires' => 31536000
                     ],
-                    'kms_key_id' => 'kmsKeyId2'
+                    'kms_key_id' => 'kms-key-id-2'
                 ],
-                'id' => '2'
+                'id' => 'id-2'
             ],
-            'password' => 'password2'
+            'password' => 'password-2'
         ],
         [
             'expectedArrayMinusPasswordHash' => [
@@ -244,11 +245,11 @@ class DataLoaderTest extends TestCase
                     'refresh' => [
                         'expires' => 31536000
                     ],
-                    'kms_key_id' => 'kmsKeyId3'
+                    'kms_key_id' => 'kms-key-id-3'
                 ],
-                'id' => '3'
+                'id' => 'id-3'
             ],
-            'password' => 'password3'
+            'password' => 'password-3'
         ],
         [
             'expectedArrayMinusPasswordHash' => [
@@ -262,11 +263,11 @@ class DataLoaderTest extends TestCase
                     'profile.serato.com' => ['profile-edit-admin'],
                 ],
                 'jwt' => [
-                    'kms_key_id' => 'kmsKeyId4'
+                    'kms_key_id' => 'kms-key-id-4'
                 ],
-                'id' => '4'
+                'id' => 'id-4'
             ],
-            'password' => 'password4'
+            'password' => 'password-4'
         ],
         [
             'expectedArrayMinusPasswordHash' => [
@@ -290,11 +291,11 @@ class DataLoaderTest extends TestCase
                     'refresh' => [
                         'expires' => 31536000
                     ],
-                    'kms_key_id' => 'kmsKeyId5'
+                    'kms_key_id' => 'kms-key-id-5'
                 ],
-                'id' => '5'
+                'id' => 'id-5'
             ],
-            'password' => 'password5'
+            'password' => 'password-5'
         ],
         [
             'expectedArrayMinusPasswordHash' => [
@@ -311,20 +312,21 @@ class DataLoaderTest extends TestCase
                         ],
                         'expires' => 900,
                         'default_audience' => ['license.serato.io'],
+                        'restricted_to' => ['Serato']
                     ],
                     'refresh' => [
                         'expires' => 31536000
                     ],
-                    'kms_key_id' => 'kmsKeyId2'
+                    'kms_key_id' => 'kms-key-id-6'
                 ],
                 'custom_template_path' => [
                     'errors' => [
                         '403' => 'pages/error/403.studio.html'
                     ]
                 ],
-                'id' => '6'
+                'id' => 'id-6'
             ],
-            'password' => 'password6'
+            'password' => 'password-6'
         ]
     ];
 }
