@@ -4,7 +4,6 @@ namespace Serato\SwsApp\Test\ClientApplication;
 
 use Serato\SwsApp\ClientApplication\DataLoader;
 use Serato\SwsApp\Test\TestCase;
-use Exception;
 use Serato\SwsApp\ClientApplication\Exception\InvalidEnvironmentNameException;
 use Serato\SwsApp\ClientApplication\Exception\InvalidFileContentsException;
 use Serato\SwsApp\ClientApplication\Exception\MissingApplicationIdException;
@@ -119,13 +118,12 @@ class DataLoaderTest extends TestCase
             ));
             // Remove password_hash so we can check the rest of the array
             unset($data['password_hash']);
-            
+
             // Check resulting array with expected array ignoring the password_hash
-            $this->assertEquals( 
+            $this->assertEquals(
                 DataLoaderTest::EXPECTED_SUCCESSFUL_OUTPUT[$index]['expectedArrayMinusPasswordHash'],
                 $data
             );
-
         }
     }
 
