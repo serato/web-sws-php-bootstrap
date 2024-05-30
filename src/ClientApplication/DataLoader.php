@@ -36,23 +36,17 @@ class DataLoader
     /** @var CacheItemPoolInterface */
     private $psrCache;
 
-    /** @var string */
-    private $localDirPath;
-
     /**
      * Constructs the object
      *
      * @param string                    $env            Application environment
      * @param AwsSdk                    $awsSdk         AWS SDK
      * @param CacheItemPoolInterface    $psrCache       PSR-6 cache item pool
-     * @param string                    $localDirPath   Path to a directory where configuration files can be found.
-     *                                                  Overrides `$awsSdk` and `$psrCache` parameters.
      */
     public function __construct(
         string $env,
         AwsSdk $awsSdk,
-        CacheItemPoolInterface $psrCache,
-        string $localDirPath = null
+        CacheItemPoolInterface $psrCache
     ) {
         if (!in_array($env, self::ENVIRONMENTS)) {
             throw new InvalidEnvironmentNameException(
@@ -64,16 +58,6 @@ class DataLoader
         $this->env = $env;
         $this->awsSdk = $awsSdk;
         $this->psrCache = $psrCache;
-
-        if ($localDirPath !== null) {
-            $this->localDirPath = realpath($localDirPath);
-            if ($this->localDirPath === false) {
-                throw new Exception("Invalid directory path '" . $this->localDirPath . "'. Path does not exist.");
-            }
-            if (!is_dir($this->localDirPath)) {
-                throw new Exception("Invalid directory path '" . $this->localDirPath . "'. Path is not a directory.");
-            }
-        }
     }
 
     /**
@@ -90,42 +74,8 @@ class DataLoader
         }
 
         return $this->parseClientAppData(
-            $this->getItem(self::COMMON_APP_DATA_NAME, $useCache)
+            $this->loadFromCache(self::COMMON_APP_DATA_NAME, $useCache)
         );
-    }
-
-    /**
-     * Returns a data config item. Will look in the cache for the item if `$useCache = true`.
-     *
-     * @return array
-     */
-    public function getItem(string $name, bool $useCache = true): array
-    {
-        if ($this->localDirPath !== null) {
-            return $this->loadFromLocalDirectory($name);
-        } else {
-            return $this->loadFromCache($name, $useCache);
-        }
-    }
-
-    /**
-     * Load application data from a file in a local directory.
-     *
-     * @return array
-     */
-    private function loadFromLocalDirectory(string $name): array
-    {
-        $filePath = rtrim($this->localDirPath, '/') . '/' . $name;
-        if (file_exists($filePath)) {
-            $data = json_decode((string)file_get_contents($filePath), true);
-            if ($data === null) {
-                throw new Exception("Invalid file path '$filePath'. File does not contain valid JSON.");
-            } else {
-                return $data;
-            }
-        } else {
-            throw new Exception("Invalid file path '$filePath'. File does not exist.");
-        }
     }
 
     /**
@@ -366,7 +316,9 @@ class DataLoader
         unset($parsedJwt['access']['services']);
         $parsedJwt['access']['default_scopes'] = $this->parseScopes($jwt['access']['default_scopes']);
         if (isset($parsedJwt['access']['permissioned_scopes'])) {
-            $parsedJwt['access']['permissioned_scopes'] = $this->parsePermissionedScopes($jwt['access']['permissioned_scopes']);
+            $parsedJwt['access']['permissioned_scopes'] = $this->parsePermissionedScopes(
+                $jwt['access']['permissioned_scopes']
+            );
         }
         return $parsedJwt;
     }
