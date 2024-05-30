@@ -74,9 +74,7 @@
                 "services": [
                     "id.serato.io",
                     "license.serato.io",
-                    "ecom.serato.com",
-                    "profile.serato.com",
-                    "notifications.serato.com"
+                    "ecom.serato.com"
                 ],
                 "default_scopes": [
                     {
@@ -98,19 +96,6 @@
                         "scopes": [
                             "user-read",
                             "user-write"
-                        ]
-                    },
-                    {
-                        "service": "profile.serato.com",
-                        "scopes": [
-                            "profile-edit"
-                        ]
-                    },
-                    {
-                        "service": "notifications.serato.com",
-                        "scopes": [
-                            "user-write",
-                            "user-read"
                         ]
                     }
                 ],
@@ -220,52 +205,6 @@
                                 ]
                             }
                         ]
-                    },
-                    {
-                        "service": "profile.serato.com",
-                        "scopes": [
-                            {
-                                "scope": "profile-edit-admin",
-                                "group_membership": [
-                                    [
-                                        "Root"
-                                    ],
-                                    [
-                                        "Serato",
-                                        "Support"
-                                    ]
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        "service": "notifications.serato.com",
-                        "scopes": [
-                            {
-                                "scope": "admin-user-read",
-                                "group_membership": [
-                                    [
-                                        "Root"
-                                    ],
-                                    [
-                                        "Serato",
-                                        "Support"
-                                    ]
-                                ]
-                            },
-                            {
-                                "scope": "admin-user-write",
-                                "group_membership": [
-                                    [
-                                        "Root"
-                                    ],
-                                    [
-                                        "Serato",
-                                        "Support"
-                                    ]
-                                ]
-                            }
-                        ]
                     }
                 ],
                 "expires": 900
@@ -295,7 +234,7 @@
     {
         "path": "client\/application-5",
         "name" : "Application 5",
-        "description": "Combination of default scopes and JWT token",
+        "description": "Combination of basic scopes and JWT token",
         "seas": false,
         "seasAfterSignIn": false,
         "forcePasswordReEntryOnLogout": false,
@@ -312,19 +251,9 @@
         "jwt": {
             "access": {
                 "services": [
-                    "id.serato.io",
                     "license.serato.io"
                 ],
                 "default_scopes": [
-                    {
-                        "service": "id.serato.io",
-                        "scopes": [
-                            "user-get",
-                            "user-update",
-                            "user-admin",
-                            "user-groups-admin"
-                        ]
-                    },
                     {
                         "service": "license.serato.io",
                         "scopes": [
@@ -333,10 +262,10 @@
                         ]
                     }
                 ],
-                "expires": 15
+                "expires": 900
             },
             "refresh": {
-                "expires": 15
+                "expires": 31536000
             }
         }
     },

@@ -187,30 +187,221 @@ class DataLoaderTest extends TestCase
 
     private function assertValidAppData(array $appData): void
     {
-        # Make sure that the correct number of apps are loaded
-        $this->assertEquals(4, count($appData));
+        foreach ($appData as $app => $data) {
+            // Compare array structure with expected structure ignoring the password_hash
+            $arrayDiff = array_diff(
+                $data,
+                DataLoaderTest::EXPECTED_SUCCESSFUL_OUTPUT[$app]['expectedArrayMinusPasswordHash']
+            );
 
-        # *** Validate some details ***
-
-        # 1. App 1 should have JWT settings but no 'restricted_to` setting
-        $this->assertTrue(isset($appData['App1']['jwt']));
-        $this->assertFalse(isset($appData['App1']['jwt']['access']['restricted_to']));
-
-        # 2. App 2 should have JWT settings and a 'restricted_to` setting
-        $this->assertTrue(isset($appData['App2']['jwt']));
-        $this->assertTrue(isset($appData['App2']['jwt']['access']['restricted_to']));
-
-        # 3. App 3 should have no JWT settings
-        $this->assertFalse(isset($appData['App3']['jwt']));
-
-        # 4. App 4 should have JWT settings with `permissioned_scopes`
-        $this->assertTrue(isset($appData['App4']['jwt']));
-        $this->assertTrue(isset($appData['App4']['jwt']['access']['permissioned_scopes']));
-
-        # 5. App 5 should no be present in data (it's defined in `apps.json` but not `credentials.dev.json`)
-        $this->assertFalse(isset($appData['App5']));
-
-        # 6. App 6 should no be present in data (it's defined in `credentials.dev.json` but not `apps.json`)
-        $this->assertFalse(isset($appData['App6']));
+            // Check password_hash
+            $this->assertEquals(1, count($arrayDiff));
+            $this->assertTrue(isset($arrayDiff['password_hash']));
+            $this->assertTrue(password_verify(
+                DataLoaderTest::EXPECTED_SUCCESSFUL_OUTPUT[$app]['password'],
+                $arrayDiff['password_hash']
+            ));
+        }
     }
+
+    private const EXPECTED_SUCCESSFUL_OUTPUT = [
+        [
+            'expectedArrayMinusPasswordHash' => [
+                'name' => 'Application 1',
+                'description' => 'Application with JWT params basic default scopes',
+                'seas' => false,
+                'seasAfterSignIn' => false,
+                'forcePasswordReEntryOnLogout' => false,
+                'requiresPasswordReEntry' => false,
+                'jwt' => [
+                    'access' => [
+                        'default_scopes' => [
+                            'ecom.serato.com' => ['user-read', 'user-write']
+
+                        ],
+                        'expires' => 900,
+                        'default_audience' => ['ecom.serato.com']
+                    ],
+                    'refresh' => [
+                        'expires' => 31536000
+                    ],
+                    'kms_key_id' => 'kmsKeyId1'
+                ],
+                'id' => '1'
+            ],
+            'password' => 'password1'
+        ],
+        [
+            'expectedArrayMinusPasswordHash' => [
+                'name' => 'Application 2',
+                'description' => 'Application with JWT params and `restricted_to` settings',
+                'seas' => false,
+                'seasAfterSignIn' => false,
+                'forcePasswordReEntryOnLogout' => false,
+                'requiresPasswordReEntry' => false,
+                'jwt' => [
+                    'access' => [
+                        'default_scopes' => [
+                            'license.serato.io' => ['user-license', 'user-license-activation']
+                        ],
+                        'expires' => 900,
+                        'default_audience' => ['license.serato.io'],
+                        'restricted_to' => ['Serato']
+                    ],
+                    'refresh' => [
+                        'expires' => 31536000
+                    ],
+                    'kms_key_id' => 'kmsKeyId2'
+                ],
+                'id' => '2'
+            ],
+            'password' => 'password2'
+        ],
+        [
+            'expectedArrayMinusPasswordHash' => [
+                'name' => 'Application 3',
+                'description' => 'Application with JWT params and lots default and permissioned scopes',
+                'seas' => true,
+                'seasAfterSignIn' => false,
+                'forcePasswordReEntryOnLogout' => false,
+                'requiresPasswordReEntry' => false,
+                'refreshTokenGroup' => 'serato-website',
+                'jwt' => [
+                    'access' => [
+                        'default_scopes' => [
+                            'license.serato.io' => ['user-license', 'user-license-activation'],
+                            'id.serato.io' => ['user-get', 'user-update'],
+                            'ecom.serato.com' => ['user-read', 'user-write']
+                        ],
+                        'permissioned_scopes' => [
+                            'license.serato.io' => [
+                                'user-license-admin' => [
+                                    ['Root'],
+                                    ['Serato', 'Support'],
+                                    ['Serato', 'License Admin']
+                                ],
+                                'product-batch-read' => [
+                                    ['Root'],
+                                    ['Serato', 'Product Batch - Read only'],
+                                    ['Serato', 'Product Batch - Admin']
+                                ],
+                                'product-batch-admin' => [
+                                    ['Root'],
+                                    ['Serato', 'Product Batch - Admin']
+                                ]
+                            ],
+                            'id.serato.io' => [
+                                'user-admin' => [
+                                    ['Root'],
+                                    ['Serato', 'Support']
+                                ],
+                                'user-groups-admin' => [
+                                    ['Root'],
+                                    ['Serato']
+                                ]
+                            ],
+                            'ecom.serato.com' => [
+                                'admin-user-read' => [
+                                    ['Root'],
+                                    ['Serato', 'Support']
+                                ],
+                                'admin-user-write' => [
+                                    ['Root'],
+                                    ['Serato', 'Support']
+                                ]
+                            ]
+                        ],
+                        'expires' => 900,
+                        'default_audience' => [
+                            'id.serato.io',
+                            'license.serato.io',
+                            'ecom.serato.com'
+                        ]
+                    ],
+                    'refresh' => [
+                        'expires' => 31536000
+                    ],
+                    'kms_key_id' => 'kmsKeyId3'
+                ],
+                'id' => '3'
+            ],
+            'password' => 'password3'
+        ],
+        [
+            'expectedArrayMinusPasswordHash' => [
+                'name' => 'Application 4',
+                'description' => 'Application with default scopes',
+                'seas' => false,
+                'seasAfterSignIn' => false,
+                'forcePasswordReEntryOnLogout' => false,
+                'requiresPasswordReEntry' => false,
+                'scopes' => [
+                    'profile.serato.com' => ['profile-edit-admin'],
+                ],
+                'jwt' => [
+                    'kms_key_id' => 'kmsKeyId4'
+                ],
+                'id' => '4'
+            ],
+            'password' => 'password4'
+        ],
+        [
+            'expectedArrayMinusPasswordHash' => [
+                'name' => 'Application 5',
+                'description' => 'Combination of basic scopes and JWT token',
+                'seas' => false,
+                'seasAfterSignIn' => false,
+                'forcePasswordReEntryOnLogout' => false,
+                'requiresPasswordReEntry' => false,
+                'scopes' => [
+                    'license.serato.io' => ['app-license-admin', 'user-license'],
+                ],
+                'jwt' => [
+                    'access' => [
+                        'default_scopes' => [
+                            'license.serato.io' => ['user-license', 'user-license-activation']
+                        ],
+                        'expires' => 900,
+                        'default_audience' => ['license.serato.io'],
+                    ],
+                    'refresh' => [
+                        'expires' => 31536000
+                    ],
+                    'kms_key_id' => 'kmsKeyId5'
+                ],
+                'id' => '5'
+            ],
+            'password' => 'password5'
+        ],
+        [
+            'expectedArrayMinusPasswordHash' => [
+                'name' => 'Application 6',
+                'description' => 'Application with JWT params and `custom_template_path` settings',
+                'seas' => false,
+                'seasAfterSignIn' => true,
+                'forcePasswordReEntryOnLogout' => true,
+                'requiresPasswordReEntry' => false,
+                'jwt' => [
+                    'access' => [
+                        'default_scopes' => [
+                            'license.serato.io' => ['user-license', 'user-license-activation']
+                        ],
+                        'expires' => 900,
+                        'default_audience' => ['license.serato.io'],
+                    ],
+                    'refresh' => [
+                        'expires' => 31536000
+                    ],
+                    'kms_key_id' => 'kmsKeyId2'
+                ],
+                'custom_template_path' => [
+                    'errors' => [
+                        '403' => 'pages/error/403.studio.html'
+                    ]
+                ],
+                'id' => '6'
+            ],
+            'password' => 'password6'
+        ]
+    ];
 }

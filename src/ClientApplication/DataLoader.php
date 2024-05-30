@@ -213,7 +213,7 @@ class DataLoader
     }
 
     /**
-     * Merges environment specific credentials withe the provided client app 
+     * Merges environment specific credentials with the provided client app
      * data.
      *
      * @param array $clientAppsData data from client-applications.json
@@ -254,7 +254,7 @@ class DataLoader
             $parsedData = $appData;
             unset($parsedData['path'], $parsedData['basic_auth_scopes'], $parsedData['restricted_to']);
             $parsedData['id'] = $credentialsData['appId'];
-            $parsedData['password_hash'] = password_hash($credentialsData['appSecret'], PASSWORD_DEFAULT);;
+            $parsedData['password_hash'] = password_hash($credentialsData['appSecret'], PASSWORD_DEFAULT);
 
             // Format scopes if present
             if (isset($appData['basic_auth_scopes'])) {
