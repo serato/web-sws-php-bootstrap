@@ -135,10 +135,9 @@ class DataLoader
     }
 
     /**
-     * Retrieve application secrets from secrets manager
+     * Retrieve application secrets from AWS secrets manager
      *
      * @return array
-     * @throws InvalidFileContentsException
      */
     private function getSecret(string $appPath): array
     {
