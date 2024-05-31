@@ -183,19 +183,19 @@ class DataLoader
             if (!isset($credentialsData['appId'])) {
                 throw new MissingApplicationIdException(
                     'Invalid configuration for application `' . $appSecretName . '` in Secrets Manager `' .
-                    $$appSecretName . '`. Missing required key `appId`.'
+                    $appSecretName . '`. Missing required key `appId`.'
                 );
             }
             if (!isset($credentialsData['appSecret'])) {
                 throw new MissingApplicationPassword(
                     'Invalid configuration for application `' . $appSecretName . '` in credentials file `' .
-                    $$appSecretName . '`. Missing required key `appSecret`.'
+                    $appSecretName . '`. Missing required key `appSecret`.'
                 );
             }
             if (!isset($credentialsData['kmsKeyId'])) {
                 throw new MissingKmsKeyIdException(
                     'Invalid configuration for application `' . $appSecretName . '` in credentials file `' .
-                    $$appSecretName . '`. Missing required key `kmsKeyId`.'
+                    $appSecretName . '`. Missing required key `kmsKeyId`.'
                 );
             }
 
