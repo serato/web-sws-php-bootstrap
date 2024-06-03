@@ -2,9 +2,9 @@
 
 namespace Serato\SwsApp\ClientApplication;
 
-use Exception;
 use DateTime;
 use Aws\Sdk as AwsSdk;
+use Aws\SecretsManager\SecretsManagerClient;
 use Psr\Cache\CacheItemPoolInterface;
 use Serato\SwsApp\ClientApplication\Exception\InvalidEnvironmentNameException;
 use Serato\SwsApp\ClientApplication\Exception\InvalidFileContentsException;
@@ -36,6 +36,9 @@ class DataLoader
     /** @var CacheItemPoolInterface */
     private $psrCache;
 
+    /** @var SecretsManagerClient */
+    private $secretsManagerClient;
+
     /**
      * Constructs the object
      *
@@ -58,6 +61,7 @@ class DataLoader
         $this->env = $env;
         $this->awsSdk = $awsSdk;
         $this->psrCache = $psrCache;
+        $this->secretsManagerClient = $this->awsSdk->createSecretsManager(['version' => '2017-10-17']);
     }
 
     /**
@@ -141,17 +145,8 @@ class DataLoader
      */
     private function getSecret(string $appPath): array
     {
-        $secretsManagerClient = $this->awsSdk->createSecretsManager(['version' => '2017-10-17']);
-
-        if ($appPath !== null) {
-            $appPath = ltrim($appPath, '/');
-            if ($appPath === '') {
-                $appPath = null;
-            }
-        }
-
-        $result = $secretsManagerClient->getSecretValue([
-            'SecretId' => $this->env . '/' . self::CLIENT_APPS_SECRET_PREFIX . '/' . ($appPath === null ? '' : $appPath)
+        $result = $this->secretsManagerClient->getSecretValue([
+            'SecretId' => $this->env . '/' . self::CLIENT_APPS_SECRET_PREFIX . '/' . ltrim($appPath, '/')
         ]);
 
         if (isset($result['SecretString'])) {
