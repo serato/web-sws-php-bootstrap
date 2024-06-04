@@ -141,7 +141,15 @@ class DataLoader
     /**
      * Retrieve application secrets from AWS secrets manager
      *
-     * @return array
+     * @return array 
+     * ```
+     * [
+     *  'appId' => string,
+     *  'appSecret' => string,
+     *  'kmsKeyId' => string
+     * ]
+     * ```
+     * 
      */
     private function getSecret(string $appPath): array
     {
@@ -151,6 +159,7 @@ class DataLoader
 
         if (isset($result['SecretString'])) {
             $secret = json_decode($result['SecretString'], true);
+            $this->validateSecret($secret, $appPath);
         }
 
         return $secret;
@@ -162,39 +171,17 @@ class DataLoader
      *
      * @param array $clientAppsData data from client-applications.json
      * @return array
-     *
-     * @throws MissingApplicationIdException
-     * @throws MissingApplicationPassword
-     * @throws MissingKmsKeyIdException
      */
     private function parseClientAppData(array $clientAppsData): array
     {
         $data = [];
         foreach ($clientAppsData as $appData) {
             $credentialsData = $this->getSecret($appData['path']);
-            $appSecretName = $this->getSecretName($appData['path'], $this->env);
-            // All apps MUST have `appId`, `appSecret` and `kmsKeyId` keys defined
-            if (!isset($credentialsData['appId'])) {
-                throw new MissingApplicationIdException(
-                    'Invalid configuration for application `' . $appSecretName . '` in Secrets Manager `' .
-                    $appSecretName . '`. Missing required key `appId`.'
-                );
-            }
-            if (!isset($credentialsData['appSecret'])) {
-                throw new MissingApplicationPassword(
-                    'Invalid configuration for application `' . $appSecretName . '` in credentials file `' .
-                    $appSecretName . '`. Missing required key `appSecret`.'
-                );
-            }
-            if (!isset($credentialsData['kmsKeyId'])) {
-                throw new MissingKmsKeyIdException(
-                    'Invalid configuration for application `' . $appSecretName . '` in credentials file `' .
-                    $appSecretName . '`. Missing required key `kmsKeyId`.'
-                );
-            }
-
-            // Add all data, excluding certain keys
+            
+            // Add all data
             $parsedData = $appData;
+            // Exclude certain keys: 'path' is new property, 'basic_auth_scopes' is renamed to 'scopes' and 
+            //'restricted_to' is nested in the 'jwt' objectin the output array
             unset($parsedData['path'], $parsedData['basic_auth_scopes'], $parsedData['restricted_to']);
             $parsedData['id'] = $credentialsData['appId'];
             $parsedData['password_hash'] = password_hash($credentialsData['appSecret'], PASSWORD_DEFAULT);
@@ -231,9 +218,39 @@ class DataLoader
         return $data;
     }
 
-    private function getSecretName(string $secretPath, string $env): string
+    /**
+     * Checks the secret retrieved from Secrets Manager contains all the required keys.
+     * Throws the revelant exception if a key is missing
+     * 
+     * @param array $secret data from AWS Secrets Manager
+     * @param string $appPath path to the secret in AWS Secrets Manager
+     *
+     * @throws MissingApplicationIdException
+     * @throws MissingApplicationPassword
+     * @throws MissingKmsKeyIdException
+     */
+    private function validateSecret(array $secret, string $appPath): void
     {
-        return $env . '/' . self::CLIENT_APPS_SECRET_PREFIX . '/' . $secretPath;
+        $appSecretName = $this->env . '/' . self::CLIENT_APPS_SECRET_PREFIX . '/' . $appPath;
+        // All appSecrets MUST have `appId`, `appSecret` and `kmsKeyId` keys defined
+        if (empty($secret['appId'])) {
+            throw new MissingApplicationIdException(
+                'Invalid configuration for secret `' . $appSecretName . '` in Secrets Manager. ' .
+                'Missing required key `appId`.'
+            );
+        }
+        if (empty($secret['appSecret'])) {
+            throw new MissingApplicationPassword(
+                'Invalid configuration for secret `' . $appSecretName . '` in Secrets Manager. ' .
+                'Missing required key `appSecret`.'
+            );
+        }
+        if (empty($secret['kmsKeyId'])) {
+            throw new MissingKmsKeyIdException(
+                'Invalid configuration for secret `' . $appSecretName . '` in Secrets Manager. ' .
+                'Missing required key `kmsKeyId`.'
+            );
+        } 
     }
 
     /**
