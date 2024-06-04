@@ -170,6 +170,8 @@ class DataLoader
     private function parseClientAppData(array $clientAppsData): array
     {
         $data = [];
+        echo '<p>Getting secrets</p>';
+        $start = microtime(true);
         foreach ($clientAppsData as $appData) {
             $parsedData = [];
             $credentialsData = $this->getSecret($appData['path']);
@@ -228,6 +230,10 @@ class DataLoader
 
             array_push($data, $parsedData);
         }
+
+        $end = microtime(true);
+        $timeElapsed = $end - $start;
+        echo '<p>Time to retrieve secrets from AWS: ' . number_format($timeElapsed, 3) . '</p>';
 
         return $data;
     }
