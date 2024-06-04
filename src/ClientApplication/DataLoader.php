@@ -171,7 +171,6 @@ class DataLoader
     {
         $data = [];
         foreach ($clientAppsData as $appData) {
-            $parsedData = [];
             $credentialsData = $this->getSecret($appData['path']);
             $appSecretName = $this->getSecretName($appData['path'], $this->env);
             // All apps MUST have `appId`, `appSecret` and `kmsKeyId` keys defined
