@@ -21,11 +21,12 @@ use Serato\SwsApp\ClientApplication\Exception\MissingKmsKeyIdException;
 class DataLoader
 {
     private const CACHE_EXPIRY_TIME = 3600; // seconds
+    private const CLIENT_APPS_DATA_CACHE_KEY = 'SWS-Client-Applications-Data';
     private const ENVIRONMENTS = ['dev', 'test', 'production'];
     private const S3_BUCKET_NAME = 'sws.clientapps';
     private const S3_BASE_PATH = 'v3';
     private const CLIENT_APPS_SECRET_PREFIX = 'sws-client-application';
-    private const COMMON_APP_DATA_NAME = 'client-applications.json';
+    private const CLIENT_APPS_DATA_NAME = 'client-applications.json';
 
     /** @var string */
     private $env;
@@ -99,7 +100,7 @@ class DataLoader
 
     /**
      * Save data to cache if available.
-     * 
+     *
      * @return array
      */
     private function saveToCache(string $cacheKey, array $data): void
@@ -137,7 +138,7 @@ class DataLoader
     /**
      * Retrieve application secrets from AWS secrets manager
      *
-     * @return array 
+     * @return array
      * ```
      * [
      *  'appId' => string,
@@ -145,7 +146,7 @@ class DataLoader
      *  'kmsKeyId' => string
      * ]
      * ```
-     * 
+     *
      */
     private function getSecret(string $appPath): array
     {
@@ -173,10 +174,10 @@ class DataLoader
         $data = [];
         foreach ($clientAppsData as $appData) {
             $credentialsData = $this->getSecret($appData['path']);
-            
+
             // Add all data
             $parsedData = $appData;
-            // Exclude certain keys: 'path' is new property, 'basic_auth_scopes' is renamed to 'scopes' and 
+            // Exclude certain keys: 'path' is new property, 'basic_auth_scopes' is renamed to 'scopes' and
             //'restricted_to' is nested in the 'jwt' objectin the output array
             unset($parsedData['path'], $parsedData['basic_auth_scopes'], $parsedData['restricted_to']);
             $parsedData['id'] = $credentialsData['appId'];
@@ -217,7 +218,7 @@ class DataLoader
     /**
      * Checks the secret retrieved from Secrets Manager contains all the required keys.
      * Throws the revelant exception if a key is missing
-     * 
+     *
      * @param array $secret data from AWS Secrets Manager
      * @param string $appPath path to the secret in AWS Secrets Manager
      *
@@ -246,7 +247,7 @@ class DataLoader
                 'Invalid configuration for secret `' . $appSecretName . '` in Secrets Manager. ' .
                 'Missing required key `kmsKeyId`.'
             );
-        } 
+        }
     }
 
     /**
