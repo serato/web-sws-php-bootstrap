@@ -2,6 +2,9 @@
 
 namespace Serato\SwsApp\Test\ClientApplication;
 
+use Mockery;
+use Psr\Cache\CacheItemInterface;
+use Psr\Cache\CacheItemPoolInterface;
 use Serato\SwsApp\ClientApplication\DataLoader;
 use Serato\SwsApp\Test\TestCase;
 use Serato\SwsApp\ClientApplication\Exception\InvalidEnvironmentNameException;
@@ -9,6 +12,8 @@ use Serato\SwsApp\ClientApplication\Exception\InvalidFileContentsException;
 use Serato\SwsApp\ClientApplication\Exception\MissingApplicationIdException;
 use Serato\SwsApp\ClientApplication\Exception\MissingApplicationPassword;
 use Serato\SwsApp\ClientApplication\Exception\MissingKmsKeyIdException;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter as FileSystemCachePool;
+use Symfony\Component\Cache\CacheItem;
 
 class DataLoaderTest extends TestCase
 {
@@ -86,6 +91,36 @@ class DataLoaderTest extends TestCase
         );
 
         $this->assertValidAppData($dataLoader->getApp(null, false));
+    }
+
+    public function testSuccessfulLoadUsingCache()
+    {
+        // $cacheItem = new CacheItem();
+        // $cacheItem->set(self::EXPECTED_SUCCESSFUL_OUTPUT);
+        $cacheItemMock = Mockery::mock(CacheItemInterface::class);
+        $cacheItemMock->shouldReceive('get')
+            ->once()
+            ->andReturn(self::EXPECTED_SUCCESSFUL_OUTPUT);
+
+        $cachePoolMock = Mockery::mock(CacheItemPoolInterface::class);
+        $cachePoolMock->shouldReceive('getItem')->andReturn($cacheItemMock);
+
+
+        $dataLoader = new DataLoader(
+            'dev',
+            $this->getAwsSdk($this->getAwsMockResponses('client-applications.json', 'secrets.json')),
+            $cachePoolMock
+        );
+
+        // Make sure there is no cached files
+        $this->assertFalse($this->hasCacheFiles());
+
+        // Populate cache
+        $dataLoader->getApp(null, false);
+        $this->assertTrue($this->hasCacheFiles());
+
+        // Check method is called
+        // $this->assertValidAppData($dataLoader->getApp(null, true));
     }
 
     /**
