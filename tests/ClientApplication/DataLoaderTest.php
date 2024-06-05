@@ -95,15 +95,21 @@ class DataLoaderTest extends TestCase
 
     public function testSuccessfulLoadUsingCache()
     {
-        // $cacheItem = new CacheItem();
-        // $cacheItem->set(self::EXPECTED_SUCCESSFUL_OUTPUT);
+        $expectedResult = ['Client Apps array'];
+        // Mock the cache to return an array
         $cacheItemMock = Mockery::mock(CacheItemInterface::class);
         $cacheItemMock->shouldReceive('get')
             ->once()
-            ->andReturn(self::EXPECTED_SUCCESSFUL_OUTPUT);
+            ->andReturn($expectedResult);
+        $cacheItemMock->shouldReceive('isHit')
+            ->once()
+            ->andReturn(true);
 
         $cachePoolMock = Mockery::mock(CacheItemPoolInterface::class);
-        $cachePoolMock->shouldReceive('getItem')->andReturn($cacheItemMock);
+        $cachePoolMock
+            ->shouldReceive('getItem')
+            ->once()
+            ->andReturn($cacheItemMock);
 
 
         $dataLoader = new DataLoader(
@@ -112,15 +118,11 @@ class DataLoaderTest extends TestCase
             $cachePoolMock
         );
 
-        // Make sure there is no cached files
-        $this->assertFalse($this->hasCacheFiles());
+        $result = $dataLoader->getApp();
 
-        // Populate cache
-        $dataLoader->getApp(null, false);
-        $this->assertTrue($this->hasCacheFiles());
-
-        // Check method is called
-        // $this->assertValidAppData($dataLoader->getApp(null, true));
+        // Should return what's in the cache and not the parsed data
+        $this->assertEquals($expectedResult, $result);
+        Mockery::close();
     }
 
     /**
