@@ -77,23 +77,7 @@ class DataLoader
             $env = $this->env;
         }
 
-        return $this->parseClientAppData(
-            $this->loadFromCache(self::COMMON_APP_DATA_NAME, $useCache)
-        );
-    }
-
-    /**
-     * Load application data from cache if available.
-     * If not, fetch from S3 and save to cache.
-     *
-     * @return array
-     */
-    private function loadFromCache(string $name, bool $useCache = true): array
-    {
-        $s3ObjectName = self::S3_BASE_PATH . '/' . $name;
-
-        $cacheKey = str_replace(['\\', '/'], '_', __CLASS__ . '--' . self::S3_BUCKET_NAME . '--' . $s3ObjectName);
-
+        $cacheKey = str_replace(['\\', '/'], '_', __CLASS__ . '--' . self::CLIENT_APPS_DATA_CACHE_KEY);
         // Read from cache, if specified
         if ($useCache) {
             $item = $this->psrCache->getItem($cacheKey);
@@ -102,18 +86,30 @@ class DataLoader
             }
         }
 
-        // Fetch from S3
-        $s3Data = $this->loadFromS3($s3ObjectName);
+        // Fetch client-applications.json from S3
+        $clientAppsRawData = $this->loadFromS3(self::S3_BASE_PATH . '/' . self::CLIENT_APPS_DATA_NAME);
+
+        // Generate output array
+        $clientAppsData = $this->parseClientAppData($clientAppsRawData);
 
         // Write to cache regardless of `$useCache` setting
+        $this->saveToCache($cacheKey, $clientAppsData);
+        return $clientAppsData;
+    }
+
+    /**
+     * Save data to cache if available.
+     * 
+     * @return array
+     */
+    private function saveToCache(string $cacheKey, array $data): void
+    {
         $item = $this->psrCache->getItem($cacheKey);
         $expiryTime = new DateTime();
         $expiryTime->setTimestamp(time() + self::CACHE_EXPIRY_TIME);
-        $item->set($s3Data);
+        $item->set($data);
         $item->expiresAt($expiryTime);
         $this->psrCache->save($item);
-
-        return $s3Data;
     }
 
     /**

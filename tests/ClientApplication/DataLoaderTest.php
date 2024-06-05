@@ -32,7 +32,7 @@ class DataLoaderTest extends TestCase
             $this->getAwsSdk($this->getAwsMockResponses('client-applications.malformed.json', 'secrets.json')),
             $this->getFileSystemCachePool()
         );
-        $dataLoader->getApp();
+        $dataLoader->getApp(null, false);
     }
 
     /**
@@ -46,7 +46,7 @@ class DataLoaderTest extends TestCase
             $this->getAwsSdk($this->getAwsMockResponses('client-applications.json', 'secrets.missing-id.json')),
             $this->getFileSystemCachePool()
         );
-        $dataLoader->getApp();
+        $dataLoader->getApp(null, false);
     }
 
     /**
@@ -60,7 +60,7 @@ class DataLoaderTest extends TestCase
             $this->getAwsSdk($this->getAwsMockResponses('client-applications.json', 'secrets.missing-password.json')),
             $this->getFileSystemCachePool()
         );
-        $dataLoader->getApp();
+        $dataLoader->getApp(null, false);
     }
 
     /**
@@ -74,7 +74,7 @@ class DataLoaderTest extends TestCase
             $this->getAwsSdk($this->getAwsMockResponses('client-applications.json', 'secrets.missing-kms-key.json')),
             $this->getFileSystemCachePool()
         );
-        $dataLoader->getApp();
+        $dataLoader->getApp(null, false);
     }
 
     public function testSuccessfulLoad()
@@ -85,7 +85,7 @@ class DataLoaderTest extends TestCase
             $this->getFileSystemCachePool()
         );
 
-        $this->assertValidAppData($dataLoader->getApp());
+        $this->assertValidAppData($dataLoader->getApp(null, false));
     }
 
     /**
