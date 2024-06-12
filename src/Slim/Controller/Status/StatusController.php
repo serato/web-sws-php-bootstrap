@@ -2,10 +2,11 @@
 
 namespace Serato\SwsApp\Slim\Controller\Status;
 
+use GuzzleHttp\Psr7\Utils;
 use Psr\Log\LoggerInterface;
 use Serato\SwsApp\Slim\Controller\AbstractController;
-use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 use Negotiation\Negotiator;
 use Serato\SwsApp\Slim\Middleware\GeoIpLookup;
 use GeoIp2\Model\City;
@@ -55,9 +56,9 @@ final class StatusController extends AbstractController
 
         // Allow for setting the content type via a GET parameter
         // (I'm looking at you Jenkins, you POS)
-        if ($request->getQueryParam('content_type', null) !== null) {
+        if ($request->getQueryParams()['content_type'] ?? false) {
             $mediaType = $negotiator->getBest(
-                $request->getQueryParam('content_type'),
+                $request->getQueryParams()['content_type'],
                 $contentTypePriorities
             );
             if ($mediaType !== null) {
@@ -103,7 +104,7 @@ final class StatusController extends AbstractController
         return $response
             ->withStatus(200)
             ->withHeader('Content-type', $contentType)
-            ->write($content);
+            ->withBody(Utils::streamFor($content));
     }
 
     /**

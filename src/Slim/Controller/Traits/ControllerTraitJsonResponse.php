@@ -2,6 +2,7 @@
 
 namespace Serato\SwsApp\Slim\Controller\Traits;
 
+use GuzzleHttp\Psr7\Utils;
 use Psr\Http\Message\ResponseInterface as Response;
 
 /**
@@ -59,7 +60,7 @@ trait ControllerTraitJsonResponse
         } else {
             $response = $response
                 ->withHeader('Etag', $etag)
-                ->write($content);
+                ->withBody(Utils::streamFor($content));
         }
 
         return $response;

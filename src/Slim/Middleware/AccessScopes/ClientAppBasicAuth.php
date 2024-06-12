@@ -3,8 +3,9 @@
 namespace Serato\SwsApp\Slim\Middleware\AccessScopes;
 
 use Serato\SwsApp\Slim\Middleware\AccessScopes\AbstractAccessScopesMiddleware;
-use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 
 /**
  * Client App Basic Auth Middleware
@@ -50,9 +51,10 @@ class ClientAppBasicAuth extends AbstractAccessScopesMiddleware
      * Invoke the middleware
      *
      * @param Request $request The most recent Request object
-     * @param Response $response The most recent Response object
+     * @param RequestHandler $handler
+     * @return Response
      */
-    public function __invoke(Request $request, Response $response, callable $next)
+    public function __invoke(Request $request, RequestHandler $handler)
     {
         $server_params = $request->getServerParams();
         if (isset($server_params['PHP_AUTH_USER']) && isset($server_params['PHP_AUTH_PW'])) {
@@ -86,6 +88,6 @@ class ClientAppBasicAuth extends AbstractAccessScopesMiddleware
                 }
             }
         }
-        return $next($request, $response);
+        return $handler->handle($request);
     }
 }

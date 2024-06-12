@@ -2,9 +2,9 @@
 
 namespace Serato\SwsApp\Slim\Middleware;
 
-use Slim\Handlers\AbstractHandler;
-use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use GeoIp2\Database\Reader;
 use GeoIp2\Model\City;
 use Exception;
@@ -20,7 +20,7 @@ use Exception;
  *                      the value will be NULL.
  * 2. `geoIpRecord`     A `GeoIp2\Model\City` record of the IP address lookup.
  */
-class GeoIpLookup extends AbstractHandler
+class GeoIpLookup
 {
     public const IP_ADDRESS = 'ipAddress';
     public const GEOIP_RECORD = 'geoIpRecord';
@@ -48,7 +48,7 @@ class GeoIpLookup extends AbstractHandler
      *
      * @return ResponseInterface
      */
-    public function __invoke(Request $request, Response $response, callable $next): Response
+    public function __invoke(Request $request, RequestHandler $handler): Response
     {
         if ($this->realIpHeader !== '' && $request->hasHeader($this->realIpHeader)) {
             $header = $request->getHeaderLine($this->realIpHeader);
@@ -56,14 +56,14 @@ class GeoIpLookup extends AbstractHandler
             // Some client IP headers, like 'CloudFront-Viewer-Address', include a port number
             $ip = explode(':', $header)[0];
         } else {
-            $ip = $request->getServerParam('REMOTE_ADDR', '');
+            $ip = $request->getServerParams()['REMOTE_ADDR'] ?? '';
         }
 
         $request = $request
                         ->withAttribute(self::IP_ADDRESS, ($ip === '' ? null : $ip))
                         ->withAttribute(self::GEOIP_RECORD, $this->getGeoIpCityRecord($ip));
 
-        return $next($request, $response);
+        return $handler->handle($request);
     }
 
     /**

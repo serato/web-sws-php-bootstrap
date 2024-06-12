@@ -2,9 +2,9 @@
 
 namespace Serato\SwsApp\Slim\Middleware;
 
-use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use Slim\Handlers\AbstractHandler;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 
 /**
  * Class FrameAncestorsCspHeader
@@ -14,18 +14,18 @@ use Slim\Handlers\AbstractHandler;
  *
  * @package App\Middleware
  */
-class FrameAncestorsCspHeader extends AbstractHandler
+class FrameAncestorsCspHeader
 {
     /**
      * Invoke the middleware
      *
-     * @param Request           $request   The most recent Request object
-     * @param Response          $response  The most recent Response object
-     * @param Callable          $next      The next middleware to call
+     * @param Request $request The most recent Request object
+     * @param RequestHandler $handler
+     * @return Response
      */
-    public function __invoke(Request $request, Response $response, callable $next): Response
+    public function __invoke(Request $request, RequestHandler $handler): Response
     {
-        $response = $next($request, $response);
+        $response = $handler->handle($request);
 
         return $response
             ->withAddedHeader('Content-Security-Policy', "frame-ancestors 'none';");

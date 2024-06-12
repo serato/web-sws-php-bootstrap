@@ -2,14 +2,17 @@
 
 namespace Serato\SwsApp\Slim\Handlers;
 
+use DI\Container;
+use GuzzleHttp\Psr7\Utils;
+use Negotiation\Negotiator;
 use Serato\SwsApp\AccessLogWriter;
-use Slim\Http\Body;
-use Slim\Container;
-use Slim\Handlers\Error as SlimError;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface as Logger;
 use Exception;
+use Slim\Error\Renderers\HtmlErrorRenderer;
+use Slim\Error\Renderers\JsonErrorRenderer;
+use Slim\Error\Renderers\XmlErrorRenderer;
 use UnexpectedValueException;
 use Serato\SwsApp\RequestToContainerTrait;
 
@@ -22,7 +25,7 @@ use Serato\SwsApp\RequestToContainerTrait;
  * 2. Better handle Client Exceptions (ie. format the response in a specific way
  *    and don't log these errors)
  */
-class Error extends SlimError
+class Error
 {
     use RequestToContainerTrait;
 
@@ -43,7 +46,7 @@ class Error extends SlimError
      *
      * @var Logger
      */
-    protected $logger;
+    protected Logger $logger;
 
     /**
      * HTTP request method
@@ -79,13 +82,15 @@ class Error extends SlimError
     /** @var Container */
     private $container;
 
+    protected bool $displayErrorDetails;
+
     /**
      * Construct the error handler
      *
      * @param string            $applicationName        Human readable name of application
      * @param bool              $displayErrorDetails    Display full error message including stack trace
      * @param Logger            $logger                 PSR-3 logger interface
-     * @param Container|null    $container              Slim container instance
+     * @param Container|null    $container              DI container instance
      */
     public function __construct(
         string $applicationName,
@@ -93,7 +98,7 @@ class Error extends SlimError
         Logger $logger,
         ?Container $container = null
     ) {
-        parent::__construct($displayErrorDetails);
+        $this->displayErrorDetails = $displayErrorDetails;
         $this->logger = $logger;
         $this->applicationName = $applicationName;
         $this->accessLogWriter = new AccessLogWriter($logger);
@@ -103,11 +108,11 @@ class Error extends SlimError
     /**
      * Invoke error handler
      *
-     * @param ServerRequestInterface $request   The most recent Request object
-     * @param ResponseInterface      $response  The most recent Response object
+     * @param Request $request   The most recent Request object
+     * @param Response $response  The most recent Response object
      * @param Exception             $exception The caught Exception object
      *
-     * @return ResponseInterface
+     * @return Response
      * @throws UnexpectedValueException
      */
     public function __invoke(Request $request, Response $response, Exception $exception): Response
@@ -124,11 +129,20 @@ class Error extends SlimError
             }
         }
 
-        $contentType = $this->determineContentType($request);
+        // Temporary
+        $negotiator = new Negotiator();
+        $acceptHeader = $negotiator->getBest(
+            $request->getHeaderLine('Accept'),
+            ['application/json', 'text/xml', 'text/html']
+        );
+        $contentType = $acceptHeader ? $acceptHeader->getType() : 'text/html';
+
+        // Not the intended use case for these renderers
+        $renderer = new XmlErrorRenderer();
 
         $output = match ($contentType) {
             'application/json' => $this->renderJsonErrorMessage($exception),
-            'text/xml', 'application/xml' => $this->renderXmlErrorMessage($exception),
+            'text/xml', 'application/xml' => $renderer->__invoke($exception, $this->displayErrorDetails),
             'text/html' => $this->renderHtmlErrorMessage($exception),
             default => throw new UnexpectedValueException('Cannot render unknown content type ' . $contentType),
         };
@@ -137,7 +151,7 @@ class Error extends SlimError
             $this->writeToErrorLog($exception);
         }
 
-        $body = new Body(fopen('php://temp', 'r+'));
+        $body = Utils::streamFor(fopen('php://temp', 'r+'));
 
         $body->write($output);
 
@@ -190,12 +204,13 @@ class Error extends SlimError
         }
 
         if ($this->displayErrorDetails) {
+            $renderer = new HtmlErrorRenderer();
             $html .= '<h2>Details</h2>';
-            $html .= $this->renderHtmlException($exception);
+            $html .= $renderer->__invoke($exception, $this->displayErrorDetails); // Hacky
 
             while ($exception = $exception->getPrevious()) {
                 $html .= '<h2>Previous exception</h2>';
-                $html .= $this->renderHtmlException($exception);
+                $html .= $renderer->__invoke($exception, true);
             }
         }
 
@@ -227,7 +242,8 @@ class Error extends SlimError
                 'code' => $exception->getCode(),
             ];
         } elseif ($this->displayErrorDetails) {
-            $json = json_decode((string) parent::renderJsonErrorMessage($exception), true);
+            $renderer = new JsonErrorRenderer();
+            $json = json_decode((string) $renderer->__invoke($exception, $this->displayErrorDetails), true);
             $json['message'] = $msg;
             return json_encode($json, JSON_PRETTY_PRINT);
         }
@@ -244,7 +260,7 @@ class Error extends SlimError
      *
      * @return void
      */
-    protected function writeToErrorLog($throwable)
+    protected function writeToErrorLog($throwable): void
     {
         $error = $this->renderThrowableAsArray($throwable);
         while ($throwable = $throwable->getPrevious()) {

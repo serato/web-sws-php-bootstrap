@@ -2,7 +2,7 @@
 
 namespace Serato\SwsApp;
 
-use Slim\Container;
+use DI\Container;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 trait RequestToContainerTrait
@@ -12,9 +12,7 @@ trait RequestToContainerTrait
 
     protected function setRequestToContainer(Request $request, ?Container $container): void
     {
-        if ($container !== null) {
-            $container[$this->containerKey] = $request;
-        }
+        $container?->set($this->containerKey, $request);
     }
 
     protected function getRequestFromContainer(?Container $container): ?Request

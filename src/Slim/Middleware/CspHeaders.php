@@ -2,12 +2,12 @@
 
 namespace Serato\SwsApp\Slim\Middleware;
 
-use Slim\Handlers\AbstractHandler;
-use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Ramsey\Uuid\Uuid;
 
-class CspHeaders extends AbstractHandler
+class CspHeaders
 {
     /* @var boolean */
     protected $addScriptNonce = true;
@@ -18,13 +18,12 @@ class CspHeaders extends AbstractHandler
      * Invoke the middleware
      *
      * @param Request $request The most recent Request object
-     * @param Response $response The most recent Response object
-     *
-     * @return callable
+     * @param RequestHandler $handler
+     * @throws \Exception
      */
-    public function __invoke(Request $request, Response $response, callable $next)
+    public function __invoke(Request $request, RequestHandler $handler)
     {
-        $response = $next($request, $response);
+        $response = $handler->handle($request);
 
         $responseBody = (string)$response->getBody();
 

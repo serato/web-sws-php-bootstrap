@@ -1,23 +1,15 @@
-<phpunit bootstrap="vendor/autoload.php">
-
+<?xml version="1.0"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="vendor/autoload.php" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd" cacheDirectory=".phpunit.cache">
   <testsuites>
     <testsuite name="common">
       <directory>tests</directory>
     </testsuite>
   </testsuites>
-
-  <filter>
-    <whitelist processUncoveredFilesFromWhitelist="true">
-      <directory suffix=".php">src</directory>
-    </whitelist>
-  </filter>
-
-	<groups>
-		<exclude>
-			<group>geoip-database</group>
-		</exclude>
-	</groups>
-
+  <groups>
+    <exclude>
+      <group>geoip-database</group>
+    </exclude>
+  </groups>
   <!--
   <logging>
       <log type="coverage-clover" target="tests/reports/logs/clover.xml"/>
@@ -25,4 +17,9 @@
       <log type="testdox-text" target="tests/reports/testdox/executed.txt"/>
   </logging>
   -->
+  <source>
+    <include>
+      <directory suffix=".php">src</directory>
+    </include>
+  </source>
 </phpunit>

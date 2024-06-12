@@ -2,10 +2,10 @@
 
 namespace Serato\SwsApp\Slim\Middleware;
 
-use Slim\Http\Body;
-use Slim\Container;
-use Psr\Http\Message\RequestInterface as Request;
+use DI\Container;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Serato\SwsApp\RequestToContainerTrait;
 
 class RequestToContainer
@@ -26,16 +26,14 @@ class RequestToContainer
     /**
      * Invoke the middleware
      *
-     * @param ServerRequestInterface $request   The most recent Request object
-     * @param ResponseInterface      $response  The most recent Response object
-     * @param Callable               $next      The next middleware to call
-     *
-     * @return ResponseInterface
+     * @param Request $request The most recent Request object
+     * @param RequestHandler $handler
+     * @return Response
      */
-    public function __invoke(Request $request, Response $response, callable $next): Response
+    public function __invoke(Request $request, RequestHandler $handler): Response
     {
         # Execute all other middleware first
-        $response = $next($request, $response);
+        $response = $handler->handle($request);
         $this->setRequestToContainer($request, $this->container);
         return $response;
     }

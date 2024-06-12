@@ -2,8 +2,6 @@
 
 namespace Serato\SwsApp\Slim\Middleware;
 
-use Slim\Handlers\AbstractHandler;
-
 /**
  * *Abstract RequestWithAttribute Middleware*
  *
@@ -20,7 +18,7 @@ use Slim\Handlers\AbstractHandler;
  * This abstract class simply defines names for request attributes added by
  * middleware.
  */
-abstract class AbstractRequestWithAttributeMiddleware extends AbstractHandler
+abstract class AbstractRequestWithAttributeMiddleware
 {
     public const APP_ID              = 'app_id';
     public const APP_NAME            = 'app_name';

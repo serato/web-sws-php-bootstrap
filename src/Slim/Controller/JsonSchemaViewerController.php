@@ -2,13 +2,14 @@
 
 namespace Serato\SwsApp\Slim\Controller;
 
+use GuzzleHttp\Psr7\Utils;
 use Serato\SwsApp\Slim\Controller\AbstractController;
-use Slim\Exception\NotFoundException;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
-use Slim\Interfaces\RouterInterface;
 use Highlight\Highlighter;
+use Slim\Exception\HttpNotFoundException;
+use Slim\Interfaces\RouteParserInterface;
 
 class JsonSchemaViewerController extends AbstractController
 {
@@ -20,7 +21,7 @@ class JsonSchemaViewerController extends AbstractController
 
     private const string STYLE_SHEET = 'github-gist.css';
 
-    /* @var RouterInterface */
+    /* @var RouteParserInterface */
     private $router;
 
     /* @var string */
@@ -33,7 +34,7 @@ class JsonSchemaViewerController extends AbstractController
      * Construct the controller
      *
      * @param LoggerInterface   $logger                 A PSR-3 logger interface
-     * @param RouterInterface   $router                 Slim router instance
+     * @param RouteParserInterface   $router            Slim route parser instance
      * @param string            $appName                Application name
      * @param string            $schemaDirectoryPath    Path to directory containing JSON schema files
      * @param string|null       $namedRoute             The named route for the base URI that the controller
@@ -41,7 +42,7 @@ class JsonSchemaViewerController extends AbstractController
      */
     public function __construct(
         LoggerInterface $logger,
-        RouterInterface $router,
+        RouteParserInterface $router,
         private readonly string $appName,
         string $schemaDirectoryPath,
         string $stylesDirectoryPath,
@@ -65,18 +66,18 @@ class JsonSchemaViewerController extends AbstractController
     #[\Override]
     public function execute(Request $request, Response $response, array $args): Response
     {
-        $baseUri = $this->router->pathFor($this->getNamedRoute());
+        $baseUri = $this->router->urlFor($this->getNamedRoute());
 
         $contentType = 'text/html';
 
         if (isset($args['view'])) {
             if (!in_array($args['view'], [self::HTML_VIEW, self::JSON_VIEW, self::JSONLIST_VIEW])) {
-                throw new NotFoundException($request, $response);
+                throw new HttpNotFoundException($request);
             }
             if ($args['view'] === self::JSONLIST_VIEW) {
                 // Display file list as JSON
                 if (isset($args['file_name'])) {
-                    throw new NotFoundException($request, $response);
+                    throw new HttpNotFoundException($request);
                 }
                 $contentType = 'application/json';
                 $content = json_encode([
@@ -100,7 +101,7 @@ class JsonSchemaViewerController extends AbstractController
                         $content = $json;
                     }
                 } else {
-                    throw new NotFoundException($request, $response);
+                    throw new HttpNotFoundException($request);
                 }
             }
         } else {
@@ -119,7 +120,7 @@ class JsonSchemaViewerController extends AbstractController
             $response = $response
                 ->withStatus(200)
                 ->withHeader('Etag', $etag)
-                ->write($content);
+                ->withBody(Utils::streamFor($content));
         }
         return $response;
     }

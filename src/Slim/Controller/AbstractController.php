@@ -3,7 +3,6 @@
 namespace Serato\SwsApp\Slim\Controller;
 
 use Serato\SwsApp\Slim\Handlers\Error as ErrorHandler;
-use Slim\Http\Response as SlimResponse;
 use Serato\SwsApp\Exception\AbstractException as ClientException;
 use Psr\Log\LoggerInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -173,7 +172,7 @@ abstract class AbstractController
         array $uriArgs = [],
         bool $catchClientErrors = false
     ): Response {
-        $response = new SlimResponse();
+        $response = new \GuzzleHttp\Psr7\Response();
 
         if ($catchClientErrors) {
             try {

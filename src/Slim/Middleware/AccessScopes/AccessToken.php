@@ -11,8 +11,9 @@ use Serato\Jwt\AccessToken as JwtAccessToken;
 use Serato\Jwt\Exception\TokenExpiredException;
 use Serato\SwsApp\Http\Rest\Exception\ExpiredAccessTokenException;
 use Serato\SwsApp\Http\Rest\Exception\InvalidAccessTokenException;
-use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Psr\Cache\CacheItemPoolInterface;
 
 /**
@@ -80,13 +81,10 @@ class AccessToken extends AbstractAccessScopesMiddleware
      * Invoke the middleware
      *
      * @param Request $request The most recent Request object
-     * @param Response $response The most recent Response object
-     *
-     * @throws ExpiredAccessTokenException
-     * @throws InvalidAccessTokenException
-     *
+     * @param RequestHandler $handler
+     * @return Response
      */
-    public function __invoke(Request $request, Response $response, callable $next)
+    public function __invoke(Request $request, RequestHandler $handler)
     {
         // Look the token string in the `Authorization` header
         $tokenString = $this->getTokenStringFromAuthHeader($request);
@@ -130,7 +128,7 @@ class AccessToken extends AbstractAccessScopesMiddleware
                 throw new InvalidAccessTokenException(null, $request);
             }
         }
-        return $next($request, $response);
+        return $handler->handle($request);
     }
 
     /**

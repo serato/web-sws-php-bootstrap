@@ -4,10 +4,12 @@ namespace Serato\SwsApp\Slim\App;
 
 define('DISPATCHER', 'event-dispatcher');
 
+use DI\Container;
+use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\App;
-use Slim\Container;
+use Slim\Factory\AppFactory;
 use Slim\Interfaces\RouteGroupInterface;
-use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -35,7 +37,7 @@ abstract class Bootstrap
      *
      * @var Container
      */
-    private $container;
+    private Container $container;
 
     /** @var RequestToContainerMiddleware */
     private $requestToContainerMiddleware;
@@ -43,15 +45,14 @@ abstract class Bootstrap
     /**
      * Constructs the Bootstrap instance
      *
-     * @param array $settings   Configuration settings for a Slim app
-     *
      * @return void
      */
-    public function __construct(array $settings = [])
+    public function __construct( )
     {
-        $this->app = new App($settings);
-        $this->container = $this->app->getContainer();
-        $this->container[DISPATCHER] = new EventDispatcher();
+        $this->container = new Container();
+        AppFactory::setContainer($this->container);
+        $this->app = AppFactory::create();
+        $this->container->set(DISPATCHER, new EventDispatcher());
         $this->requestToContainerMiddleware = new RequestToContainerMiddleware($this->container);
     }
 
@@ -81,24 +82,25 @@ abstract class Bootstrap
     /**
      * Run application
      */
-    public function run(bool $silent = false): Response
+    public function run(bool $silent = false): void
     {
         // Run the Slim app
-        $response = $this->getApp()->run($silent);
+        $this->getApp()->run();
 
-        // Create the `SwsHttpRequest` event...
-        $event = new SwsHttpRequest();
-        $event['response'] = $response;
-        $event['request'] = $this->getRequestFromContainer($this->container);
-        if ($event['request'] === null) {
-            $event['request'] = $this->container->get('request');
-        }
-
-        // ...and dispatch it
-        $dispatcher = $this->container[DISPATCHER];
-        $dispatcher->dispatch($event, SwsHttpRequest::getEventName());
-
-        return $response;
+        // Commented out for testing. I think we'd want to move this to middleware.
+//        // Create the `SwsHttpRequest` event...
+//        $event = new SwsHttpRequest();
+//        $event['response'] = $response;
+//        $event['request'] = $this->getRequestFromContainer($this->container);
+//        if ($event['request'] === null) {
+//            $event['request'] = $this->container->get('request');
+//        }
+//
+//        // ...and dispatch it
+//        $dispatcher = $this->container->get(DISPATCHER);
+//        $dispatcher->dispatch($event, SwsHttpRequest::getEventName());
+//
+//        return $response;
     }
 
     /**
@@ -119,7 +121,7 @@ abstract class Bootstrap
      */
     public function register(string $key, callable $f): self
     {
-        $this->container[$key] = $f;
+        $this->container->set($key, $f);
         return $this;
     }
 
@@ -134,7 +136,7 @@ abstract class Bootstrap
      */
     public function addEventListener(string $eventName, callable $listener, int $priority = 0): void
     {
-        $this->container[DISPATCHER]->addListener($eventName, $listener, $priority);
+        $this->container->get(DISPATCHER)->addListener($eventName, $listener, $priority);
     }
 
     /**
@@ -145,7 +147,7 @@ abstract class Bootstrap
      */
     public function addEventSubscriber(EventSubscriberInterface $subscriber): void
     {
-        $this->container[DISPATCHER]->addSubscriber($subscriber);
+        $this->container->get(DISPATCHER)->addSubscriber($subscriber);
     }
 
     /**
