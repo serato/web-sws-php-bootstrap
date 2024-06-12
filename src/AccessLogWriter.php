@@ -66,7 +66,8 @@ class AccessLogWriter
                 'client_app'        => $app,
                 'request_scopes'    => $request->getAttribute(RequestMiddleware::SCOPES, []),
                 'request_user_id'   => $request->getAttribute(RequestMiddleware::USER_ID, ''),
-                'extra'             => $extra
+                'extra'             => $extra,
+                'stream'            => 'access'
             ];
             if (is_array($request->getParsedBody())) {
                 $logBodyParams = array_filter(

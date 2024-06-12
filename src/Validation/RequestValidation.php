@@ -4,8 +4,11 @@ namespace Serato\SwsApp\Validation;
 
 use Serato\SwsApp\Exception\MissingRequiredParametersException;
 use Serato\SwsApp\Exception\InvalidRequestParametersException;
+use Serato\SwsApp\Exception\BadRequestContainHTMLTagsException;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Rakit\Validation\Validator;
+use Rakit\Validation\Rules\Regex;
+use Serato\SwsApp\Validation\Rules\NoHtmlTag;
 
 /**
  * Class RequestValidation
@@ -22,6 +25,12 @@ class RequestValidation implements RequestValidationInterface
     ): array {
         $requestBody = $request->getParsedBody() ?? [];
         $validator   = new Validator();
+
+        // add custom validators
+        $validator->addValidator(NoHtmlTag::NO_HTML_TAG_RULE, new NoHtmlTag());
+
+        // add custom exceptions
+        $exceptions[NoHtmlTag::NO_HTML_TAG_RULE] = BadRequestContainHTMLTagsException::class;
 
         // Add custom validation rules
         foreach ($customRules as $key => $customRule) {
@@ -51,7 +60,7 @@ class RequestValidation implements RequestValidationInterface
 
             foreach ($exceptions as $exceptionKey => $exception) {
                 if (!empty($error[$exceptionKey])) {
-                    throw new $exception('', $request);
+                    throw new $exception($error[$exceptionKey], $request);
                 }
             }
 
@@ -61,7 +70,6 @@ class RequestValidation implements RequestValidationInterface
         if (!empty($required)) {
             throw new MissingRequiredParametersException('', $request, $required);
         }
-
         if (!empty($invalid)) {
             $errors = implode('. ', $invalid);
             throw new InvalidRequestParametersException($errors, $request);
