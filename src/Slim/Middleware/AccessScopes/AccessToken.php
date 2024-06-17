@@ -3,7 +3,6 @@
 namespace Serato\SwsApp\Slim\Middleware\AccessScopes;
 
 use Aws\Kms\KmsClient;
-use Aws\Sdk;
 use Exception;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
@@ -25,9 +24,9 @@ use Psr\Cache\CacheItemPoolInterface;
 class AccessToken extends AbstractAccessScopesMiddleware
 {
     /**
-     * AWS Sdk
+     * KMS Client
      *
-     * @var Sdk
+     * @var KmsClient
      */
     private $kmsClient;
 
