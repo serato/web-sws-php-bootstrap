@@ -102,16 +102,16 @@ class DataLoaderTest extends TestCase
     private function assertValidAppData(array $appData): void
     {
         foreach ($appData as $index => $data) {
-            // Check password_hash
-            $this->assertTrue(isset($data['password_hash']));
+            // Check hashed_password
+            $this->assertTrue(isset($data['hashed_password']));
             $this->assertEquals(
                 DataLoaderTest::EXPECTED_SUCCESSFUL_OUTPUT[$index]['password'],
-                $data['password_hash']
+                $data['hashed_password']
             );
-            // Remove password_hash so we can check the rest of the array
-            unset($data['password_hash']);
+            // Remove hashed_password so we can check the rest of the array
+            unset($data['hashed_password']);
 
-            // Check resulting array with expected array ignoring the password_hash
+            // Check resulting array with expected array ignoring the hashed_password
             $this->assertEquals(
                 DataLoaderTest::EXPECTED_SUCCESSFUL_OUTPUT[$index]['expectedArrayMinusPasswordHash'],
                 $data
