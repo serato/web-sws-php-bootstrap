@@ -102,7 +102,7 @@ class DataLoaderTest extends TestCase
     private function assertValidAppData(array $appData): void
     {
         foreach ($appData as $index => $data) {
-            // Check resulting array with expected array including the hashed_password
+            // Check resulting array with expected array including the password_hash
             $this->assertEquals(
                 DataLoaderTest::EXPECTED_SUCCESSFUL_OUTPUT[$index],
                 $data
@@ -115,9 +115,9 @@ class DataLoaderTest extends TestCase
             'name' => 'Application 1',
             'description' => 'Application with JWT params basic default scopes',
             'seas' => false,
-            'seas_after_sign_in' => false,
-            'force_password_re_entry_on_logout' => false,
-            'requires_password_re_entry' => false,
+            'seasAfterSignIn' => false,
+            'forcePasswordReEntryOnLogout' => false,
+            'requiresPasswordReEntry' => false,
             'jwt' => [
                 'access' => [
                     'default_scopes' => [
@@ -132,15 +132,15 @@ class DataLoaderTest extends TestCase
                 'kms_key_id' => 'kms-key-id-1'
             ],
             'id' => 'id-1',
-            'hashed_password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90a'
+            'password_hash' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90a'
         ],
         [
             'name' => 'Application 2',
             'description' => 'Application with JWT params and `restricted_to` settings',
             'seas' => false,
-            'seas_after_sign_in' => false,
-            'force_password_re_entry_on_logout' => false,
-            'requires_password_re_entry' => false,
+            'seasAfterSignIn' => false,
+            'forcePasswordReEntryOnLogout' => false,
+            'requiresPasswordReEntry' => false,
             'jwt' => [
                 'access' => [
                     'default_scopes' => [
@@ -156,16 +156,16 @@ class DataLoaderTest extends TestCase
                 'kms_key_id' => 'kms-key-id-2'
             ],
             'id' => 'id-2',
-            'hashed_password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90b'
+            'password_hash' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90b'
         ],
         [
             'name' => 'Application 3',
             'description' => 'Application with JWT params and lots default and permissioned scopes',
             'seas' => true,
-            'seas_after_sign_in' => false,
-            'force_password_re_entry_on_logout' => false,
-            'requires_password_re_entry' => false,
-            'refresh_token_group' => 'serato-website',
+            'seasAfterSignIn' => false,
+            'forcePasswordReEntryOnLogout' => false,
+            'requiresPasswordReEntry' => false,
+            'refreshTokenGroup' => 'serato-website',
             'jwt' => [
                 'access' => [
                     'default_scopes' => [
@@ -224,31 +224,28 @@ class DataLoaderTest extends TestCase
                 'kms_key_id' => 'kms-key-id-3'
             ],
             'id' => 'id-3',
-            'hashed_password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90c'
+            'password_hash' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90c'
         ],
         [
             'name' => 'Application 4',
             'description' => 'Application with default scopes',
             'seas' => false,
-            'seas_after_sign_in' => false,
-            'force_password_re_entry_on_logout' => false,
-            'requires_password_re_entry' => false,
+            'seasAfterSignIn' => false,
+            'forcePasswordReEntryOnLogout' => false,
+            'requiresPasswordReEntry' => false,
             'scopes' => [
                 'profile.serato.com' => ['profile-edit-admin'],
             ],
-            'jwt' => [
-                'kms_key_id' => 'kms-key-id-4'
-            ],
             'id' => 'id-4',
-            'hashed_password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90d'
+            'password_hash' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90d'
         ],
         [
             'name' => 'Application 5',
             'description' => 'Combination of basic scopes and JWT token',
             'seas' => false,
-            'seas_after_sign_in' => false,
-            'force_password_re_entry_on_logout' => false,
-            'requires_password_re_entry' => false,
+            'seasAfterSignIn' => false,
+            'forcePasswordReEntryOnLogout' => false,
+            'requiresPasswordReEntry' => false,
             'scopes' => [
                 'license.serato.io' => ['app-license-admin', 'user-license'],
             ],
@@ -266,15 +263,15 @@ class DataLoaderTest extends TestCase
                 'kms_key_id' => 'kms-key-id-5'
             ],
             'id' => 'id-5',
-            'hashed_password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90e'
+            'password_hash' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90e'
         ],
         [
             'name' => 'Application 6',
             'description' => 'Application with JWT params and `custom_template_path` settings',
             'seas' => false,
-            'seas_after_sign_in' => true,
-            'force_password_re_entry_on_logout' => true,
-            'requires_password_re_entry' => false,
+            'seasAfterSignIn' => true,
+            'forcePasswordReEntryOnLogout' => true,
+            'requiresPasswordReEntry' => false,
             'jwt' => [
                 'access' => [
                     'default_scopes' => [
@@ -295,7 +292,7 @@ class DataLoaderTest extends TestCase
                 ]
             ],
             'id' => 'id-6',
-            'hashed_password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90f'
+            'password_hash' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90f'
         ]
     ];
 }

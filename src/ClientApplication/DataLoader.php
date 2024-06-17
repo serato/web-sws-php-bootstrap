@@ -140,15 +140,12 @@ class DataLoader
     private function parseClientAppData(array $clientAppsData): array
     {
         $data = [];
-        foreach ($clientAppsData as $key => $appData) {
+        foreach ($clientAppsData as $appData) {
             // Add all data
             $parsedData = $appData;
             // Exclude certain keys: 'path' is new property, 'basic_auth_scopes' is renamed to 'scopes' and
             //'restricted_to' is nested in the 'jwt' objectin the output array
             unset($parsedData['path'], $parsedData['basic_auth_scopes'], $parsedData['restricted_to']);
-
-            $idNumber = $key + 1;
-            $parsedData['id'] = "id-{$idNumber}";
 
             // Format scopes if present
             if (isset($appData['basic_auth_scopes'])) {
@@ -158,8 +155,6 @@ class DataLoader
             if (isset($appData['jwt'])) {
                 $parsedData['jwt'] =  $this->parseJwt($appData['jwt']);
             }
-            $parsedData['jwt']['kms_key_id'] = "kms-key-id-{$idNumber}";
-
             // Format the optional `custom_template_path` item
             if (isset($appData['custom_template_path'])) {
                 $parsedData['custom_template_path'] = $this->parseCustomTemplatePath($appData['custom_template_path']);
@@ -174,6 +169,24 @@ class DataLoader
                     $parsedData['jwt']['access'] = [];
                 }
                 $parsedData['jwt']['access']['restricted_to'] = $appData['restricted_to'];
+            }
+
+            // Transform some keys from snake case to camel case
+            if (isset($appData['seas_after_sign_in'])) {
+                $parsedData['seasAfterSignIn'] = $appData['seas_after_sign_in'];
+                unset($parsedData['seas_after_sign_in']);
+            }
+            if (isset($appData['force_password_re_entry_on_logout'])) {
+                $parsedData['forcePasswordReEntryOnLogout'] = $appData['force_password_re_entry_on_logout'];
+                unset($parsedData['force_password_re_entry_on_logout']);
+            }
+            if (isset($appData['requires_password_re_entry'])) {
+                $parsedData['requiresPasswordReEntry'] = $appData['requires_password_re_entry'];
+                unset($parsedData['requires_password_re_entry']);
+            }
+            if (isset($appData['refresh_token_group'])) {
+                $parsedData['refreshTokenGroup'] = $appData['refresh_token_group'];
+                unset($parsedData['refresh_token_group']);
             }
 
             array_push($data, $parsedData);
