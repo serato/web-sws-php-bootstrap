@@ -82,9 +82,8 @@ class DataLoader
             }
         }
 
-        // Fetch client-applications.json from S3
-        $clientAppsRawData = $this->loadFromS3(self::S3_BASE_PATH . '/' . 'client-applications-' . $env . '.json');
-        file_put_contents('test.txt', print_r($clientAppsRawData, true));
+        // Fetch client-applications-{$env}.json from S3
+        $clientAppsRawData = $this->loadFromS3(self::S3_BASE_PATH . "./client-applications-{$env}.json");
 
         // Generate output array
         $clientAppsData = $this->parseClientAppData($clientAppsRawData);
