@@ -170,7 +170,7 @@ class AccessToken extends AbstractAccessScopesMiddleware
     }
 
     /**
-     * Get the AWS Sdk
+     * Get the KMS client
      *
      * @return KmsClient
      */
