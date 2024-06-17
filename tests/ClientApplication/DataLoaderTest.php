@@ -110,6 +110,10 @@ class DataLoaderTest extends TestCase
         }
     }
 
+    /**
+    * The expected output array with the correct array structure used by the client applications.
+    * This should not be change unless we change it in the client applications!
+    */
     private const EXPECTED_SUCCESSFUL_OUTPUT = [
         [
             'name' => 'Application 1',
@@ -131,7 +135,7 @@ class DataLoaderTest extends TestCase
                 ],
                 'kms_key_id' => 'kms-key-id-1'
             ],
-            'id' => 'id-1',
+            'id' => '6ffc0253-7f98-4670-88c4-e924187592b1',
             'password_hash' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90a'
         ],
         [
@@ -155,7 +159,7 @@ class DataLoaderTest extends TestCase
                 ],
                 'kms_key_id' => 'kms-key-id-2'
             ],
-            'id' => 'id-2',
+            'id' => '6ffc0253-7f98-4670-88c4-e924187592b2',
             'password_hash' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90b'
         ],
         [
@@ -223,7 +227,7 @@ class DataLoaderTest extends TestCase
                 ],
                 'kms_key_id' => 'kms-key-id-3'
             ],
-            'id' => 'id-3',
+            'id' => '6ffc0253-7f98-4670-88c4-e924187592b3',
             'password_hash' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90c'
         ],
         [
@@ -236,7 +240,7 @@ class DataLoaderTest extends TestCase
             'scopes' => [
                 'profile.serato.com' => ['profile-edit-admin'],
             ],
-            'id' => 'id-4',
+            'id' => '6ffc0253-7f98-4670-88c4-e924187592b4',
             'password_hash' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90d'
         ],
         [
@@ -262,7 +266,7 @@ class DataLoaderTest extends TestCase
                 ],
                 'kms_key_id' => 'kms-key-id-5'
             ],
-            'id' => 'id-5',
+            'id' => '6ffc0253-7f98-4670-88c4-e924187592b5',
             'password_hash' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90e'
         ],
         [
@@ -291,7 +295,7 @@ class DataLoaderTest extends TestCase
                     '403' => 'pages/error/403.studio.html'
                 ]
             ],
-            'id' => 'id-6',
+            'id' => '6ffc0253-7f98-4670-88c4-e924187592b6',
             'password_hash' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90f'
         ]
     ];
