@@ -26,7 +26,8 @@
             "refresh": {
                 "expires": 31536000
             }
-        }
+        },
+        "password_hash": "$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90a"
     },
     {
         "path": "client\/application-2",
@@ -58,7 +59,8 @@
             "refresh": {
                 "expires": 31536000
             }
-        }
+        },
+        "password_hash": "$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90a"
     },
     {
         "path": "client\/application-3",
@@ -212,7 +214,8 @@
             "refresh": {
                 "expires": 31536000
             }
-        }
+        },
+        "password_hash": "$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90a"
     }, 
     {
         "path": "client\/application-4",
@@ -229,7 +232,8 @@
                     "profile-edit-admin"
                 ]
             }
-        ]
+        ],
+        "password_hash": "$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90a"
     },
     {
         "path": "client\/application-5",
@@ -267,7 +271,8 @@
             "refresh": {
                 "expires": 31536000
             }
-        }
+        },
+        "password_hash": "$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90a"
     },
     {
         "path": "client\/application-6",
@@ -300,6 +305,7 @@
                 "expires": 31536000
             }
         },
+        "password_hash": "$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90a",
         "custom_template_path": {
             "errors": [
                 {

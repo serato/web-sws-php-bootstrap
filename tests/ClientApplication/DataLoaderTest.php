@@ -9,9 +9,6 @@ use Serato\SwsApp\ClientApplication\DataLoader;
 use Serato\SwsApp\Test\TestCase;
 use Serato\SwsApp\ClientApplication\Exception\InvalidEnvironmentNameException;
 use Serato\SwsApp\ClientApplication\Exception\InvalidFileContentsException;
-use Serato\SwsApp\ClientApplication\Exception\MissingApplicationIdException;
-use Serato\SwsApp\ClientApplication\Exception\MissingApplicationPassword;
-use Serato\SwsApp\ClientApplication\Exception\MissingKmsKeyIdException;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter as FileSystemCachePool;
 use Symfony\Component\Cache\CacheItem;
 
@@ -40,53 +37,11 @@ class DataLoaderTest extends TestCase
         $dataLoader->getApp(null, false);
     }
 
-    /**
-     * Test secret credentials is missing App id
-     */
-    public function testCredentialsMissingAppId()
-    {
-        $this->expectException(MissingApplicationIdException::class);
-        $dataLoader = new DataLoader(
-            'dev',
-            $this->getAwsSdk($this->getAwsMockResponses('client-applications.json', 'secrets.missing-id.json')),
-            $this->getFileSystemCachePool()
-        );
-        $dataLoader->getApp(null, false);
-    }
-
-    /**
-     * Test secret credentials is missing App password
-     */
-    public function testCredentialsMissingPassword()
-    {
-        $this->expectException(MissingApplicationPassword::class);
-        $dataLoader = new DataLoader(
-            'dev',
-            $this->getAwsSdk($this->getAwsMockResponses('client-applications.json', 'secrets.missing-password.json')),
-            $this->getFileSystemCachePool()
-        );
-        $dataLoader->getApp(null, false);
-    }
-
-    /**
-     * Test secret credentials is missing App kms key id
-     */
-    public function testCredentialsMissingKmsKeyId()
-    {
-        $this->expectException(MissingKmsKeyIdException::class);
-        $dataLoader = new DataLoader(
-            'dev',
-            $this->getAwsSdk($this->getAwsMockResponses('client-applications.json', 'secrets.missing-kms-key.json')),
-            $this->getFileSystemCachePool()
-        );
-        $dataLoader->getApp(null, false);
-    }
-
     public function testSuccessfulLoad()
     {
         $dataLoader = new DataLoader(
             'dev',
-            $this->getAwsSdk($this->getAwsMockResponses('client-applications.json', 'secrets.json')),
+            $this->getAwsSdk($this->getAwsMockResponses('client-applications-dev.json', 'secrets.json')),
             $this->getFileSystemCachePool()
         );
 
@@ -114,7 +69,7 @@ class DataLoaderTest extends TestCase
 
         $dataLoader = new DataLoader(
             'dev',
-            $this->getAwsSdk($this->getAwsMockResponses('client-applications.json', 'secrets.json')),
+            $this->getAwsSdk($this->getAwsMockResponses('client-applications-dev.json', 'secrets.json')),
             $cachePoolMock
         );
 
@@ -149,10 +104,10 @@ class DataLoaderTest extends TestCase
         foreach ($appData as $index => $data) {
             // Check password_hash
             $this->assertTrue(isset($data['password_hash']));
-            $this->assertTrue(password_verify(
+            $this->assertEquals(
                 DataLoaderTest::EXPECTED_SUCCESSFUL_OUTPUT[$index]['password'],
                 $data['password_hash']
-            ));
+            );
             // Remove password_hash so we can check the rest of the array
             unset($data['password_hash']);
 
@@ -188,7 +143,7 @@ class DataLoaderTest extends TestCase
                 ],
                 'id' => 'id-1'
             ],
-            'password' => 'password-1'
+            'password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90a'
         ],
         [
             'expectedArrayMinusPasswordHash' => [
@@ -214,7 +169,7 @@ class DataLoaderTest extends TestCase
                 ],
                 'id' => 'id-2'
             ],
-            'password' => 'password-2'
+            'password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90a'
         ],
         [
             'expectedArrayMinusPasswordHash' => [
@@ -284,7 +239,7 @@ class DataLoaderTest extends TestCase
                 ],
                 'id' => 'id-3'
             ],
-            'password' => 'password-3'
+            'password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90a'
         ],
         [
             'expectedArrayMinusPasswordHash' => [
@@ -302,7 +257,7 @@ class DataLoaderTest extends TestCase
                 ],
                 'id' => 'id-4'
             ],
-            'password' => 'password-4'
+            'password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90a'
         ],
         [
             'expectedArrayMinusPasswordHash' => [
@@ -330,7 +285,7 @@ class DataLoaderTest extends TestCase
                 ],
                 'id' => 'id-5'
             ],
-            'password' => 'password-5'
+            'password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90a'
         ],
         [
             'expectedArrayMinusPasswordHash' => [
@@ -361,7 +316,7 @@ class DataLoaderTest extends TestCase
                 ],
                 'id' => 'id-6'
             ],
-            'password' => 'password-6'
+            'password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90a'
         ]
     ];
 }

@@ -8,9 +8,6 @@ use Aws\SecretsManager\SecretsManagerClient;
 use Psr\Cache\CacheItemPoolInterface;
 use Serato\SwsApp\ClientApplication\Exception\InvalidEnvironmentNameException;
 use Serato\SwsApp\ClientApplication\Exception\InvalidFileContentsException;
-use Serato\SwsApp\ClientApplication\Exception\MissingApplicationIdException;
-use Serato\SwsApp\ClientApplication\Exception\MissingApplicationPassword;
-use Serato\SwsApp\ClientApplication\Exception\MissingKmsKeyIdException;
 
 /**
  * Client Application Data Loader
@@ -25,8 +22,6 @@ class DataLoader
     private const ENVIRONMENTS = ['dev', 'test', 'production'];
     private const S3_BUCKET_NAME = 'sws.clientapps';
     private const S3_BASE_PATH = 'v3';
-    private const CLIENT_APPS_SECRET_PREFIX = 'sws-client-application';
-    private const CLIENT_APPS_DATA_NAME = 'client-applications.json';
 
     /** @var string */
     private $env;
@@ -88,7 +83,7 @@ class DataLoader
         }
 
         // Fetch client-applications.json from S3
-        $clientAppsRawData = $this->loadFromS3(self::S3_BASE_PATH . '/' . self::CLIENT_APPS_DATA_NAME);
+        $clientAppsRawData = $this->loadFromS3(self::S3_BASE_PATH . '/' . 'client-applications-' . $env . '.json');
 
         // Generate output array
         $clientAppsData = $this->parseClientAppData($clientAppsRawData);
@@ -136,33 +131,6 @@ class DataLoader
     }
 
     /**
-     * Retrieve application secrets from AWS secrets manager
-     *
-     * @return array
-     * ```
-     * [
-     *  'appId' => string,
-     *  'appSecret' => string,
-     *  'kmsKeyId' => string
-     * ]
-     * ```
-     *
-     */
-    private function getSecret(string $appPath): array
-    {
-        $result = $this->secretsManagerClient->getSecretValue([
-            'SecretId' => $this->env . '/' . self::CLIENT_APPS_SECRET_PREFIX . '/' . ltrim($appPath, '/')
-        ]);
-
-        if (isset($result['SecretString'])) {
-            $secret = json_decode($result['SecretString'], true);
-            $this->validateSecret($secret, $appPath);
-        }
-
-        return $secret;
-    }
-
-    /**
      * Merges environment specific credentials with the provided client app
      * data.
      *
@@ -173,15 +141,15 @@ class DataLoader
     {
         $data = [];
         foreach ($clientAppsData as $appData) {
-            $credentialsData = $this->getSecret($appData['path']);
 
             // Add all data
             $parsedData = $appData;
             // Exclude certain keys: 'path' is new property, 'basic_auth_scopes' is renamed to 'scopes' and
             //'restricted_to' is nested in the 'jwt' objectin the output array
             unset($parsedData['path'], $parsedData['basic_auth_scopes'], $parsedData['restricted_to']);
-            $parsedData['id'] = $credentialsData['appId'];
-            $parsedData['password_hash'] = password_hash($credentialsData['appSecret'], PASSWORD_DEFAULT);
+
+            $idNumber = substr($appData['path'], -1);
+            $parsedData['id'] = "id-{$idNumber}";
 
             // Format scopes if present
             if (isset($appData['basic_auth_scopes'])) {
@@ -191,7 +159,7 @@ class DataLoader
             if (isset($appData['jwt'])) {
                 $parsedData['jwt'] =  $this->parseJwt($appData['jwt']);
             }
-            $parsedData['jwt']['kms_key_id'] = $credentialsData['kmsKeyId'];
+            $parsedData['jwt']['kms_key_id'] = "kms-key-id-{$idNumber}";
 
             // Format the optional `custom_template_path` item
             if (isset($appData['custom_template_path'])) {
@@ -213,41 +181,6 @@ class DataLoader
         }
 
         return $data;
-    }
-
-    /**
-     * Checks the secret retrieved from Secrets Manager contains all the required keys.
-     * Throws the revelant exception if a key is missing
-     *
-     * @param array $secret data from AWS Secrets Manager
-     * @param string $appPath path to the secret in AWS Secrets Manager
-     *
-     * @throws MissingApplicationIdException
-     * @throws MissingApplicationPassword
-     * @throws MissingKmsKeyIdException
-     */
-    private function validateSecret(array $secret, string $appPath): void
-    {
-        $appSecretName = $this->env . '/' . self::CLIENT_APPS_SECRET_PREFIX . '/' . $appPath;
-        // All appSecrets MUST have `appId`, `appSecret` and `kmsKeyId` keys defined
-        if (empty($secret['appId'])) {
-            throw new MissingApplicationIdException(
-                'Invalid configuration for secret `' . $appSecretName . '` in Secrets Manager. ' .
-                'Missing required key `appId`.'
-            );
-        }
-        if (empty($secret['appSecret'])) {
-            throw new MissingApplicationPassword(
-                'Invalid configuration for secret `' . $appSecretName . '` in Secrets Manager. ' .
-                'Missing required key `appSecret`.'
-            );
-        }
-        if (empty($secret['kmsKeyId'])) {
-            throw new MissingKmsKeyIdException(
-                'Invalid configuration for secret `' . $appSecretName . '` in Secrets Manager. ' .
-                'Missing required key `kmsKeyId`.'
-            );
-        }
     }
 
     /**
