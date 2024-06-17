@@ -116,9 +116,9 @@ class DataLoaderTest extends TestCase
                 'name' => 'Application 1',
                 'description' => 'Application with JWT params basic default scopes',
                 'seas' => false,
-                'seasAfterSignIn' => false,
-                'forcePasswordReEntryOnLogout' => false,
-                'requiresPasswordReEntry' => false,
+                'seas_after_sign_in' => false,
+                'force_password_re_entry_on_logout' => false,
+                'requires_password_re_entry' => false,
                 'jwt' => [
                     'access' => [
                         'default_scopes' => [
@@ -141,9 +141,9 @@ class DataLoaderTest extends TestCase
                 'name' => 'Application 2',
                 'description' => 'Application with JWT params and `restricted_to` settings',
                 'seas' => false,
-                'seasAfterSignIn' => false,
-                'forcePasswordReEntryOnLogout' => false,
-                'requiresPasswordReEntry' => false,
+                'seas_after_sign_in' => false,
+                'force_password_re_entry_on_logout' => false,
+                'requires_password_re_entry' => false,
                 'jwt' => [
                     'access' => [
                         'default_scopes' => [
@@ -167,10 +167,10 @@ class DataLoaderTest extends TestCase
                 'name' => 'Application 3',
                 'description' => 'Application with JWT params and lots default and permissioned scopes',
                 'seas' => true,
-                'seasAfterSignIn' => false,
-                'forcePasswordReEntryOnLogout' => false,
-                'requiresPasswordReEntry' => false,
-                'refreshTokenGroup' => 'serato-website',
+                'seas_after_sign_in' => false,
+                'force_password_re_entry_on_logout' => false,
+                'requires_password_re_entry' => false,
+                'refresh_token_group' => 'serato-website',
                 'jwt' => [
                     'access' => [
                         'default_scopes' => [
@@ -237,9 +237,9 @@ class DataLoaderTest extends TestCase
                 'name' => 'Application 4',
                 'description' => 'Application with default scopes',
                 'seas' => false,
-                'seasAfterSignIn' => false,
-                'forcePasswordReEntryOnLogout' => false,
-                'requiresPasswordReEntry' => false,
+                'seas_after_sign_in' => false,
+                'force_password_re_entry_on_logout' => false,
+                'requires_password_re_entry' => false,
                 'scopes' => [
                     'profile.serato.com' => ['profile-edit-admin'],
                 ],
@@ -255,9 +255,9 @@ class DataLoaderTest extends TestCase
                 'name' => 'Application 5',
                 'description' => 'Combination of basic scopes and JWT token',
                 'seas' => false,
-                'seasAfterSignIn' => false,
-                'forcePasswordReEntryOnLogout' => false,
-                'requiresPasswordReEntry' => false,
+                'seas_after_sign_in' => false,
+                'force_password_re_entry_on_logout' => false,
+                'requires_password_re_entry' => false,
                 'scopes' => [
                     'license.serato.io' => ['app-license-admin', 'user-license'],
                 ],
@@ -283,9 +283,9 @@ class DataLoaderTest extends TestCase
                 'name' => 'Application 6',
                 'description' => 'Application with JWT params and `custom_template_path` settings',
                 'seas' => false,
-                'seasAfterSignIn' => true,
-                'forcePasswordReEntryOnLogout' => true,
-                'requiresPasswordReEntry' => false,
+                'seas_after_sign_in' => true,
+                'force_password_re_entry_on_logout' => true,
+                'requires_password_re_entry' => false,
                 'jwt' => [
                     'access' => [
                         'default_scopes' => [
