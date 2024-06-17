@@ -102,18 +102,9 @@ class DataLoaderTest extends TestCase
     private function assertValidAppData(array $appData): void
     {
         foreach ($appData as $index => $data) {
-            // Check hashed_password
-            $this->assertTrue(isset($data['hashed_password']));
+            // Check resulting array with expected array including the hashed_password
             $this->assertEquals(
-                DataLoaderTest::EXPECTED_SUCCESSFUL_OUTPUT[$index]['password'],
-                $data['hashed_password']
-            );
-            // Remove hashed_password so we can check the rest of the array
-            unset($data['hashed_password']);
-
-            // Check resulting array with expected array ignoring the hashed_password
-            $this->assertEquals(
-                DataLoaderTest::EXPECTED_SUCCESSFUL_OUTPUT[$index]['expectedArrayMinusPasswordHash'],
+                DataLoaderTest::EXPECTED_SUCCESSFUL_OUTPUT[$index]['expectedArrayWithHashedPassword'],
                 $data
             );
         }
@@ -121,7 +112,7 @@ class DataLoaderTest extends TestCase
 
     private const EXPECTED_SUCCESSFUL_OUTPUT = [
         [
-            'expectedArrayMinusPasswordHash' => [
+            'expectedArrayWithHashedPassword' => [
                 'name' => 'Application 1',
                 'description' => 'Application with JWT params basic default scopes',
                 'seas' => false,
@@ -141,12 +132,12 @@ class DataLoaderTest extends TestCase
                     ],
                     'kms_key_id' => 'kms-key-id-1'
                 ],
-                'id' => 'id-1'
-            ],
-            'password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90a'
+                'id' => 'id-1',
+                'hashed_password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90a'
+            ]
         ],
         [
-            'expectedArrayMinusPasswordHash' => [
+            'expectedArrayWithHashedPassword' => [
                 'name' => 'Application 2',
                 'description' => 'Application with JWT params and `restricted_to` settings',
                 'seas' => false,
@@ -167,12 +158,12 @@ class DataLoaderTest extends TestCase
                     ],
                     'kms_key_id' => 'kms-key-id-2'
                 ],
-                'id' => 'id-2'
-            ],
-            'password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90b'
+                'id' => 'id-2',
+                'hashed_password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90b'
+            ]
         ],
         [
-            'expectedArrayMinusPasswordHash' => [
+            'expectedArrayWithHashedPassword' => [
                 'name' => 'Application 3',
                 'description' => 'Application with JWT params and lots default and permissioned scopes',
                 'seas' => true,
@@ -237,12 +228,12 @@ class DataLoaderTest extends TestCase
                     ],
                     'kms_key_id' => 'kms-key-id-3'
                 ],
-                'id' => 'id-3'
-            ],
-            'password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90c'
+                'id' => 'id-3',
+                'hashed_password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90c'
+            ]
         ],
         [
-            'expectedArrayMinusPasswordHash' => [
+            'expectedArrayWithHashedPassword' => [
                 'name' => 'Application 4',
                 'description' => 'Application with default scopes',
                 'seas' => false,
@@ -255,12 +246,12 @@ class DataLoaderTest extends TestCase
                 'jwt' => [
                     'kms_key_id' => 'kms-key-id-4'
                 ],
-                'id' => 'id-4'
-            ],
-            'password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90d'
+                'id' => 'id-4',
+                'hashed_password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90d'
+            ]
         ],
         [
-            'expectedArrayMinusPasswordHash' => [
+            'expectedArrayWithHashedPassword' => [
                 'name' => 'Application 5',
                 'description' => 'Combination of basic scopes and JWT token',
                 'seas' => false,
@@ -283,12 +274,12 @@ class DataLoaderTest extends TestCase
                     ],
                     'kms_key_id' => 'kms-key-id-5'
                 ],
-                'id' => 'id-5'
-            ],
-            'password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90e'
+                'id' => 'id-5',
+                'hashed_password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90e'
+            ]
         ],
         [
-            'expectedArrayMinusPasswordHash' => [
+            'expectedArrayWithHashedPassword' => [
                 'name' => 'Application 6',
                 'description' => 'Application with JWT params and `custom_template_path` settings',
                 'seas' => false,
@@ -314,9 +305,9 @@ class DataLoaderTest extends TestCase
                         '403' => 'pages/error/403.studio.html'
                     ]
                 ],
-                'id' => 'id-6'
-            ],
-            'password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90f'
+                'id' => 'id-6',
+                'hashed_password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90f'
+            ]
         ]
     ];
 }
