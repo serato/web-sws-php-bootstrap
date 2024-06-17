@@ -141,7 +141,6 @@ class DataLoader
     {
         $data = [];
         foreach ($clientAppsData as $appData) {
-
             // Add all data
             $parsedData = $appData;
             // Exclude certain keys: 'path' is new property, 'basic_auth_scopes' is renamed to 'scopes' and
