@@ -140,14 +140,14 @@ class DataLoader
     private function parseClientAppData(array $clientAppsData): array
     {
         $data = [];
-        foreach ($clientAppsData as $appData) {
+        foreach ($clientAppsData as $key => $appData) {
             // Add all data
             $parsedData = $appData;
             // Exclude certain keys: 'path' is new property, 'basic_auth_scopes' is renamed to 'scopes' and
             //'restricted_to' is nested in the 'jwt' objectin the output array
             unset($parsedData['path'], $parsedData['basic_auth_scopes'], $parsedData['restricted_to']);
 
-            $idNumber = substr($appData['path'], -1);
+            $idNumber = $key + 1;
             $parsedData['id'] = "id-{$idNumber}";
 
             // Format scopes if present
