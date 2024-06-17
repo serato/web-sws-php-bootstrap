@@ -169,7 +169,7 @@ class DataLoaderTest extends TestCase
                 ],
                 'id' => 'id-2'
             ],
-            'password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90a'
+            'password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90b'
         ],
         [
             'expectedArrayMinusPasswordHash' => [
@@ -239,7 +239,7 @@ class DataLoaderTest extends TestCase
                 ],
                 'id' => 'id-3'
             ],
-            'password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90a'
+            'password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90c'
         ],
         [
             'expectedArrayMinusPasswordHash' => [
@@ -257,7 +257,7 @@ class DataLoaderTest extends TestCase
                 ],
                 'id' => 'id-4'
             ],
-            'password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90a'
+            'password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90d'
         ],
         [
             'expectedArrayMinusPasswordHash' => [
@@ -285,7 +285,7 @@ class DataLoaderTest extends TestCase
                 ],
                 'id' => 'id-5'
             ],
-            'password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90a'
+            'password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90e'
         ],
         [
             'expectedArrayMinusPasswordHash' => [
@@ -316,7 +316,7 @@ class DataLoaderTest extends TestCase
                 ],
                 'id' => 'id-6'
             ],
-            'password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90a'
+            'password' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90f'
         ]
     ];
 }
