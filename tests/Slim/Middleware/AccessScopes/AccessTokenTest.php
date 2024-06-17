@@ -50,7 +50,8 @@ class AccessTokenTest extends TestCase
         );
 
         $this->assertEquals(null, $nextMiddleware->getRequestInterface()->getAttribute(
-            AbstractRequestWithAttributeMiddleware::SCOPES));
+            AbstractRequestWithAttributeMiddleware::SCOPES
+        ));
     }
 
     /**
@@ -61,7 +62,7 @@ class AccessTokenTest extends TestCase
     public function testMiddlewareWithValidateTokenInAuthHeader()
     {
         $kmsClient = $this->getKmsClient();
-        $accessToken = new \Serato\Jwt\AccessToken($kmsClient,  $this->getFileSystemCachePool());
+        $accessToken = new \Serato\Jwt\AccessToken($kmsClient, $this->getFileSystemCachePool());
         $accessToken->set(
             self::APP_ID,
             self::APP_NAME,
@@ -125,7 +126,7 @@ class AccessTokenTest extends TestCase
         $this->expectException(ExpiredAccessTokenException::class);
         $kmsClient = $this->getKmsClient();
         $cachePool = $this->getFileSystemCachePool();
-        $accessToken = new \Serato\Jwt\AccessToken($kmsClient,  $cachePool);
+        $accessToken = new \Serato\Jwt\AccessToken($kmsClient, $cachePool);
         $accessToken->set(
             self::APP_ID,
             self::APP_NAME,
@@ -144,8 +145,7 @@ class AccessTokenTest extends TestCase
 
         # EXPIRE the refresh token by adding it to the cache.
         $refreshToken = $cachePool->getItem('r-' .  AbstractRequestWithAttributeMiddleware::REFRESH_TOKEN_ID);
-        if (!$refreshToken->isHit())
-        {
+        if (!$refreshToken->isHit()) {
             $refreshToken->set($rtid);
             $cachePool->save($refreshToken);
         }
@@ -265,8 +265,8 @@ class AccessTokenTest extends TestCase
             AbstractRequestWithAttributeMiddleware::USER_EMAIL           => self::USER_EMAIL_ADDRESS,
             AbstractRequestWithAttributeMiddleware::USER_EMAIL_VERIFIED  => true,
             AbstractRequestWithAttributeMiddleware::SCOPES               => self::SCOPES,
-            AbstractRequestWithAttributeMiddleware::REFRESH_TOKEN_ID     => AbstractRequestWithAttributeMiddleware::REFRESH_TOKEN_ID,
-
+            AbstractRequestWithAttributeMiddleware::REFRESH_TOKEN_ID     =>
+                AbstractRequestWithAttributeMiddleware::REFRESH_TOKEN_ID,
         ];
     }
 
