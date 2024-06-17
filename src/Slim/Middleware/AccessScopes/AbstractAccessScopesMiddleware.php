@@ -3,7 +3,6 @@
 namespace Serato\SwsApp\Slim\Middleware\AccessScopes;
 
 use Serato\SwsApp\Slim\Middleware\AbstractRequestWithAttributeMiddleware;
-use Slim\Handlers\AbstractHandler;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
 abstract class AbstractAccessScopesMiddleware extends AbstractRequestWithAttributeMiddleware

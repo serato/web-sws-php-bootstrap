@@ -25,8 +25,6 @@ class VaryHeader extends AbstractHandler
     public function __invoke(Request $request, Response $response, callable $next): Response
     {
         $response = $next($request, $response);
-        $response = $response->withAddedHeader('Vary', 'Origin, Accept-Encoding');
-
-        return $response;
+        return $response->withAddedHeader('Vary', 'Origin, Accept-Encoding');
     }
 }

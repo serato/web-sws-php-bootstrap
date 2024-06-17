@@ -33,11 +33,11 @@ class MaintenanceMode extends AbstractHandler
     /**
      * Invoke the middleware
      *
-     * @param ServerRequestInterface $request   The most recent Request object
-     * @param ResponseInterface      $response  The most recent Response object
-     * @param Callable               $next      The next middleware to call
+     * @param Request $request The most recent Request object
+     * @param Response $response The most recent Response object
+     * @param Callable $next The next middleware to call
      *
-     * @return ResponseInterface
+     * @return Response
      */
     public function __invoke(Request $request, Response $response, callable $next): Response
     {
@@ -51,10 +51,10 @@ class MaintenanceMode extends AbstractHandler
     /**
      * Render page content and set response headers
      *
-     * @param ServerRequestInterface $request   The most recent Request object
-     * @param ResponseInterface      $response  The most recent Response object
+     * @param Request $request The most recent Request object
+     * @param Response $response The most recent Response object
      *
-     * @return ResponseInterface
+     * @return Response
      */
     public function defaultMaintenancePage(Request $request, Response $response): Response
     {

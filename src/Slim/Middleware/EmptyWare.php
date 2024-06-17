@@ -2,7 +2,6 @@
 
 namespace Serato\SwsApp\Slim\Middleware;
 
-use Slim\Http\Body;
 use Slim\Handlers\AbstractHandler;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
