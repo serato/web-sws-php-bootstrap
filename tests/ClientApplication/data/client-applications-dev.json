@@ -27,9 +27,9 @@
             },
             "refresh": {
                 "expires": 31536000
-            },
-            "kms_key_id": "kms-key-id-1"
-        }
+            }
+        },
+        "kms_key_id": "kms-key-id-1"
     },
     {
         "id": "22222222-2222-2222-2222-222222222222",
@@ -62,9 +62,9 @@
             },
             "refresh": {
                 "expires": 31536000
-            },
-            "kms_key_id": "kms-key-id-2"
-        }
+            }
+        },
+        "kms_key_id": "kms-key-id-2"
     },
     {
         "id": "33333333-3333-3333-3333-333333333333",
@@ -219,9 +219,9 @@
             },
             "refresh": {
                 "expires": 31536000
-            },
-            "kms_key_id": "kms-key-id-3"
-        }
+            }
+        },
+        "kms_key_id": "kms-key-id-3"
     },
     {
         "id": "44444444-4444-4444-4444-444444444444",
@@ -240,7 +240,8 @@
                     "profile-edit-admin"
                 ]
             }
-        ]
+        ],
+        "kms_key_id": "kms-key-id-4"
     },
     {
         "id": "55555555-5555-5555-5555-555555555555",
@@ -279,9 +280,9 @@
             },
             "refresh": {
                 "expires": 31536000
-            },
-            "kms_key_id": "kms-key-id-5"
-        }
+            }
+        },
+        "kms_key_id": "kms-key-id-5"
     },
     {
         "id": "66666666-6666-6666-6666-666666666666",
@@ -314,9 +315,9 @@
             },
             "refresh": {
                 "expires": 31536000
-            },
-            "kms_key_id": "kms-key-id-6"
+            }
         },
+        "kms_key_id": "kms-key-id-6",
         "custom_template_path": {
             "errors": [
                 {

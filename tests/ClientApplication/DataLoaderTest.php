@@ -124,11 +124,11 @@ class DataLoaderTest extends TestCase
                 ],
                 'refresh' => [
                     'expires' => 31536000
-                ],
-                'kms_key_id' => 'kms-key-id-1'
+                ]
             ],
             'id' => '11111111-1111-1111-1111-111111111111',
-            'password_hash' => 'password-hash-1'
+            'password_hash' => 'password-hash-1',
+            'kms_key_id' => 'kms-key-id-1'
         ],
         [
             'name' => 'Application 2',
@@ -148,11 +148,11 @@ class DataLoaderTest extends TestCase
                 ],
                 'refresh' => [
                     'expires' => 31536000
-                ],
-                'kms_key_id' => 'kms-key-id-2'
+                ]
             ],
             'id' => '22222222-2222-2222-2222-222222222222',
-            'password_hash' => 'password-hash-2'
+            'password_hash' => 'password-hash-2',
+            'kms_key_id' => 'kms-key-id-2'
         ],
         [
             'name' => 'Application 3',
@@ -216,11 +216,11 @@ class DataLoaderTest extends TestCase
                 ],
                 'refresh' => [
                     'expires' => 31536000
-                ],
-                'kms_key_id' => 'kms-key-id-3'
+                ]
             ],
             'id' => '33333333-3333-3333-3333-333333333333',
-            'password_hash' => 'password-hash-3'
+            'password_hash' => 'password-hash-3',
+            'kms_key_id' => 'kms-key-id-3'
         ],
         [
             'name' => 'Application 4',
@@ -233,7 +233,8 @@ class DataLoaderTest extends TestCase
                 'profile.serato.com' => ['profile-edit-admin'],
             ],
             'id' => '44444444-4444-4444-4444-444444444444',
-            'password_hash' => 'password-hash-4'
+            'password_hash' => 'password-hash-4',
+            'kms_key_id' => 'kms-key-id-4'
         ],
         [
             'name' => 'Application 5',
@@ -255,11 +256,11 @@ class DataLoaderTest extends TestCase
                 ],
                 'refresh' => [
                     'expires' => 31536000
-                ],
-                'kms_key_id' => 'kms-key-id-5'
+                ]
             ],
             'id' => '55555555-5555-5555-5555-555555555555',
-            'password_hash' => 'password-hash-5'
+            'password_hash' => 'password-hash-5',
+            'kms_key_id' => 'kms-key-id-5'
         ],
         [
             'name' => 'Application 6',
@@ -279,8 +280,7 @@ class DataLoaderTest extends TestCase
                 ],
                 'refresh' => [
                     'expires' => 31536000
-                ],
-                'kms_key_id' => 'kms-key-id-6'
+                ]
             ],
             'custom_template_path' => [
                 'errors' => [
@@ -288,7 +288,8 @@ class DataLoaderTest extends TestCase
                 ]
             ],
             'id' => '66666666-6666-6666-6666-666666666666',
-            'password_hash' => 'password-hash-6'
+            'password_hash' => 'password-hash-6',
+            'kms_key_id' => 'kms-key-id-6'
         ]
     ];
 }
