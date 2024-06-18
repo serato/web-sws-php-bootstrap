@@ -127,8 +127,8 @@ class DataLoaderTest extends TestCase
                 ],
                 'kms_key_id' => 'kms-key-id-1'
             ],
-            'id' => 'app-1-id',
-            'password_hash' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90a'
+            'id' => '11111111-1111-1111-1111-111111111111',
+            'password_hash' => 'password-hash-1'
         ],
         [
             'name' => 'Application 2',
@@ -151,8 +151,8 @@ class DataLoaderTest extends TestCase
                 ],
                 'kms_key_id' => 'kms-key-id-2'
             ],
-            'id' => 'app-2-id',
-            'password_hash' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90b'
+            'id' => '22222222-2222-2222-2222-222222222222',
+            'password_hash' => 'password-hash-2'
         ],
         [
             'name' => 'Application 3',
@@ -219,8 +219,8 @@ class DataLoaderTest extends TestCase
                 ],
                 'kms_key_id' => 'kms-key-id-3'
             ],
-            'id' => 'app-3-id',
-            'password_hash' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90c'
+            'id' => '33333333-3333-3333-3333-333333333333',
+            'password_hash' => 'password-hash-3'
         ],
         [
             'name' => 'Application 4',
@@ -232,8 +232,8 @@ class DataLoaderTest extends TestCase
             'scopes' => [
                 'profile.serato.com' => ['profile-edit-admin'],
             ],
-            'id' => 'app-4-id',
-            'password_hash' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90d'
+            'id' => '44444444-4444-4444-4444-444444444444',
+            'password_hash' => 'password-hash-4'
         ],
         [
             'name' => 'Application 5',
@@ -258,8 +258,8 @@ class DataLoaderTest extends TestCase
                 ],
                 'kms_key_id' => 'kms-key-id-5'
             ],
-            'id' => 'app-5-id',
-            'password_hash' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90e'
+            'id' => '55555555-5555-5555-5555-555555555555',
+            'password_hash' => 'password-hash-5'
         ],
         [
             'name' => 'Application 6',
@@ -287,8 +287,8 @@ class DataLoaderTest extends TestCase
                     '403' => 'pages/error/403.studio.html'
                 ]
             ],
-            'id' => 'app-6-id',
-            'password_hash' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90f'
+            'id' => '66666666-6666-6666-6666-666666666666',
+            'password_hash' => 'password-hash-6'
         ]
     ];
 }

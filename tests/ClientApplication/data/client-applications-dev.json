@@ -1,9 +1,10 @@
 [
     {
-        "id": "app-1-id",
+        "id": "11111111-1111-1111-1111-111111111111",
+        "password_hash": "password-hash-1",
         "path": "client\/application-1",
-        "name" : "Application 1",
-        "description" : "Application with JWT params basic default scopes",
+        "name": "Application 1",
+        "description": "Application with JWT params basic default scopes",
         "seas": false,
         "seas_after_sign_in": false,
         "force_password_re_entry_on_logout": false,
@@ -28,19 +29,19 @@
                 "expires": 31536000
             },
             "kms_key_id": "kms-key-id-1"
-        },
-        "password_hash": "$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90a"
+        }
     },
     {
-        "id": "app-2-id",
+        "id": "22222222-2222-2222-2222-222222222222",
+        "password_hash": "password-hash-2",
         "path": "client\/application-2",
-        "name" : "Application 2",
-        "description" : "Application with JWT params and `restricted_to` settings",
+        "name": "Application 2",
+        "description": "Application with JWT params and `restricted_to` settings",
         "seas": false,
         "seas_after_sign_in": false,
         "force_password_re_entry_on_logout": false,
         "requires_password_re_entry": false,
-        "restricted_to": [ 
+        "restricted_to": [
             "Serato"
         ],
         "jwt": {
@@ -63,14 +64,14 @@
                 "expires": 31536000
             },
             "kms_key_id": "kms-key-id-2"
-        },
-        "password_hash": "$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90b"
+        }
     },
     {
-        "id": "app-3-id",
+        "id": "33333333-3333-3333-3333-333333333333",
+        "password_hash": "password-hash-3",
         "path": "client\/application-3",
-        "name" : "Application 3",
-        "description" : "Application with JWT params and lots default and permissioned scopes",
+        "name": "Application 3",
+        "description": "Application with JWT params and lots default and permissioned scopes",
         "seas": true,
         "seas_after_sign_in": false,
         "force_password_re_entry_on_logout": false,
@@ -220,14 +221,14 @@
                 "expires": 31536000
             },
             "kms_key_id": "kms-key-id-3"
-        },
-        "password_hash": "$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90c"
-    }, 
+        }
+    },
     {
-        "id": "app-4-id",
+        "id": "44444444-4444-4444-4444-444444444444",
+        "password_hash": "password-hash-4",
         "path": "client\/application-4",
-        "name" : "Application 4",
-        "description" : "Application with default scopes",
+        "name": "Application 4",
+        "description": "Application with default scopes",
         "seas": false,
         "seas_after_sign_in": false,
         "force_password_re_entry_on_logout": false,
@@ -239,13 +240,13 @@
                     "profile-edit-admin"
                 ]
             }
-        ],
-        "password_hash": "$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90d"
+        ]
     },
     {
-        "id": "app-5-id",
+        "id": "55555555-5555-5555-5555-555555555555",
+        "password_hash": "password-hash-5",
         "path": "client\/application-5",
-        "name" : "Application 5",
+        "name": "Application 5",
         "description": "Combination of basic scopes and JWT token",
         "seas": false,
         "seas_after_sign_in": false,
@@ -280,19 +281,19 @@
                 "expires": 31536000
             },
             "kms_key_id": "kms-key-id-5"
-        },
-        "password_hash": "$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90e"
+        }
     },
     {
-        "id": "app-6-id",
+        "id": "66666666-6666-6666-6666-666666666666",
+        "password_hash": "password-hash-6",
         "path": "client\/application-6",
-        "name" : "Application 6",
+        "name": "Application 6",
         "description": "Application with JWT params and `custom_template_path` settings",
         "seas": false,
         "seas_after_sign_in": true,
         "force_password_re_entry_on_logout": true,
         "requires_password_re_entry": false,
-        "restricted_to": [ 
+        "restricted_to": [
             "Serato"
         ],
         "jwt": {
@@ -316,7 +317,6 @@
             },
             "kms_key_id": "kms-key-id-6"
         },
-        "password_hash": "$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90f",
         "custom_template_path": {
             "errors": [
                 {
