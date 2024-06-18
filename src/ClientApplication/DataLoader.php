@@ -155,6 +155,13 @@ class DataLoader
             if (isset($appData['jwt'])) {
                 $parsedData['jwt'] =  $this->parseJwt($appData['jwt']);
             }
+
+            // Always add `kms_key_id` inside jwt
+            if (isset($appData['kms_key_id'])) {
+                $parsedData['jwt']['kms_key_id'] = $appData['kms_key_id'];
+                unset($parsedData['kms_key_id']);
+            }
+
             // Format the optional `custom_template_path` item
             if (isset($appData['custom_template_path'])) {
                 $parsedData['custom_template_path'] = $this->parseCustomTemplatePath($appData['custom_template_path']);
