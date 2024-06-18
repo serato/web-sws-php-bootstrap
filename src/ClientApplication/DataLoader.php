@@ -83,7 +83,7 @@ class DataLoader
         }
 
         // Fetch client-applications-{$env}.json from S3
-        $clientAppsRawData = $this->loadFromS3(self::S3_BASE_PATH . "./client-applications-{$env}.json");
+        $clientAppsRawData = $this->loadFromS3(self::S3_BASE_PATH . "/client-applications-{$env}.json");
 
         // Generate output array
         $clientAppsData = $this->parseClientAppData($clientAppsRawData);
