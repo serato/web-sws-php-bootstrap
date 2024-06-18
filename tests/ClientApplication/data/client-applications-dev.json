@@ -1,6 +1,6 @@
 [
     {
-        "id": "6ffc0253-7f98-4670-88c4-e924187592b1",
+        "id": "app-1-id",
         "path": "client\/application-1",
         "name" : "Application 1",
         "description" : "Application with JWT params basic default scopes",
@@ -32,7 +32,7 @@
         "password_hash": "$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90a"
     },
     {
-        "id": "6ffc0253-7f98-4670-88c4-e924187592b2",
+        "id": "app-2-id",
         "path": "client\/application-2",
         "name" : "Application 2",
         "description" : "Application with JWT params and `restricted_to` settings",
@@ -67,7 +67,7 @@
         "password_hash": "$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90b"
     },
     {
-        "id": "6ffc0253-7f98-4670-88c4-e924187592b3",
+        "id": "app-3-id",
         "path": "client\/application-3",
         "name" : "Application 3",
         "description" : "Application with JWT params and lots default and permissioned scopes",
@@ -224,7 +224,7 @@
         "password_hash": "$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90c"
     }, 
     {
-        "id": "6ffc0253-7f98-4670-88c4-e924187592b4",
+        "id": "app-4-id",
         "path": "client\/application-4",
         "name" : "Application 4",
         "description" : "Application with default scopes",
@@ -243,7 +243,7 @@
         "password_hash": "$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90d"
     },
     {
-        "id": "6ffc0253-7f98-4670-88c4-e924187592b5",
+        "id": "app-5-id",
         "path": "client\/application-5",
         "name" : "Application 5",
         "description": "Combination of basic scopes and JWT token",
@@ -284,7 +284,7 @@
         "password_hash": "$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90e"
     },
     {
-        "id": "6ffc0253-7f98-4670-88c4-e924187592b6",
+        "id": "app-6-id",
         "path": "client\/application-6",
         "name" : "Application 6",
         "description": "Application with JWT params and `custom_template_path` settings",

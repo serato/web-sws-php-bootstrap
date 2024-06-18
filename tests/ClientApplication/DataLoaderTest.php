@@ -127,7 +127,7 @@ class DataLoaderTest extends TestCase
                 ],
                 'kms_key_id' => 'kms-key-id-1'
             ],
-            'id' => '6ffc0253-7f98-4670-88c4-e924187592b1',
+            'id' => 'app-1-id',
             'password_hash' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90a'
         ],
         [
@@ -151,7 +151,7 @@ class DataLoaderTest extends TestCase
                 ],
                 'kms_key_id' => 'kms-key-id-2'
             ],
-            'id' => '6ffc0253-7f98-4670-88c4-e924187592b2',
+            'id' => 'app-2-id',
             'password_hash' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90b'
         ],
         [
@@ -219,7 +219,7 @@ class DataLoaderTest extends TestCase
                 ],
                 'kms_key_id' => 'kms-key-id-3'
             ],
-            'id' => '6ffc0253-7f98-4670-88c4-e924187592b3',
+            'id' => 'app-3-id',
             'password_hash' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90c'
         ],
         [
@@ -232,7 +232,7 @@ class DataLoaderTest extends TestCase
             'scopes' => [
                 'profile.serato.com' => ['profile-edit-admin'],
             ],
-            'id' => '6ffc0253-7f98-4670-88c4-e924187592b4',
+            'id' => 'app-4-id',
             'password_hash' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90d'
         ],
         [
@@ -258,7 +258,7 @@ class DataLoaderTest extends TestCase
                 ],
                 'kms_key_id' => 'kms-key-id-5'
             ],
-            'id' => '6ffc0253-7f98-4670-88c4-e924187592b5',
+            'id' => 'app-5-id',
             'password_hash' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90e'
         ],
         [
@@ -287,7 +287,7 @@ class DataLoaderTest extends TestCase
                     '403' => 'pages/error/403.studio.html'
                 ]
             ],
-            'id' => '6ffc0253-7f98-4670-88c4-e924187592b6',
+            'id' => 'app-6-id',
             'password_hash' => '$2y$10$JALUJZhEAwwechMrF5Ixfe/4x8VG5pmJLod1FEchAFw0TkFUWc90f'
         ]
     ];
