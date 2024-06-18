@@ -45,7 +45,10 @@ class DataLoaderTest extends TestCase
             $this->getFileSystemCachePool()
         );
 
-        $this->assertValidAppData($dataLoader->getApp(null, false));
+        $this->assertEquals(
+            DataLoaderTest::EXPECTED_SUCCESSFUL_OUTPUT,
+            $dataLoader->getApp(null, false)
+        );
     }
 
     public function testSuccessfulLoadUsingCache()
@@ -99,20 +102,9 @@ class DataLoaderTest extends TestCase
         return array_merge($clientAppResponse, $secretReponses);
     }
 
-    private function assertValidAppData(array $appData): void
-    {
-        foreach ($appData as $index => $data) {
-            // Check resulting array with expected array including the password_hash
-            $this->assertEquals(
-                DataLoaderTest::EXPECTED_SUCCESSFUL_OUTPUT[$index],
-                $data
-            );
-        }
-    }
-
     /**
     * The expected output array with the correct array structure used by the client applications.
-    * This should not be change unless we change it in the client applications!
+    * This should not be changed unless we change it in the client applications!
     */
     private const EXPECTED_SUCCESSFUL_OUTPUT = [
         [
