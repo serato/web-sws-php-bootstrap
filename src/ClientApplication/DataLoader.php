@@ -152,26 +152,24 @@ class DataLoader
                 $parsedData['scopes'] = $this->parseScopes($appData['basic_auth_scopes']);
             }
 
-            if (isset($appData['jwt'])) {
-                $parsedData['jwt'] =  $this->parseJwt($appData['jwt']);
-            }
-
-            // Always add `kms_key_id` inside jwt
-            if (isset($appData['kms_key_id'])) {
-                $parsedData['jwt']['kms_key_id'] = $appData['kms_key_id'];
-                unset($parsedData['kms_key_id']);
-            }
-
             // Format the optional `custom_template_path` item
             if (isset($appData['custom_template_path'])) {
                 $parsedData['custom_template_path'] = $this->parseCustomTemplatePath($appData['custom_template_path']);
             }
 
+            if (isset($appData['jwt'])) {
+                $parsedData['jwt'] =  $this->parseJwt($appData['jwt']);
+            } else {
+                $parsedData['jwt'] = [];
+            }
+
+            // Always add `kms_key_id` inside jwt
+            // `kms_key_id` is a required field, so no need to check if it exists in $appData
+            $parsedData['jwt']['kms_key_id'] = $appData['kms_key_id'];
+            unset($parsedData['kms_key_id']);
+
             // Add optional `restricted_to` item
             if (isset($appData['restricted_to'])) {
-                if (!isset($parsedData['jwt'])) {
-                    $parsedData['jwt'] = [];
-                }
                 if (!isset($parsedData['jwt']['access'])) {
                     $parsedData['jwt']['access'] = [];
                 }
