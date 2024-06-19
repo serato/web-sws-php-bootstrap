@@ -17,7 +17,7 @@ use Serato\SwsApp\ClientApplication\Exception\InvalidFileContentsException;
 
 class DataLoader
 {
-    private const CACHE_EXPIRY_TIME = 3600; // seconds
+    private const CACHE_EXPIRY_TIME = 120; // seconds
     private const CLIENT_APPS_DATA_CACHE_KEY = 'SWS-Client-Applications-Data';
     private const ENVIRONMENTS = ['dev', 'test', 'production'];
     private const S3_BUCKET_NAME = 'sws.clientapps';
