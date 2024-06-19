@@ -83,7 +83,7 @@ class DataLoader
         }
 
         // Fetch client-applications-{$env}.json from S3
-        $clientAppsRawData = $this->loadFromS3(self::S3_BASE_PATH . '/client-applications-{$env}.json');
+        $clientAppsRawData = $this->loadFromS3(self::S3_BASE_PATH . "/client-applications-{$env}.json");
 
         // Generate output array
         $clientAppsData = $this->parseClientAppData($clientAppsRawData);
@@ -96,7 +96,9 @@ class DataLoader
     /**
      * Save data to cache if available.
      *
-     * @return array
+     * @param string $cacheKey The cache key under which to store the data.
+     * @param array $data The client apps data to be stored in the cache.
+     * @return void
      */
     private function saveToCache(string $cacheKey, array $data): void
     {
