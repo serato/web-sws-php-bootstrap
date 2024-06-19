@@ -9,8 +9,6 @@ use Serato\SwsApp\ClientApplication\DataLoader;
 use Serato\SwsApp\Test\TestCase;
 use Serato\SwsApp\ClientApplication\Exception\InvalidEnvironmentNameException;
 use Serato\SwsApp\ClientApplication\Exception\InvalidFileContentsException;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter as FileSystemCachePool;
-use Symfony\Component\Cache\CacheItem;
 
 class DataLoaderTest extends TestCase
 {
