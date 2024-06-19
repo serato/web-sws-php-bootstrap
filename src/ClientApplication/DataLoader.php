@@ -157,14 +157,9 @@ class DataLoader
                 $parsedData['custom_template_path'] = $this->parseCustomTemplatePath($appData['custom_template_path']);
             }
 
-            if (isset($appData['jwt'])) {
-                $parsedData['jwt'] =  $this->parseJwt($appData['jwt']);
-            } else {
-                $parsedData['jwt'] = [];
-            }
+            $parsedData['jwt'] = isset($appData['jwt']) ? $this->parseJwt($appData['jwt']) : [];
 
             // Always add `kms_key_id` inside jwt
-            // `kms_key_id` is a required field, so no need to check if it exists in $appData
             $parsedData['jwt']['kms_key_id'] = $appData['kms_key_id'];
             unset($parsedData['kms_key_id']);
 
