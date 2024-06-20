@@ -74,7 +74,7 @@ class DataLoader
         }
 
         $cacheKey = str_replace(['\\', '/'], '_', __CLASS__ . '--' . self::CLIENT_APPS_DATA_CACHE_KEY);
-        var_dump(cacheKey);
+        var_dump($cacheKey);
         var_dump(time());
         // Read from cache, if specified
         if ($useCache) {
