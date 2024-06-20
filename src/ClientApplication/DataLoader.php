@@ -83,6 +83,8 @@ class DataLoader
                 var_dump($item);
                 var_dump('cache hit');
                 return $item->get();
+            } else {
+                var_dump($item);
             }
         }
 
