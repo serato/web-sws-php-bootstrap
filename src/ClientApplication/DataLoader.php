@@ -74,6 +74,8 @@ class DataLoader
         }
 
         $cacheKey = str_replace(['\\', '/'], '_', __CLASS__ . '--' . self::CLIENT_APPS_DATA_CACHE_KEY);
+        var_dump($cacheKey);
+        die;
         // Read from cache, if specified
         if ($useCache) {
             $item = $this->psrCache->getItem($cacheKey);
