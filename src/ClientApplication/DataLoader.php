@@ -78,9 +78,9 @@ class DataLoader
         var_dump(time());
         // Read from cache, if specified
         if ($useCache) {
-            var_dump('cache hit');
             $item = $this->psrCache->getItem($cacheKey);
             if ($item->isHit()) {
+                var_dump('cache hit');
                 return $item->get();
             }
         }
