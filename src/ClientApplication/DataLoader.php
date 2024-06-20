@@ -110,7 +110,8 @@ class DataLoader
         var_dump('cache expiry time: ' . $expiryTime->getTimestamp());
         var_dump($expiryTime->getTimezone()->getName());
         $item->set($data);
-        $item->expiresAt($expiryTime);
+        $item->expiresAfter(self::CACHE_EXPIRY_TIME);
+//        $item->expiresAt($expiryTime);
         $this->psrCache->save($item);
         var_dump('saved');
     }
