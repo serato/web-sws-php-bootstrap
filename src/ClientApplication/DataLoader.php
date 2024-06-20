@@ -78,7 +78,7 @@ class DataLoader
         if ($useCache) {
             $item = $this->psrCache->getItem($cacheKey);
             if ($item->isHit()) {
-                var_dump($item);
+//                var_dump($item);
                 var_dump('cache hit');
                 return $item->get();
             }
