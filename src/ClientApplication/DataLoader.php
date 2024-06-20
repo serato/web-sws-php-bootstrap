@@ -73,7 +73,9 @@ class DataLoader
             $env = $this->env;
         }
 
-        $cacheKey = str_replace(['\\', '/'], '_', __CLASS__ . '--' . self::CLIENT_APPS_DATA_CACHE_KEY. '-v2');
+        $s3Object = self::S3_BASE_PATH . "/client-applications-{$env}.json";
+
+        $cacheKey = str_replace(['\\', '/'], '_', __CLASS__ . '--' . $s3Object);
         var_dump($cacheKey);
 
         // Read from cache, if specified
@@ -91,7 +93,7 @@ class DataLoader
         }
 
         // Fetch client-applications-{$env}.json from S3
-        $clientAppsRawData = $this->loadFromS3(self::S3_BASE_PATH . "/client-applications-{$env}.json");
+        $clientAppsRawData = $this->loadFromS3($s3Object);
 
         // Generate output array
         $clientAppsData = $this->parseClientAppData($clientAppsRawData);
