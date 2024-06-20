@@ -105,13 +105,15 @@ class DataLoader
      */
     private function saveToCache(string $cacheKey, array $data): void
     {
+        $time = time() + self::CACHE_EXPIRY_TIME;
         $item = $this->psrCache->getItem($cacheKey);
         $expiryTime = new DateTime();
-        $expiryTime->setTimestamp(time() + self::CACHE_EXPIRY_TIME);
+        $expiryTime->setTimestamp($time);
         $item->set($data);
         $item->expiresAt($expiryTime);
         $this->psrCache->save($item);
-        var_dump('cache valid until: ' . time() + self::CACHE_EXPIRY_TIME);
+        $time = time() + self::CACHE_EXPIRY_TIME;
+        var_dump('cache valid until: ' . $time);
         var_dump('cache saved');
     }
 
