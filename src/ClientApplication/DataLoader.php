@@ -74,8 +74,11 @@ class DataLoader
         }
 
         $cacheKey = str_replace(['\\', '/'], '_', __CLASS__ . '--' . self::CLIENT_APPS_DATA_CACHE_KEY);
+        var_dump(cacheKey);
+        var_dump(time());
         // Read from cache, if specified
         if ($useCache) {
+            var_dump('cache hit');
             $item = $this->psrCache->getItem($cacheKey);
             if ($item->isHit()) {
                 return $item->get();
@@ -108,6 +111,8 @@ class DataLoader
         $item->set($data);
         $item->expiresAt($expiryTime);
         $this->psrCache->save($item);
+        var_dump('cache valid until: ' . time() + self::CACHE_EXPIRY_TIME);
+        var_dump('cache saved');
     }
 
     /**
