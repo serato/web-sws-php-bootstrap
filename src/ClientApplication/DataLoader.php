@@ -17,7 +17,7 @@ use Serato\SwsApp\ClientApplication\Exception\InvalidFileContentsException;
 
 class DataLoader
 {
-    private const CACHE_EXPIRY_TIME = 120; // seconds
+    private const CACHE_EXPIRY_TIME = 20; // seconds
     private const CLIENT_APPS_DATA_CACHE_KEY = 'SWS-Client-Applications-Data';
     private const ENVIRONMENTS = ['dev', 'test', 'production'];
     private const S3_BUCKET_NAME = 'sws.clientapps';
@@ -78,6 +78,7 @@ class DataLoader
         if ($useCache) {
             $item = $this->psrCache->getItem($cacheKey);
             if ($item->isHit()) {
+                var_dump('cache hit');
                 return $item->get();
             }
         }
@@ -108,6 +109,7 @@ class DataLoader
         $item->set($data);
         $item->expiresAt($expiryTime);
         $this->psrCache->save($item);
+        var_dump('saved');
     }
 
     /**
