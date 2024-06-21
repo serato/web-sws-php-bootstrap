@@ -29,7 +29,7 @@ class DataLoaderTest extends TestCase
         $this->expectException(InvalidFileContentsException::class);
         $dataLoader = new DataLoader(
             'dev',
-            $this->getAwsSdk($this->getAwsMockResponses('client-applications.malformed.json', 'secrets.json')),
+            $this->getAwsSdk($this->getAwsMockResponses('client-applications.malformed.json')),
             $this->getFileSystemCachePool()
         );
         $dataLoader->getApp(null, false);
@@ -39,7 +39,7 @@ class DataLoaderTest extends TestCase
     {
         $dataLoader = new DataLoader(
             'dev',
-            $this->getAwsSdk($this->getAwsMockResponses('client-applications-dev.json', 'secrets.json')),
+            $this->getAwsSdk($this->getAwsMockResponses('client-applications-dev.json')),
             $this->getFileSystemCachePool()
         );
 
@@ -70,7 +70,7 @@ class DataLoaderTest extends TestCase
 
         $dataLoader = new DataLoader(
             'dev',
-            $this->getAwsSdk($this->getAwsMockResponses('client-applications-dev.json', 'secrets.json')),
+            $this->getAwsSdk($this->getAwsMockResponses('client-applications-dev.json')),
             $cachePoolMock
         );
 
@@ -82,22 +82,18 @@ class DataLoaderTest extends TestCase
     }
 
     /**
-     * Creates an array of mock AWS Result objects.
+     * Creates an array of mock AWS responses.
      *
-     * The array contains the responses to S3 GetObject requests for the `client-applications.json` file
-     * and the SecretsManager GetSecretValue for the client app secrets.
+     * The array contains the response from `client-applications-dev.json` in S3
      *
+     * @param string $appsFileName The name of the JSON file
      * @return array
      */
-    private function getAwsMockResponses(string $appsFileName, string $secretsFileName): array
+    private function getAwsMockResponses(string $appsFileName): array
     {
-        $clientAppResponse = [
+        return [
             ['Body' => file_get_contents(__DIR__ . '/data/' . $appsFileName)]
         ];
-
-        $secretReponses = json_decode(file_get_contents(__DIR__ . '/data/' . $secretsFileName), true) ?? [];
-
-        return array_merge($clientAppResponse, $secretReponses);
     }
 
     /**

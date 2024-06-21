@@ -4,7 +4,6 @@ namespace Serato\SwsApp\ClientApplication;
 
 use DateTime;
 use Aws\Sdk as AwsSdk;
-use Aws\SecretsManager\SecretsManagerClient;
 use Psr\Cache\CacheItemPoolInterface;
 use Serato\SwsApp\ClientApplication\Exception\InvalidEnvironmentNameException;
 use Serato\SwsApp\ClientApplication\Exception\InvalidFileContentsException;
@@ -32,9 +31,6 @@ class DataLoader
     /** @var CacheItemPoolInterface */
     private $psrCache;
 
-    /** @var SecretsManagerClient */
-    private $secretsManagerClient;
-
     /**
      * Constructs the object
      *
@@ -57,7 +53,6 @@ class DataLoader
         $this->env = $env;
         $this->awsSdk = $awsSdk;
         $this->psrCache = $psrCache;
-        $this->secretsManagerClient = $this->awsSdk->createSecretsManager(['version' => '2017-10-17']);
     }
 
     /**
