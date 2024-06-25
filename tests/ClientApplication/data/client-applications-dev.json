@@ -1,0 +1,330 @@
+[
+    {
+        "id": "11111111-1111-1111-1111-111111111111",
+        "password_hash": "password-hash-1",
+        "path": "client\/application-1",
+        "name": "Application 1",
+        "description": "Application with JWT params basic default scopes",
+        "seas": false,
+        "seas_after_sign_in": false,
+        "force_password_re_entry_on_logout": false,
+        "requires_password_re_entry": false,
+        "jwt": {
+            "access": {
+                "services": [
+                    "ecom.serato.com"
+                ],
+                "default_scopes": [
+                    {
+                        "service": "ecom.serato.com",
+                        "scopes": [
+                            "user-read",
+                            "user-write"
+                        ]
+                    }
+                ],
+                "expires": 900
+            },
+            "refresh": {
+                "expires": 31536000
+            }
+        },
+        "kms_key_id": "kms-key-id-1"
+    },
+    {
+        "id": "22222222-2222-2222-2222-222222222222",
+        "password_hash": "password-hash-2",
+        "path": "client\/application-2",
+        "name": "Application 2",
+        "description": "Application with JWT params and `restricted_to` settings",
+        "seas": false,
+        "seas_after_sign_in": false,
+        "force_password_re_entry_on_logout": false,
+        "requires_password_re_entry": false,
+        "restricted_to": [
+            "Serato"
+        ],
+        "jwt": {
+            "access": {
+                "services": [
+                    "license.serato.io"
+                ],
+                "default_scopes": [
+                    {
+                        "service": "license.serato.io",
+                        "scopes": [
+                            "user-license",
+                            "user-license-activation"
+                        ]
+                    }
+                ],
+                "expires": 900
+            },
+            "refresh": {
+                "expires": 31536000
+            }
+        },
+        "kms_key_id": "kms-key-id-2"
+    },
+    {
+        "id": "33333333-3333-3333-3333-333333333333",
+        "password_hash": "password-hash-3",
+        "path": "client\/application-3",
+        "name": "Application 3",
+        "description": "Application with JWT params and lots default and permissioned scopes",
+        "seas": true,
+        "seas_after_sign_in": false,
+        "force_password_re_entry_on_logout": false,
+        "requires_password_re_entry": false,
+        "refresh_token_group": "serato-website",
+        "jwt": {
+            "access": {
+                "services": [
+                    "id.serato.io",
+                    "license.serato.io",
+                    "ecom.serato.com"
+                ],
+                "default_scopes": [
+                    {
+                        "service": "license.serato.io",
+                        "scopes": [
+                            "user-license",
+                            "user-license-activation"
+                        ]
+                    },
+                    {
+                        "service": "id.serato.io",
+                        "scopes": [
+                            "user-get",
+                            "user-update"
+                        ]
+                    },
+                    {
+                        "service": "ecom.serato.com",
+                        "scopes": [
+                            "user-read",
+                            "user-write"
+                        ]
+                    }
+                ],
+                "permissioned_scopes": [
+                    {
+                        "service": "license.serato.io",
+                        "scopes": [
+                            {
+                                "scope": "user-license-admin",
+                                "group_membership": [
+                                    [
+                                        "Root"
+                                    ],
+                                    [
+                                        "Serato",
+                                        "Support"
+                                    ],
+                                    [
+                                        "Serato",
+                                        "License Admin"
+                                    ]
+                                ]
+                            },
+                            {
+                                "scope": "product-batch-read",
+                                "group_membership": [
+                                    [
+                                        "Root"
+                                    ],
+                                    [
+                                        "Serato",
+                                        "Product Batch - Read only"
+                                    ],
+                                    [
+                                        "Serato",
+                                        "Product Batch - Admin"
+                                    ]
+                                ]
+                            },
+                            {
+                                "scope": "product-batch-admin",
+                                "group_membership": [
+                                    [
+                                        "Root"
+                                    ],
+                                    [
+                                        "Serato",
+                                        "Product Batch - Admin"
+                                    ]
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "service": "id.serato.io",
+                        "scopes": [
+                            {
+                                "scope": "user-admin",
+                                "group_membership": [
+                                    [
+                                        "Root"
+                                    ],
+                                    [
+                                        "Serato",
+                                        "Support"
+                                    ]
+                                ]
+                            },
+                            {
+                                "scope": "user-groups-admin",
+                                "group_membership": [
+                                    [
+                                        "Root"
+                                    ],
+                                    [
+                                        "Serato"
+                                    ]
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "service": "ecom.serato.com",
+                        "scopes": [
+                            {
+                                "scope": "admin-user-read",
+                                "group_membership": [
+                                    [
+                                        "Root"
+                                    ],
+                                    [
+                                        "Serato",
+                                        "Support"
+                                    ]
+                                ]
+                            },
+                            {
+                                "scope": "admin-user-write",
+                                "group_membership": [
+                                    [
+                                        "Root"
+                                    ],
+                                    [
+                                        "Serato",
+                                        "Support"
+                                    ]
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "expires": 900
+            },
+            "refresh": {
+                "expires": 31536000
+            }
+        },
+        "kms_key_id": "kms-key-id-3"
+    },
+    {
+        "id": "44444444-4444-4444-4444-444444444444",
+        "password_hash": "password-hash-4",
+        "path": "client\/application-4",
+        "name": "Application 4",
+        "description": "Application with default scopes",
+        "seas": false,
+        "seas_after_sign_in": false,
+        "force_password_re_entry_on_logout": false,
+        "requires_password_re_entry": false,
+        "basic_auth_scopes": [
+            {
+                "service": "profile.serato.com",
+                "scopes": [
+                    "profile-edit-admin"
+                ]
+            }
+        ],
+        "kms_key_id": "kms-key-id-4"
+    },
+    {
+        "id": "55555555-5555-5555-5555-555555555555",
+        "password_hash": "password-hash-5",
+        "path": "client\/application-5",
+        "name": "Application 5",
+        "description": "Combination of basic scopes and JWT token",
+        "seas": false,
+        "seas_after_sign_in": false,
+        "force_password_re_entry_on_logout": false,
+        "requires_password_re_entry": false,
+        "basic_auth_scopes": [
+            {
+                "service": "license.serato.io",
+                "scopes": [
+                    "app-license-admin",
+                    "user-license"
+                ]
+            }
+        ],
+        "jwt": {
+            "access": {
+                "services": [
+                    "license.serato.io"
+                ],
+                "default_scopes": [
+                    {
+                        "service": "license.serato.io",
+                        "scopes": [
+                            "user-license",
+                            "user-license-activation"
+                        ]
+                    }
+                ],
+                "expires": 900
+            },
+            "refresh": {
+                "expires": 31536000
+            }
+        },
+        "kms_key_id": "kms-key-id-5"
+    },
+    {
+        "id": "66666666-6666-6666-6666-666666666666",
+        "password_hash": "password-hash-6",
+        "path": "client\/application-6",
+        "name": "Application 6",
+        "description": "Application with JWT params and `custom_template_path` settings",
+        "seas": false,
+        "seas_after_sign_in": true,
+        "force_password_re_entry_on_logout": true,
+        "requires_password_re_entry": false,
+        "restricted_to": [
+            "Serato"
+        ],
+        "jwt": {
+            "access": {
+                "services": [
+                    "license.serato.io"
+                ],
+                "default_scopes": [
+                    {
+                        "service": "license.serato.io",
+                        "scopes": [
+                            "user-license",
+                            "user-license-activation"
+                        ]
+                    }
+                ],
+                "expires": 900
+            },
+            "refresh": {
+                "expires": 31536000
+            }
+        },
+        "kms_key_id": "kms-key-id-6",
+        "custom_template_path": {
+            "errors": [
+                {
+                    "http_status_code": 403,
+                    "template_path": "pages\/error\/403.studio.html"
+                }
+            ]
+        }
+    }
+]

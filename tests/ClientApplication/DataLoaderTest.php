@@ -2,204 +2,290 @@
 
 namespace Serato\SwsApp\Test\ClientApplication;
 
-use Aws\Sdk;
+use Mockery;
+use Psr\Cache\CacheItemInterface;
+use Psr\Cache\CacheItemPoolInterface;
 use Serato\SwsApp\ClientApplication\DataLoader;
 use Serato\SwsApp\Test\TestCase;
-use Exception;
+use Serato\SwsApp\ClientApplication\Exception\InvalidEnvironmentNameException;
+use Serato\SwsApp\ClientApplication\Exception\InvalidFileContentsException;
 
 class DataLoaderTest extends TestCase
 {
     /**
-     * @expectedException \Serato\SwsApp\ClientApplication\Exception\InvalidEnvironmentNameException
+     * Test invalid environment name is provided
      */
     public function testInvalidEnvironmentName()
     {
-        $dataLoader = new DataLoader('invalidEnvName', $this->getAwsSdk(), $this->getFileSystemCachePool());
+        $this->expectException(InvalidEnvironmentNameException::class);
+        new DataLoader('invalidEnvName', $this->getAwsSdk(), $this->getFileSystemCachePool());
     }
 
     /**
-     * @expectedException \Serato\SwsApp\ClientApplication\Exception\InvalidFileContentsException
+     * Test importing malformed app data json
      */
     public function testMalformedAppData()
     {
+        $this->expectException(InvalidFileContentsException::class);
         $dataLoader = new DataLoader(
             'dev',
-            $this->getAwsSdk($this->getAwsMockResponses('apps.malformed.json', 'credentials.dev.json')),
+            $this->getAwsSdk($this->getAwsMockResponses('client-applications.malformed.json')),
             $this->getFileSystemCachePool()
         );
-        $dataLoader->getApp();
-    }
-
-    /**
-     * @expectedException \Serato\SwsApp\ClientApplication\Exception\InvalidFileContentsException
-     */
-    public function testMalformedCredentialsData()
-    {
-        $dataLoader = new DataLoader(
-            'dev',
-            $this->getAwsSdk($this->getAwsMockResponses('apps.json', 'credentials.malformed.json')),
-            $this->getFileSystemCachePool()
-        );
-        $dataLoader->getApp();
-    }
-
-    /**
-     * @expectedException \Serato\SwsApp\ClientApplication\Exception\MissingApplicationIdException
-     */
-    public function testCredentialsMissingAppId()
-    {
-        $dataLoader = new DataLoader(
-            'dev',
-            $this->getAwsSdk($this->getAwsMockResponses('apps.json', 'credentials.missing-id.json')),
-            $this->getFileSystemCachePool()
-        );
-        $dataLoader->getApp();
-    }
-
-    /**
-     * @expectedException \Serato\SwsApp\ClientApplication\Exception\MissingApplicationPasswordHash
-     */
-    public function testCredentialsMissingPasswordHash()
-    {
-        $dataLoader = new DataLoader(
-            'dev',
-            $this->getAwsSdk($this->getAwsMockResponses('apps.json', 'credentials.missing-password.json')),
-            $this->getFileSystemCachePool()
-        );
-        $dataLoader->getApp();
+        $dataLoader->getApp(null, false);
     }
 
     public function testSuccessfulLoad()
     {
         $dataLoader = new DataLoader(
             'dev',
-            $this->getAwsSdk($this->getAwsMockResponses('apps.json', 'credentials.dev.json')),
+            $this->getAwsSdk($this->getAwsMockResponses('client-applications-dev.json')),
             $this->getFileSystemCachePool()
         );
 
-        $this->assertValidAppData($dataLoader->getApp());
+        $this->assertEquals(
+            DataLoaderTest::EXPECTED_SUCCESSFUL_OUTPUT,
+            $dataLoader->getApp(null, false)
+        );
     }
 
-    public function testLocalDirInvalidDirPath()
+    public function testSuccessfulLoadUsingCache()
     {
-        try {
-            new DataLoader(
-                'dev',
-                $this->getAwsSdk(),
-                $this->getFileSystemCachePool(),
-                './no-such-directory'
-            );
-            // Shouldn't get this far
-            $this->assertTrue(false);
-        } catch (Exception $e) {
-            $this->assertTrue(strpos($e->getMessage(), 'Path does not exist') !== false);
-        }
-    }
+        $expectedResult = ['Client Apps array'];
+        // Mock the cache to return an array
+        $cacheItemMock = Mockery::mock(CacheItemInterface::class);
+        $cacheItemMock->shouldReceive('get')
+            ->once()
+            ->andReturn($expectedResult);
+        $cacheItemMock->shouldReceive('isHit')
+            ->once()
+            ->andReturn(true);
 
-    public function testLocalDirSpecifyFilePath()
-    {
-        try {
-            new DataLoader(
-                'dev',
-                $this->getAwsSdk(),
-                $this->getFileSystemCachePool(),
-                rtrim(__DIR__, '/') . '/data/apps.json'
-            );
-            // Shouldn't get this far
-            $this->assertTrue(false);
-        } catch (Exception $e) {
-            $this->assertTrue(strpos($e->getMessage(), 'Path is not a directory') !== false);
-        }
-    }
+        $cachePoolMock = Mockery::mock(CacheItemPoolInterface::class);
+        $cachePoolMock
+            ->shouldReceive('getItem')
+            ->once()
+            ->andReturn($cacheItemMock);
 
-    public function testLocalDirInvalidJsonFiles()
-    {
-        try {
-            $dataLoader = new DataLoader(
-                'dev',
-                $this->getAwsSdk(),
-                $this->getFileSystemCachePool(),
-                rtrim(__DIR__, '/') . '/data/local_malformed'
-            );
-            $dataLoader->getApp();
-            // Shouldn't get this far
-            $this->assertTrue(false);
-        } catch (Exception $e) {
-            $this->assertTrue(strpos($e->getMessage(), 'File does not contain valid JSON') !== false);
-        }
-    }
 
-    public function testLocalDirInvalidFilesDontExist()
-    {
-        try {
-            $dataLoader = new DataLoader(
-                'dev',
-                $this->getAwsSdk(),
-                $this->getFileSystemCachePool(),
-                rtrim(__DIR__, '/') . '/data/local_does_not_exist'
-            );
-            $dataLoader->getApp();
-            // Shouldn't get this far
-            $this->assertTrue(false);
-        } catch (Exception $e) {
-            $this->assertTrue(strpos($e->getMessage(), 'File does not exist') !== false);
-        }
-    }
-
-    public function testLocalDirValidFiles()
-    {
         $dataLoader = new DataLoader(
             'dev',
-            $this->getAwsSdk(),
-            $this->getFileSystemCachePool(),
-            rtrim(__DIR__, '/') . '/data'
+            $this->getAwsSdk($this->getAwsMockResponses('client-applications-dev.json')),
+            $cachePoolMock
         );
-        $this->assertValidAppData($dataLoader->getApp());
+
+        $result = $dataLoader->getApp();
+
+        // Should return what's in the cache and not the parsed data
+        $this->assertEquals($expectedResult, $result);
+        Mockery::close();
     }
 
     /**
-     * Creates an array of mock AWS Result objects.
+     * Creates an array of mock AWS responses.
      *
-     * The array contains two items corresponding to S3 GetObject
-     * requests for the `apps.json` file and `credentials.dev.json` file.
+     * The array contains the response from `client-applications-dev.json` in S3
      *
+     * @param string $appsFileName The name of the JSON file
      * @return array
      */
-    private function getAwsMockResponses(string $appsFileName, string $credentialsFileName): array
+    private function getAwsMockResponses(string $appsFileName): array
     {
-        # FYI `Serato\SwsApp\ClientApplication\DataLoader` always loads the apps file first
         return [
-            ['Body' => file_get_contents(__DIR__ . '/data/' . $appsFileName)],
-            ['Body' => file_get_contents(__DIR__ . '/data/' . $credentialsFileName)]
+            ['Body' => file_get_contents(__DIR__ . '/data/' . $appsFileName)]
         ];
     }
 
-    private function assertValidAppData(array $appData): void
-    {
-        # Make sure that the correct number of apps are loaded
-        $this->assertEquals(4, count($appData));
-
-        # *** Validate some details ***
-
-        # 1. App 1 should have JWT settings but no 'restricted_to` setting
-        $this->assertTrue(isset($appData['App1']['jwt']));
-        $this->assertFalse(isset($appData['App1']['jwt']['access']['restricted_to']));
-
-        # 2. App 2 should have JWT settings and a 'restricted_to` setting
-        $this->assertTrue(isset($appData['App2']['jwt']));
-        $this->assertTrue(isset($appData['App2']['jwt']['access']['restricted_to']));
-
-        # 3. App 3 should have no JWT settings
-        $this->assertFalse(isset($appData['App3']['jwt']));
-
-        # 4. App 4 should have JWT settings with `permissioned_scopes`
-        $this->assertTrue(isset($appData['App4']['jwt']));
-        $this->assertTrue(isset($appData['App4']['jwt']['access']['permissioned_scopes']));
-
-        # 5. App 5 should no be present in data (it's defined in `apps.json` but not `credentials.dev.json`)
-        $this->assertFalse(isset($appData['App5']));
-
-        # 6. App 6 should no be present in data (it's defined in `credentials.dev.json` but not `apps.json`)
-        $this->assertFalse(isset($appData['App6']));
-    }
+    /**
+    * The expected output array with the correct array structure used by the client applications.
+    * This should not be changed unless we change it in the client applications!
+    */
+    private const EXPECTED_SUCCESSFUL_OUTPUT = [
+        [
+            'name' => 'Application 1',
+            'description' => 'Application with JWT params basic default scopes',
+            'seas' => false,
+            'seasAfterSignIn' => false,
+            'forcePasswordReEntryOnLogout' => false,
+            'requiresPasswordReEntry' => false,
+            'jwt' => [
+                'access' => [
+                    'default_scopes' => [
+                        'ecom.serato.com' => ['user-read', 'user-write']
+                    ],
+                    'expires' => 900,
+                    'default_audience' => ['ecom.serato.com']
+                ],
+                'refresh' => [
+                    'expires' => 31536000
+                ],
+                'kms_key_id' => 'kms-key-id-1'
+            ],
+            'id' => '11111111-1111-1111-1111-111111111111',
+            'password_hash' => 'password-hash-1'
+        ],
+        [
+            'name' => 'Application 2',
+            'description' => 'Application with JWT params and `restricted_to` settings',
+            'seas' => false,
+            'seasAfterSignIn' => false,
+            'forcePasswordReEntryOnLogout' => false,
+            'requiresPasswordReEntry' => false,
+            'jwt' => [
+                'access' => [
+                    'default_scopes' => [
+                        'license.serato.io' => ['user-license', 'user-license-activation']
+                    ],
+                    'expires' => 900,
+                    'default_audience' => ['license.serato.io'],
+                    'restricted_to' => ['Serato']
+                ],
+                'refresh' => [
+                    'expires' => 31536000
+                ],
+                'kms_key_id' => 'kms-key-id-2'
+            ],
+            'id' => '22222222-2222-2222-2222-222222222222',
+            'password_hash' => 'password-hash-2'
+        ],
+        [
+            'name' => 'Application 3',
+            'description' => 'Application with JWT params and lots default and permissioned scopes',
+            'seas' => true,
+            'seasAfterSignIn' => false,
+            'forcePasswordReEntryOnLogout' => false,
+            'requiresPasswordReEntry' => false,
+            'refreshTokenGroup' => 'serato-website',
+            'jwt' => [
+                'access' => [
+                    'default_scopes' => [
+                        'license.serato.io' => ['user-license', 'user-license-activation'],
+                        'id.serato.io' => ['user-get', 'user-update'],
+                        'ecom.serato.com' => ['user-read', 'user-write']
+                    ],
+                    'permissioned_scopes' => [
+                        'license.serato.io' => [
+                            'user-license-admin' => [
+                                ['Root'],
+                                ['Serato', 'Support'],
+                                ['Serato', 'License Admin']
+                            ],
+                            'product-batch-read' => [
+                                ['Root'],
+                                ['Serato', 'Product Batch - Read only'],
+                                ['Serato', 'Product Batch - Admin']
+                            ],
+                            'product-batch-admin' => [
+                                ['Root'],
+                                ['Serato', 'Product Batch - Admin']
+                            ]
+                        ],
+                        'id.serato.io' => [
+                            'user-admin' => [
+                                ['Root'],
+                                ['Serato', 'Support']
+                            ],
+                            'user-groups-admin' => [
+                                ['Root'],
+                                ['Serato']
+                            ]
+                        ],
+                        'ecom.serato.com' => [
+                            'admin-user-read' => [
+                                ['Root'],
+                                ['Serato', 'Support']
+                            ],
+                            'admin-user-write' => [
+                                ['Root'],
+                                ['Serato', 'Support']
+                            ]
+                        ]
+                    ],
+                    'expires' => 900,
+                    'default_audience' => [
+                        'id.serato.io',
+                        'license.serato.io',
+                        'ecom.serato.com'
+                    ]
+                ],
+                'refresh' => [
+                    'expires' => 31536000
+                ],
+                'kms_key_id' => 'kms-key-id-3'
+            ],
+            'id' => '33333333-3333-3333-3333-333333333333',
+            'password_hash' => 'password-hash-3'
+        ],
+        [
+            'name' => 'Application 4',
+            'description' => 'Application with default scopes',
+            'seas' => false,
+            'seasAfterSignIn' => false,
+            'forcePasswordReEntryOnLogout' => false,
+            'requiresPasswordReEntry' => false,
+            'scopes' => [
+                'profile.serato.com' => ['profile-edit-admin'],
+            ],
+            'id' => '44444444-4444-4444-4444-444444444444',
+            'password_hash' => 'password-hash-4',
+            'jwt' => [
+                'kms_key_id' => 'kms-key-id-4'
+            ]
+        ],
+        [
+            'name' => 'Application 5',
+            'description' => 'Combination of basic scopes and JWT token',
+            'seas' => false,
+            'seasAfterSignIn' => false,
+            'forcePasswordReEntryOnLogout' => false,
+            'requiresPasswordReEntry' => false,
+            'scopes' => [
+                'license.serato.io' => ['app-license-admin', 'user-license'],
+            ],
+            'jwt' => [
+                'access' => [
+                    'default_scopes' => [
+                        'license.serato.io' => ['user-license', 'user-license-activation']
+                    ],
+                    'expires' => 900,
+                    'default_audience' => ['license.serato.io'],
+                ],
+                'refresh' => [
+                    'expires' => 31536000
+                ],
+                'kms_key_id' => 'kms-key-id-5'
+            ],
+            'id' => '55555555-5555-5555-5555-555555555555',
+            'password_hash' => 'password-hash-5'
+        ],
+        [
+            'name' => 'Application 6',
+            'description' => 'Application with JWT params and `custom_template_path` settings',
+            'seas' => false,
+            'seasAfterSignIn' => true,
+            'forcePasswordReEntryOnLogout' => true,
+            'requiresPasswordReEntry' => false,
+            'jwt' => [
+                'access' => [
+                    'default_scopes' => [
+                        'license.serato.io' => ['user-license', 'user-license-activation']
+                    ],
+                    'expires' => 900,
+                    'default_audience' => ['license.serato.io'],
+                    'restricted_to' => ['Serato']
+                ],
+                'refresh' => [
+                    'expires' => 31536000
+                ],
+                'kms_key_id' => 'kms-key-id-6'
+            ],
+            'custom_template_path' => [
+                'errors' => [
+                    '403' => 'pages/error/403.studio.html'
+                ]
+            ],
+            'id' => '66666666-6666-6666-6666-666666666666',
+            'password_hash' => 'password-hash-6'
+        ]
+    ];
 }

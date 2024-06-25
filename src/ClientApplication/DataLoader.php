@@ -2,14 +2,11 @@
 
 namespace Serato\SwsApp\ClientApplication;
 
-use Exception;
 use DateTime;
 use Aws\Sdk as AwsSdk;
 use Psr\Cache\CacheItemPoolInterface;
 use Serato\SwsApp\ClientApplication\Exception\InvalidEnvironmentNameException;
 use Serato\SwsApp\ClientApplication\Exception\InvalidFileContentsException;
-use Serato\SwsApp\ClientApplication\Exception\MissingApplicationIdException;
-use Serato\SwsApp\ClientApplication\Exception\MissingApplicationPasswordHash;
 
 /**
  * Client Application Data Loader
@@ -19,19 +16,14 @@ use Serato\SwsApp\ClientApplication\Exception\MissingApplicationPasswordHash;
 
 class DataLoader
 {
-    private const CACHE_EXPIRY_TIME = 3600; // seconds
+    private const CACHE_EXPIRY_TIME = 120; // seconds
+    private const CLIENT_APPS_DATA_CACHE_KEY = 'SWS-Client-Applications-Data';
     private const ENVIRONMENTS = ['dev', 'test', 'production'];
     private const S3_BUCKET_NAME = 'sws.clientapps';
-    private const S3_BASE_PATH = 'v2';
-    private const COMMON_APP_DATA_NAME = 'apps.json';
-    private const ENV_CREDENTIALS_NAME_PATTERN = 'credentials.__env__.json';
-    private const CREDENTIALS_ENV_PLACEHOLDER = '__env__';
+    private const S3_BASE_PATH = 'v3';
 
     /** @var string */
     private $env;
-
-    /** @var array */
-    private $loadEnv = [];
 
     /** @var AwsSdk */
     private $awsSdk;
@@ -39,23 +31,17 @@ class DataLoader
     /** @var CacheItemPoolInterface */
     private $psrCache;
 
-    /** @var string */
-    private $localDirPath;
-
     /**
      * Constructs the object
      *
      * @param string                    $env            Application environment
      * @param AwsSdk                    $awsSdk         AWS SDK
      * @param CacheItemPoolInterface    $psrCache       PSR-6 cache item pool
-     * @param string                    $localDirPath   Path to a directory where configuration files can be found.
-     *                                                  Overrides `$awsSdk` and `$psrCache` parameters.
      */
     public function __construct(
         string $env,
         AwsSdk $awsSdk,
-        CacheItemPoolInterface $psrCache,
-        string $localDirPath = null
+        CacheItemPoolInterface $psrCache
     ) {
         if (!in_array($env, self::ENVIRONMENTS)) {
             throw new InvalidEnvironmentNameException(
@@ -67,23 +53,6 @@ class DataLoader
         $this->env = $env;
         $this->awsSdk = $awsSdk;
         $this->psrCache = $psrCache;
-
-        if ($localDirPath !== null) {
-            $this->localDirPath = realpath($localDirPath);
-            if ($this->localDirPath === false) {
-                throw new Exception("Invalid directory path '" . $this->localDirPath . "'. Path does not exist.");
-            }
-            if (!is_dir($this->localDirPath)) {
-                throw new Exception("Invalid directory path '" . $this->localDirPath . "'. Path is not a directory.");
-            }
-        }
-
-        // Load all environment data in `dev` environment
-        if ($this->env === 'dev') {
-            $this->loadEnv = self::ENVIRONMENTS;
-        } else {
-            $this->loadEnv = [$this->env];
-        }
     }
 
     /**
@@ -99,76 +68,7 @@ class DataLoader
             $env = $this->env;
         }
 
-        $credentialsObject = $this->getCredentialsObjectName($env);
-
-        return $this->mergeCredentials(
-            $this->getItem(self::COMMON_APP_DATA_NAME, $useCache),
-            $this->getItem($credentialsObject, $useCache),
-            $credentialsObject
-        );
-    }
-
-    /**
-     * Returns a data config item. Will look in the cache for the item if `$useCache = true`.
-     *
-     * @return array
-     */
-    public function getItem(string $name, bool $useCache = true): array
-    {
-        if ($this->localDirPath !== null) {
-            return $this->loadFromLocalDirectory($name);
-        } else {
-            return $this->loadFromCache($name, $useCache);
-        }
-    }
-
-    /**
-     * Returns the name of an environment-specific credentials object
-     *
-     * @param string $env
-     * @return string
-     */
-    public function getCredentialsObjectName(string $env): string
-    {
-        return str_replace(
-            self::CREDENTIALS_ENV_PLACEHOLDER,
-            $env,
-            self::ENV_CREDENTIALS_NAME_PATTERN
-        );
-    }
-
-    /**
-     * Load application data from a file in a local directory.
-     *
-     * @return array
-     */
-    private function loadFromLocalDirectory(string $name): array
-    {
-        $filePath = rtrim($this->localDirPath, '/') . '/' . $name;
-        if (file_exists($filePath)) {
-            $data = json_decode((string)file_get_contents($filePath), true);
-            if ($data === null) {
-                throw new Exception("Invalid file path '$filePath'. File does not contain valid JSON.");
-            } else {
-                return $data;
-            }
-        } else {
-            throw new Exception("Invalid file path '$filePath'. File does not exist.");
-        }
-    }
-
-    /**
-     * Load application data from cache if available.
-     * If not, fetch from S3 and save to cache.
-     *
-     * @return array
-     */
-    private function loadFromCache(string $name, bool $useCache = true): array
-    {
-        $s3ObjectName = self::S3_BASE_PATH . '/' . $name;
-
-        $cacheKey = str_replace(['\\', '/'], '_', __CLASS__ . '--' . self::S3_BUCKET_NAME . '--' . $s3ObjectName);
-
+        $cacheKey = str_replace(['\\', '/'], '_', __CLASS__ . '--' . self::CLIENT_APPS_DATA_CACHE_KEY);
         // Read from cache, if specified
         if ($useCache) {
             $item = $this->psrCache->getItem($cacheKey);
@@ -177,18 +77,32 @@ class DataLoader
             }
         }
 
-        // Fetch from S3
-        $s3Data = $this->loadFromS3($s3ObjectName);
+        // Fetch client-applications-{$env}.json from S3
+        $clientAppsRawData = $this->loadFromS3(self::S3_BASE_PATH . "/client-applications-{$env}.json");
+
+        // Generate output array
+        $clientAppsData = $this->parseClientAppData($clientAppsRawData);
 
         // Write to cache regardless of `$useCache` setting
+        $this->saveToCache($cacheKey, $clientAppsData);
+        return $clientAppsData;
+    }
+
+    /**
+     * Save data to cache if available.
+     *
+     * @param string $cacheKey The cache key under which to store the data.
+     * @param array $data The client apps data to be stored in the cache.
+     * @return void
+     */
+    private function saveToCache(string $cacheKey, array $data): void
+    {
         $item = $this->psrCache->getItem($cacheKey);
         $expiryTime = new DateTime();
         $expiryTime->setTimestamp(time() + self::CACHE_EXPIRY_TIME);
-        $item->set($s3Data);
+        $item->set($data);
         $item->expiresAt($expiryTime);
         $this->psrCache->save($item);
-
-        return $s3Data;
     }
 
     /**
@@ -214,59 +128,147 @@ class DataLoader
     }
 
     /**
-     * Merges environment specific credentials
+     * Merges environment specific credentials with the provided client app
+     * data.
      *
-     * @param array $commonData
-     * @param array $credentialsData
+     * @param array $clientAppsData data from client-applications.json
      * @return array
-     *
-     * @throws MissingApplicationIdException
-     * @throws MissingApplicationPasswordHash
      */
-    private function mergeCredentials(array $commonData, array $credentialsData, string $credentialsObjectPath): array
+    private function parseClientAppData(array $clientAppsData): array
     {
         $data = [];
-        foreach ($commonData as $appName => $appData) {
-            if (isset($credentialsData[$appName])) {
-                // All apps MUST have `id` and `password_hash` keys defined
-                if (!isset($credentialsData[$appName]['id'])) {
-                    throw new MissingApplicationIdException(
-                        'Invalid configuration for application `' . $appName . '` in credentials file `' .
-                        $credentialsObjectPath . '`. Missing required key `id`.'
-                    );
-                }
-                if (!isset($credentialsData[$appName]['password_hash'])) {
-                    throw new MissingApplicationPasswordHash(
-                        'Invalid configuration for application `' . $appName . '` in credentials file `' .
-                        $credentialsObjectPath . '`. Missing required key `password_hash`.'
-                    );
-                }
+        foreach ($clientAppsData as $appData) {
+            // Add all data
+            $parsedData = $appData;
+            // Exclude certain keys: 'path' is new property, 'basic_auth_scopes' is renamed to 'scopes' and
+            //'restricted_to' is nested in the 'jwt' objectin the output array
+            unset($parsedData['path'], $parsedData['basic_auth_scopes'], $parsedData['restricted_to']);
 
-                // Add common and required data
-                $data[$appName] = $appData;
-                $data[$appName]['id'] = $credentialsData[$appName]['id'];
-                $data[$appName]['password_hash'] = $credentialsData[$appName]['password_hash'];
-
-                // Add optional `kms_key_id` item
-                if (isset($credentialsData[$appName]['kms_key_id'])) {
-                    if (!isset($data[$appName]['jwt'])) {
-                        $data[$appName]['jwt'] = [];
-                    }
-                    $data[$appName]['jwt']['kms_key_id'] = $credentialsData[$appName]['kms_key_id'];
-                }
-
-                // Add option `restricted_to` item
-                if (isset($credentialsData[$appName]['restricted_to'])) {
-                    if (!isset($data[$appName]['jwt'])) {
-                        $data[$appName]['jwt'] = [];
-                    }
-                    if (!isset($data[$appName]['jwt']['access'])) {
-                        $data[$appName]['jwt']['access'] = [];
-                    }
-                    $data[$appName]['jwt']['access']['restricted_to'] = $credentialsData[$appName]['restricted_to'];
-                }
+            // Format scopes if present
+            if (isset($appData['basic_auth_scopes'])) {
+                $parsedData['scopes'] = $this->parseScopes($appData['basic_auth_scopes']);
             }
+
+            // Format the optional `custom_template_path` item
+            if (isset($appData['custom_template_path'])) {
+                $parsedData['custom_template_path'] = $this->parseCustomTemplatePath($appData['custom_template_path']);
+            }
+
+            $parsedData['jwt'] = isset($appData['jwt']) ? $this->parseJwt($appData['jwt']) : [];
+
+            // Always add `kms_key_id` inside jwt
+            $parsedData['jwt']['kms_key_id'] = $appData['kms_key_id'];
+            unset($parsedData['kms_key_id']);
+
+            // Add optional `restricted_to` item
+            if (isset($appData['restricted_to'])) {
+                if (!isset($parsedData['jwt']['access'])) {
+                    $parsedData['jwt']['access'] = [];
+                }
+                $parsedData['jwt']['access']['restricted_to'] = $appData['restricted_to'];
+            }
+
+            // Transform some keys from snake case to camel case
+            if (isset($appData['seas_after_sign_in'])) {
+                $parsedData['seasAfterSignIn'] = $appData['seas_after_sign_in'];
+                unset($parsedData['seas_after_sign_in']);
+            }
+            if (isset($appData['force_password_re_entry_on_logout'])) {
+                $parsedData['forcePasswordReEntryOnLogout'] = $appData['force_password_re_entry_on_logout'];
+                unset($parsedData['force_password_re_entry_on_logout']);
+            }
+            if (isset($appData['requires_password_re_entry'])) {
+                $parsedData['requiresPasswordReEntry'] = $appData['requires_password_re_entry'];
+                unset($parsedData['requires_password_re_entry']);
+            }
+            if (isset($appData['refresh_token_group'])) {
+                $parsedData['refreshTokenGroup'] = $appData['refresh_token_group'];
+                unset($parsedData['refresh_token_group']);
+            }
+
+            array_push($data, $parsedData);
         }
+
         return $data;
+    }
+
+    /**
+     * Return scopes to be in format
+     * 'service' => ['scope']
+     */
+    private function parseScopes(array $scopes): array
+    {
+        $parsedScopes = [];
+        foreach ($scopes as $scope) {
+            $parsedScopes[$scope['service']] = $scope['scopes'];
+        }
+        return $parsedScopes;
+    }
+
+    /**
+     * Return permissioned scopes to be in format
+     * 'service' => [
+     *     'scope' => ['group_membership']
+     * ],
+     */
+    private function parsePermissionedScopes(array $permissionedScopes): array
+    {
+        $parsedPermissionedScopes = [];
+        // $scopes = [ 'service' => 'webservice', 'scopes' => [ list of scopes ]]
+        foreach ($permissionedScopes as $serviceScopes) {
+            $userGroups = [];
+
+            // Parse the inner user group scopes
+            // $scope = [ 'scope' => 'scope name', 'group_membership' => [user group names]]
+            foreach ($serviceScopes['scopes'] as $serviceScope) {
+                $userGroups[$serviceScope['scope']] = $serviceScope['group_membership'];
+            }
+            $parsedPermissionedScopes[$serviceScopes['service']] = $userGroups;
+        }
+        return $parsedPermissionedScopes;
+    }
+    /**
+     * Return custom template paths to be in format
+     * 'errors' => [
+     *      'errorCode' => 'path'
+     * ]
+     */
+    private function parseCustomTemplatePath(array $customTemplatePath): array
+    {
+        foreach ($customTemplatePath['errors'] as $errorPath) {
+            $parsedPaths['errors'][$errorPath['http_status_code']] = $errorPath['template_path'];
+        }
+        return $parsedPaths;
+    }
+
+    /**
+     * Return jwt object to be in format
+     * ```
+     * 'access' => [
+     *      'default_audience' => [],
+     *      'default_scopes' => [
+     *          'service' => ['scope']
+     *       ],
+     *      'permissioned_scopes' => [
+     *          'service' => [
+     *            'scope' => ['group_membership']
+     *          ],
+     *       ],
+     *      <other properties>
+     * ]
+     * ```
+     */
+    private function parseJwt(array $jwt): array
+    {
+        $parsedJwt = $jwt;
+        $parsedJwt['access']['default_audience'] = $jwt['access']['services'];
+        unset($parsedJwt['access']['services']);
+        $parsedJwt['access']['default_scopes'] = $this->parseScopes($jwt['access']['default_scopes']);
+        if (isset($parsedJwt['access']['permissioned_scopes'])) {
+            $parsedJwt['access']['permissioned_scopes'] = $this->parsePermissionedScopes(
+                $jwt['access']['permissioned_scopes']
+            );
+        }
+        return $parsedJwt;
     }
 }
