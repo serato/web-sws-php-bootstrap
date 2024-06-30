@@ -2,25 +2,31 @@
 
 namespace Serato\SwsApp\Test\Slim\Middleware\AccessScopes;
 
+use Aws\Kms\KmsClient;
+use Aws\Result;
+use Serato\SwsApp\Http\Rest\Exception\ExpiredAccessTokenException;
+use Serato\SwsApp\Http\Rest\Exception\InvalidAccessTokenException;
+use Serato\SwsApp\Slim\Middleware\AbstractRequestWithAttributeMiddleware;
 use Serato\SwsApp\Test\TestCase;
-use Serato\SwsApp\Test\Slim\Middleware\AccessScopes\AccessToken as MockAccessToken;
 use Serato\SwsApp\Slim\Middleware\AccessScopes\AccessToken as AccessTokenMiddleware;
 use Serato\SwsApp\Slim\Middleware\EmptyWare;
 use Serato\Slimulator\EnvironmentBuilder;
 use Serato\Slimulator\Request;
 use Serato\Slimulator\Authorization\BearerToken;
 use Slim\Http\Response;
-use Aws\Sdk;
-use Mockery;
-use Mockery\MockInterface;
 
 /**
  * Unit tests for Serato\SwsApp\Slim\Middleware\AccessScopes\AccessToken
  */
 class AccessTokenTest extends TestCase
 {
-    private const MOCK_ENCRYPTION_KEY = '123456789abcdefg';
     private const WEBSERVICE_NAME = 'my.webservice.me';
+    private const APP_ID = 'my_app_id';
+    private const APP_NAME = 'my_app_name';
+    private const USER_ID = 242342342;
+    private const USER_EMAIL_ADDRESS = 'my_email@test.com';
+    private const SCOPES = [self::WEBSERVICE_NAME => ['scope1', 'scope2']];
+    protected const MOCK_ENCRYPTION_KEY = '123456789abcdefg';
 
     /**
      * Call the middleware without a token at all.
@@ -31,10 +37,9 @@ class AccessTokenTest extends TestCase
     public function testAccessToken()
     {
         $middleware = new AccessTokenMiddleware(
-            $this->getAwsSdk(),
+            $this->getKmsClient(),
             $this->getLogger(),
             $this->getFileSystemCachePool(),
-            $this->getMockMemcached(),
             self::WEBSERVICE_NAME
         );
         $nextMiddleware = new EmptyWare();
@@ -44,7 +49,9 @@ class AccessTokenTest extends TestCase
             $nextMiddleware
         );
 
-        $this->assertEquals(null, $nextMiddleware->getRequestInterface()->getAttribute(AccessTokenMiddleware::SCOPES));
+        $this->assertEquals(null, $nextMiddleware->getRequestInterface()->getAttribute(
+            AbstractRequestWithAttributeMiddleware::SCOPES
+        ));
     }
 
     /**
@@ -54,28 +61,26 @@ class AccessTokenTest extends TestCase
      */
     public function testMiddlewareWithValidateTokenInAuthHeader()
     {
-        $awsSdk = $this->getAwsSdkWithKmsResults();
-
-        $token = $this->getAccessToken(
-            $awsSdk,
-            time() + 300,
-            [self::WEBSERVICE_NAME]
+        $kmsClient = $this->getKmsClient();
+        $accessToken = new \Serato\Jwt\AccessToken($kmsClient, $this->getFileSystemCachePool());
+        $accessToken->set(
+            self::APP_ID,
+            self::APP_NAME,
+            self::MOCK_ENCRYPTION_KEY,
+            [self::WEBSERVICE_NAME],
+            100,
+            self::SCOPES,
+            AbstractRequestWithAttributeMiddleware::REFRESH_TOKEN_ID,
+            self::USER_ID,
+            self::USER_EMAIL_ADDRESS,
+            true
         );
-
-        $rtid = $token->getClaim(AccessTokenMiddleware::REFRESH_TOKEN_ID);
-        $mockMemcached = $this->getMockMemcached();
-
-        // Mock cache miss
-        $mockMemcached
-            ->shouldReceive('get')
-            ->withArgs(['r-' . $rtid])
-            ->andReturn(false);
+        $token = $accessToken->__toString();
 
         $middleware = new AccessTokenMiddleware(
-            $awsSdk,
+            $kmsClient,
             $this->getLogger(),
             $this->getFileSystemCachePool(),
-            $mockMemcached,
             self::WEBSERVICE_NAME
         );
 
@@ -84,14 +89,14 @@ class AccessTokenTest extends TestCase
         $response = $middleware(
             Request::createFromEnvironmentBuilder(
                 EnvironmentBuilder::create()
-                    ->setAuthorization(BearerToken::create((string)$token))
+                    ->setAuthorization(BearerToken::create($token))
             ),
             new Response(),
             $nextMiddleware
         );
 
         foreach ($this->getAccessTokenCustomClaims() as $name => $value) {
-            if ($name === AccessTokenMiddleware::SCOPES) {
+            if ($name === AbstractRequestWithAttributeMiddleware::SCOPES) {
                 $scopes = $nextMiddleware->getRequestInterface()->getAttribute($name);
                 $this->assertEquals(
                     $value[self::WEBSERVICE_NAME],
@@ -115,75 +120,40 @@ class AccessTokenTest extends TestCase
      *
      * However its parent refresh token has been invalidated i.e. it exists in memcache.
      *
-     * @expectedException \Serato\SwsApp\Http\Rest\Exception\ExpiredAccessTokenException
      */
     public function testMiddlewareWithValidAccessTokenWithInvalidRefreshToken()
     {
-        $awsSdk = $this->getAwsSdkWithKmsResults();
-
-        $token = $this->getAccessToken(
-            $awsSdk,
-            time() + 300,
-            [self::WEBSERVICE_NAME]
-        );
-
-        $rtid = $token->getClaim(AccessTokenMiddleware::REFRESH_TOKEN_ID);
-        $mockMemcached = $this->getMockMemcached();
-
-        // Mock cache hit
-        $mockMemcached
-            ->shouldReceive('get')
-            ->withArgs(['r-' . $rtid])
-            ->andReturn($rtid);
-
-        $middleware = new AccessTokenMiddleware(
-            $awsSdk,
-            $this->getLogger(),
-            $this->getFileSystemCachePool(),
-            $mockMemcached,
-            self::WEBSERVICE_NAME
-        );
-
-        $nextMiddleware = new EmptyWare();
-
-        $response = $middleware(
-            Request::createFromEnvironmentBuilder(
-                EnvironmentBuilder::create()
-                    ->setAuthorization(BearerToken::create((string)$token))
-            ),
-            new Response(),
-            $nextMiddleware
-        );
-    }
-
-    /**
-     * Create an Access Token that does NOT have ab 'rtid' claim and ensure that that Request
-     * object contains an empty string value for the 'rtid' custom attribute.
-     *
-     * We need to do this because the 'rtid' claim was added to the Access Token at a later date
-     * and some in-flight tokens won't have this claim.
-     */
-    public function testMiddlewareWithValidateTokenInAuthHeaderNoRefreshTokenId()
-    {
-        $awsSdk = $this->getAwsSdkWithKmsResults();
-
-        $claims = $this->getAccessTokenCustomClaims();
-
-        # Remove the 'rtid' claim from the data added into the Access Token
-        unset($claims[AccessTokenMiddleware::REFRESH_TOKEN_ID]);
-
-        $token = $this->getAccessToken(
-            $awsSdk,
-            time() + 300,
+        $this->expectException(ExpiredAccessTokenException::class);
+        $kmsClient = $this->getKmsClient();
+        $cachePool = $this->getFileSystemCachePool();
+        $accessToken = new \Serato\Jwt\AccessToken($kmsClient, $cachePool);
+        $accessToken->set(
+            self::APP_ID,
+            self::APP_NAME,
+            self::MOCK_ENCRYPTION_KEY,
             [self::WEBSERVICE_NAME],
-            $claims
+            100,
+            self::SCOPES,
+            AbstractRequestWithAttributeMiddleware::REFRESH_TOKEN_ID,
+            self::USER_ID,
+            self::USER_EMAIL_ADDRESS,
+            true
         );
+        $token = $accessToken->__toString();
+
+        $rtid = $accessToken->getClaim(AbstractRequestWithAttributeMiddleware::REFRESH_TOKEN_ID);
+
+        # EXPIRE the refresh token by adding it to the cache.
+        $refreshToken = $cachePool->getItem('r-' .  AbstractRequestWithAttributeMiddleware::REFRESH_TOKEN_ID);
+        if (!$refreshToken->isHit()) {
+            $refreshToken->set($rtid);
+            $cachePool->save($refreshToken);
+        }
 
         $middleware = new AccessTokenMiddleware(
-            $awsSdk,
+            $kmsClient,
             $this->getLogger(),
-            $this->getFileSystemCachePool(),
-            $this->getMockMemcached(),
+            $cachePool,
             self::WEBSERVICE_NAME
         );
 
@@ -192,65 +162,50 @@ class AccessTokenTest extends TestCase
         $response = $middleware(
             Request::createFromEnvironmentBuilder(
                 EnvironmentBuilder::create()
-                    ->setAuthorization(BearerToken::create((string)$token))
+                    ->setAuthorization(BearerToken::create($token))
             ),
             new Response(),
             $nextMiddleware
         );
-
-        # Add the expected empty value back into the data used to check against the custom
-        # attributes of the Request object
-        $claims[AccessTokenMiddleware::REFRESH_TOKEN_ID] = '';
-
-        foreach ($claims as $name => $value) {
-            if ($name === AccessTokenMiddleware::SCOPES) {
-                $scopes = $nextMiddleware->getRequestInterface()->getAttribute($name);
-                $this->assertEquals(
-                    $value[self::WEBSERVICE_NAME],
-                    $scopes,
-                    "Assert value of '$name' from request attributes"
-                );
-            } else {
-                $this->assertEquals(
-                    $value,
-                    $nextMiddleware->getRequestInterface()->getAttribute($name),
-                    "Assert value of '$name' from request attributes"
-                );
-            }
-        }
     }
-
-
-
 
     /**
      * Force a token validation error by checking the `aud` claim against a value
      * that doesn't exist in the token
      *
-     * @expectedException \Serato\SwsApp\Http\Rest\Exception\InvalidAccessTokenException
      */
     public function testMiddlewareWithInvalidAudienceTokenInAuthHeader()
     {
-        $awsSdk = $this->getAwsSdkWithKmsResults();
+        $this->expectException(InvalidAccessTokenException::class);
+        $kmsClient = $this->getKmsClient();
 
-        $token = $this->getAccessToken(
-            $awsSdk,
-            time() + 300,
-            [self::WEBSERVICE_NAME]
+        $accessToken = new \Serato\Jwt\AccessToken($kmsClient);
+        $accessToken->set(
+            self::APP_ID,
+            self::APP_NAME,
+            self::MOCK_ENCRYPTION_KEY,
+            [self::WEBSERVICE_NAME],
+            100,
+            self::SCOPES,
+            AbstractRequestWithAttributeMiddleware::REFRESH_TOKEN_ID,
+            self::USER_ID,
+            self::USER_EMAIL_ADDRESS,
+            true
         );
 
+        $token = $accessToken->__toString();
+
         $middleware = new AccessTokenMiddleware(
-            $awsSdk,
+            $kmsClient,
             $this->getLogger(),
             $this->getFileSystemCachePool(),
-            $this->getMockMemcached(),
             self::WEBSERVICE_NAME . ' invalidate'
         );
 
         $response = $middleware(
             Request::createFromEnvironmentBuilder(
                 EnvironmentBuilder::create()
-                    ->setAuthorization(BearerToken::create((string)$token))
+                    ->setAuthorization(BearerToken::create($token))
             ),
             new Response(),
             new EmptyWare()
@@ -258,30 +213,40 @@ class AccessTokenTest extends TestCase
     }
 
     /**
-     * @expectedException \Serato\SwsApp\Http\Rest\Exception\ExpiredAccessTokenException
+     * Unit test to test if the correct exception is thrown for expired access tokens.
      */
     public function testMiddlewareWithExpiredTokenInAuthHeader()
     {
-        $awsSdk = $this->getAwsSdkWithKmsResults();
+        $this->expectException(ExpiredAccessTokenException::class);
+        $kmsClient = $this->getKmsClient();
 
-        $token = $this->getAccessToken(
-            $awsSdk,
-            time() - 5, // Expired
-            [self::WEBSERVICE_NAME]
+        $accessToken = new \Serato\Jwt\AccessToken($kmsClient);
+        $accessToken->set(
+            self::APP_ID,
+            self::APP_NAME,
+            self::MOCK_ENCRYPTION_KEY,
+            [self::WEBSERVICE_NAME],
+            -50,
+            self::SCOPES,
+            AbstractRequestWithAttributeMiddleware::REFRESH_TOKEN_ID,
+            self::USER_ID,
+            self::USER_EMAIL_ADDRESS,
+            true
         );
 
+        $token = $accessToken->__toString();
+
         $middleware = new AccessTokenMiddleware(
-            $awsSdk,
+            $kmsClient,
             $this->getLogger(),
             $this->getFileSystemCachePool(),
-            $this->getMockMemcached(),
             self::WEBSERVICE_NAME
         );
 
         $response = $middleware(
             Request::createFromEnvironmentBuilder(
                 EnvironmentBuilder::create()
-                    ->setAuthorization(BearerToken::create((string)$token))
+                    ->setAuthorization(BearerToken::create($token))
             ),
             new Response(),
             new EmptyWare()
@@ -289,50 +254,40 @@ class AccessTokenTest extends TestCase
     }
 
     /**
-     * Returns a mocked memcache instance
-     *
-     * @return \Memcached&MockInterface
+     * @return array
      */
-    private function getMockMemcached()
+    private function getAccessTokenCustomClaims(): array
     {
-        return Mockery::mock(\Memcached::class);
+        return [
+            AbstractRequestWithAttributeMiddleware::APP_ID               => self::APP_ID,
+            AbstractRequestWithAttributeMiddleware::APP_NAME             => self::APP_NAME,
+            AbstractRequestWithAttributeMiddleware::USER_ID              => self::USER_ID,
+            AbstractRequestWithAttributeMiddleware::USER_EMAIL           => self::USER_EMAIL_ADDRESS,
+            AbstractRequestWithAttributeMiddleware::USER_EMAIL_VERIFIED  => true,
+            AbstractRequestWithAttributeMiddleware::SCOPES               => self::SCOPES,
+            AbstractRequestWithAttributeMiddleware::REFRESH_TOKEN_ID     =>
+                AbstractRequestWithAttributeMiddleware::REFRESH_TOKEN_ID,
+        ];
     }
 
-    private function getAccessToken(Sdk $awsSdk, int $expiry, array $audience, ?array $claims = null)
+    /**
+     * @return KmsClient
+     */
+    protected function getKmsClient(): KmsClient
     {
-        $tokenClaims = $claims ?? $this->getAccessTokenCustomClaims();
-        $token = new MockAccessToken($awsSdk);
-        return $token->create(
-            $audience,
-            $expiry,
-            $tokenClaims
-        );
-    }
-
-    private function getAwsSdkWithKmsResults(): Sdk
-    {
-        return $this->getAwsSdk([
+        $mockKMSClient =  \Mockery::mock(KmsClient::class);
+        $mockKMSClient->shouldReceive('generateDataKey')->once()->andReturns(new Result(
             [
                 'CiphertextBlob'    => base64_encode(self::MOCK_ENCRYPTION_KEY),
                 'Plaintext'         => self::MOCK_ENCRYPTION_KEY
-            ],
+            ]
+        ));
+        $mockKMSClient->shouldReceive('decrypt')->once()->andReturns(new Result(
             [
+                'CiphertextBlob'    => base64_encode(self::MOCK_ENCRYPTION_KEY),
                 'Plaintext'         => self::MOCK_ENCRYPTION_KEY
             ]
-        ]);
-    }
-
-    private function getAccessTokenCustomClaims()
-    {
-        return [
-            AccessTokenMiddleware::APP_ID               => 'my_app_id',
-            AccessTokenMiddleware::APP_NAME             => 'my_app_name',
-            AccessTokenMiddleware::USER_ID              => 'my_uid',
-            AccessTokenMiddleware::USER_EMAIL           => 'my_email@test.com',
-            AccessTokenMiddleware::USER_EMAIL_VERIFIED  => true,
-            AccessTokenMiddleware::SCOPES               => [self::WEBSERVICE_NAME => ['scope1', 'scope2']],
-            AccessTokenMiddleware::REFRESH_TOKEN_ID     => 'my_refresh_token_id',
-
-        ];
+        ));
+        return $mockKMSClient;
     }
 }
