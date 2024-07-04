@@ -2,10 +2,11 @@
 
 namespace Serato\SwsApp\Slim\Middleware\AccessScopes;
 
-use Aws\Kms\KmsClient;
+use Aws\Sdk;
 use Exception;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
+use Serato\SwsApp\Slim\Middleware\AccessScopes\AbstractAccessScopesMiddleware;
 use Serato\Jwt\AccessToken as JwtAccessToken;
 use Serato\Jwt\Exception\TokenExpiredException;
 use Serato\SwsApp\Http\Rest\Exception\ExpiredAccessTokenException;
@@ -24,11 +25,11 @@ use Psr\Cache\CacheItemPoolInterface;
 class AccessToken extends AbstractAccessScopesMiddleware
 {
     /**
-     * KMS Client
+     * AWS Sdk
      *
-     * @var KmsClient
+     * @var Sdk
      */
-    private $kmsClient;
+    private $awsSdk;
 
     /**
      * Web Service Name
@@ -52,20 +53,31 @@ class AccessToken extends AbstractAccessScopesMiddleware
     protected $cache;
 
     /**
-     * @param KmsClient $kmsClient
-     * @param LoggerInterface $logger PSR-3 logger interface
-     * @param CacheItemPoolInterface $cache PSR-6 cache item pool
-     * @param string $webServiceName Name of the host web application
+     * Memcached connection
+     *
+     * @var \Memcached
+     */
+    protected $memcached;
+
+    /**
+     * @param Sdk                       $awsSdk             AWS SDK v3.x
+     * @param LoggerInterface           $logger             PSR-3 logger interface
+     * @param CacheItemPoolInterface    $cache              PSR-6 cache item pool
+     * @param string                    $webServiceName     Name of the host web application
+     * @param \Memcached                $memcached          Memcache connection
+     *
      */
     public function __construct(
-        KmsClient $kmsClient,
+        Sdk $awsSdk,
         LoggerInterface $logger,
         CacheItemPoolInterface $cache,
+        \Memcached $memcached,
         string $webServiceName
     ) {
-        $this->kmsClient = $kmsClient;
+        $this->awsSdk = $awsSdk;
         $this->logger = $logger;
         $this->cache = $cache;
+        $this->memcached = $memcached;
         $this->webServiceName = $webServiceName;
     }
 
@@ -76,7 +88,9 @@ class AccessToken extends AbstractAccessScopesMiddleware
      * @param Response $response The most recent Response object
      * @param callable $next
      *
-     * @return mixed
+     * @throws ExpiredAccessTokenException
+     * @throws InvalidAccessTokenException
+     *
      */
     public function __invoke(Request $request, Response $response, callable $next)
     {
@@ -89,10 +103,10 @@ class AccessToken extends AbstractAccessScopesMiddleware
         # Look for the token string in other places. eg a Cookie
 
         if ($tokenString !== null) {
-            $accessToken = new JwtAccessToken($this->getKmsClient(), $this->cache);
+            $accessToken = new JwtAccessToken($this->getAwsSdk());
             try {
-                $accessToken->parseTokenString((string)$tokenString);
-                $accessToken->validate($this->webServiceName);
+                $accessToken->parseTokenString((string)$tokenString, $this->cache);
+                $accessToken->validate($this->webServiceName, $this->memcached);
 
                 $scopes = $this->getAccessTokenScopes($accessToken);
 
@@ -170,13 +184,13 @@ class AccessToken extends AbstractAccessScopesMiddleware
     }
 
     /**
-     * Get the KMS client
+     * Get the AWS Sdk
      *
-     * @return KmsClient
+     * @return Sdk
      */
-    private function getKmsClient(): KmsClient
+    private function getAwsSdk(): Sdk
     {
-        return $this->kmsClient;
+        return $this->awsSdk;
     }
 
     /**

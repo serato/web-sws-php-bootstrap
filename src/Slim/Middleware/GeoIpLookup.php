@@ -2,7 +2,6 @@
 
 namespace Serato\SwsApp\Slim\Middleware;
 
-use MaxMind\Db\Reader\InvalidDatabaseException;
 use Slim\Handlers\AbstractHandler;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -47,11 +46,11 @@ class GeoIpLookup extends AbstractHandler
     /**
      * Invoke the middleware
      *
-     * @param Request $request The most recent Request object
-     * @param Response $response The most recent Response object
-     * @param Callable $next The next middleware to call
+     * @param ServerRequestInterface $request   The most recent Request object
+     * @param ResponseInterface      $response  The most recent Response object
+     * @param Callable               $next      The next middleware to call
      *
-     * @return Response
+     * @return ResponseInterface
      */
     public function __invoke(Request $request, Response $response, callable $next): Response
     {
@@ -72,9 +71,8 @@ class GeoIpLookup extends AbstractHandler
     }
 
     /**
-     * @param string $ipAddress IP address
+     * @param string    $ipAddress     IP address
      * @return City
-     * @throws InvalidDatabaseException
      */
     private function getGeoIpCityRecord(string $ipAddress): City
     {

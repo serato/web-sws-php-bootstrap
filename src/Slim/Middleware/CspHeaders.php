@@ -21,10 +21,9 @@ class CspHeaders extends AbstractHandler
      * @param Response $response The most recent Response object
      * @param callable $next
      *
-     * @return Response
-     * @throws \Exception
+     * @return callable
      */
-    public function __invoke(Request $request, Response $response, callable $next): Response
+    public function __invoke(Request $request, Response $response, callable $next)
     {
         $response = $next($request, $response);
 
@@ -68,7 +67,7 @@ class CspHeaders extends AbstractHandler
         $response->getBody()->rewind();
         $response->getBody()->write($responseBody);
 
-        // Add CSP header
+        // Add CSP heaser
         return $response->withHeader('Content-Security-Policy', $this->makeCspHeaderString($cspSettings));
     }
 
@@ -135,7 +134,7 @@ class CspHeaders extends AbstractHandler
     }
 
     /**
-     * Parses the content within all matching instances of a given tag in a string of content
+     * Parses the content within all matching intances of a given tag in a string of content
      * and returns an array of SHA256 hashes of the content. Empty tags are ignored.
      *
      * This function is not currently used, but could be used for hash-based CSP directives.
