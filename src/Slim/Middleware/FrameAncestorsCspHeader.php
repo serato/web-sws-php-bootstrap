@@ -28,7 +28,9 @@ class FrameAncestorsCspHeader extends AbstractHandler
     public function __invoke(Request $request, Response $response, callable $next): Response
     {
         $response = $next($request, $response);
-        return $response
+        $response = $response
             ->withAddedHeader('Content-Security-Policy', "frame-ancestors 'none';");
+
+        return $response;
     }
 }

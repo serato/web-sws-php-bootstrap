@@ -2,6 +2,7 @@
 
 namespace Serato\SwsApp\Slim\Middleware\AccessScopes;
 
+use Serato\SwsApp\Slim\Middleware\AccessScopes\AbstractAccessScopesMiddleware;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
@@ -51,7 +52,6 @@ class ClientAppBasicAuth extends AbstractAccessScopesMiddleware
      * @param Request $request The most recent Request object
      * @param Response $response The most recent Response object
      * @param callable $next
-     * @return mixed
      */
     public function __invoke(Request $request, Response $response, callable $next)
     {
@@ -71,9 +71,9 @@ class ClientAppBasicAuth extends AbstractAccessScopesMiddleware
                         # middleware.
                         $scopes = [];
                         if (
-                            isset($appData['scopes'][$this->webServiceName]) && is_array(
-                                $appData['scopes']
-                            ) && is_array($appData['scopes'][$this->webServiceName])
+                            isset($appData['scopes']) && is_array($appData['scopes']) &&
+                            isset($appData['scopes'][$this->webServiceName]) &&
+                            is_array($appData['scopes'][$this->webServiceName])
                         ) {
                             $scopes = $appData['scopes'][$this->webServiceName];
                         }
