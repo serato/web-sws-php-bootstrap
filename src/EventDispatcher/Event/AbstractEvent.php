@@ -60,7 +60,7 @@ abstract class AbstractEvent extends GenericEvent
     /**
      * {@inheritDoc}
      */
-    public function offsetSet($key, $value)
+    public function offsetSet($key, $value): void
     {
         if (!in_array($key, $this->getArrayKeys())) {
             throw new Exception(
