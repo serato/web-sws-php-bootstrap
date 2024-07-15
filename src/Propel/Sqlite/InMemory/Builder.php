@@ -42,6 +42,7 @@ class Builder extends AbstractBuilder
         // generates model class files (using the QuickBuilder::buildClasses method)
         // and includes these files into the current namespace making it impossible
         // to test our own model classes.
+        $propelConfig = require(__DIR__ . '/../../../../propel.php');
         $builder = new QuickBuilder();
         $builder->setSchema(self::mergeSchemaXml(self::readSchemaXmlFiles($schemaDirs), $dbName));
         $adapter = new SqliteAdapter();

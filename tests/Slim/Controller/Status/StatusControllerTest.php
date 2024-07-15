@@ -33,7 +33,7 @@ class StatusControllerTest extends TestCase
             )
         );
 
-        $this->assertEquals($response->getStatusCode(), 200);
+        $this->assertEquals(200, $response->getStatusCode());
         $obj = json_decode((string)$response->getBody(), true);
         $this->assertTrue(isset($obj['current_time']));
         $this->assertTrue(isset($obj['host']));
@@ -55,12 +55,12 @@ class StatusControllerTest extends TestCase
             )
         );
 
-        $this->assertEquals($response->getStatusCode(), 200);
+        $this->assertEquals(200, $response->getStatusCode());
         $obj = json_decode((string)$response->getBody(), true);
         $this->assertTrue(isset($obj['current_time']));
         $this->assertTrue(isset($obj['host']));
         $this->assertTrue(isset($obj['web_app_commit']));
-        $this->assertEquals($obj['web_app_commit'], 'abc123456789def');
+        $this->assertEquals('abc123456789def', $obj['web_app_commit']);
     }
 
     /**
@@ -86,12 +86,12 @@ class StatusControllerTest extends TestCase
             $request
         );
 
-        $this->assertEquals($response->getStatusCode(), 200);
+        $this->assertEquals(200, $response->getStatusCode());
         $obj = json_decode((string)$response->getBody(), true);
         $this->assertTrue(isset($obj['current_time']));
         $this->assertTrue(isset($obj['host']));
         $this->assertTrue(isset($obj['web_app_commit']));
-        $this->assertEquals($obj['web_app_commit'], 'abc123456789def');
+        $this->assertEquals('abc123456789def', $obj['web_app_commit']);
         $this->assertEquals($obj['remote_address'], $ip_address);
         $this->assertTrue(is_array($obj['remote_location']));
     }
@@ -111,7 +111,7 @@ class StatusControllerTest extends TestCase
             )
         );
 
-        $this->assertEquals($response->getStatusCode(), 200);
+        $this->assertEquals(200, $response->getStatusCode());
         $html = (string)$response->getBody();
 
         $this->assertRegExp('/\<html\>/', $html);
@@ -145,7 +145,7 @@ class StatusControllerTest extends TestCase
             $request
         );
 
-        $this->assertEquals($response->getStatusCode(), 200);
+        $this->assertEquals(200, $response->getStatusCode());
         $html = (string)$response->getBody();
 
         $this->assertRegExp('/\<html\>/', $html);
@@ -178,12 +178,12 @@ class StatusControllerTest extends TestCase
             )
         );
 
-        $this->assertEquals($response->getStatusCode(), 200);
+        $this->assertEquals(200, $response->getStatusCode());
         $obj = json_decode((string)$response->getBody(), true);
         $this->assertTrue(isset($obj['current_time']));
         $this->assertTrue(isset($obj['host']));
         $this->assertTrue(isset($obj['web_app_commit']));
-        $this->assertEquals($obj['web_app_commit'], 'abc123456789def');
+        $this->assertEquals('abc123456789def', $obj['web_app_commit']);
     }
 
     /**
@@ -206,7 +206,7 @@ class StatusControllerTest extends TestCase
             )
         );
 
-        $this->assertEquals($response->getStatusCode(), 200);
+        $this->assertEquals(200, $response->getStatusCode());
         $html = (string)$response->getBody();
 
         $this->assertRegExp('/\<html\>/', $html);

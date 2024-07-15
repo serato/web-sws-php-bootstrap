@@ -11,10 +11,11 @@ class ClientAppDataTest extends TestCase
     /**
      * Load a file that doesn't exist
      *
-     * @expectedException \Exception
+     *
      */
     public function testCreateFromNonExistentFile()
     {
+        $this->expectException(\Exception::class);
         $this->deleteFileSystemCacheDir();
         $filePath = __DIR__ . '/../resources/client_apps_invalid.json.nosuchthing';
         $clientAppData = ClientAppData::create($this->getFileSystemCachePool());
@@ -24,10 +25,11 @@ class ClientAppDataTest extends TestCase
     /**
      * Load a file containing a non-valid JSON string
      *
-     * @expectedException \Exception
+     *
      */
     public function testCreateFromInvalidJsonFile()
     {
+        $this->expectException(\Exception::class);
         $this->deleteFileSystemCacheDir();
         $filePath = __DIR__ . '/../resources/client_apps_invalid.json';
         $clientAppData = ClientAppData::create($this->getFileSystemCachePool());
@@ -59,10 +61,11 @@ class ClientAppDataTest extends TestCase
     /**
      * Load invalid data from S3 bucket
      *
-     * @expectedException \Exception
+     *
      */
     public function testCreateInvalidFromS3Bucket()
     {
+        $this->expectException(\Exception::class);
         $aws = $this->getAwsSdk([['Body' => 'not valid json content']]);
         $clientAppData = ClientAppData::create($this->getFileSystemCachePool());
         $clientAppData->loadFromS3Object($aws, 'mybucket', 'mykey');

@@ -10,11 +10,9 @@ use Serato\SwsApp\Utils\CsvFileIterator;
  */
 class CsvFileIteratorTest extends TestCase
 {
-    /**
-     * @expectedException \Exception
-     */
     public function testFileNotFound()
     {
+        $this->expectException(\Exception::class);
         $csv = new CsvFileIterator(__DIR__ . '/../resources/nosuchfile.csv');
         $this->assertTrue(true);
     }
