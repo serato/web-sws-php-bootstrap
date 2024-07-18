@@ -17,13 +17,13 @@ class TestCase extends PHPUnitTestCase
     protected $fileSystemCacheDir;
     protected static $fileSystemCachePool;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->fileSystemCacheDir = sys_get_temp_dir() . '/fs-cache';
         $this->deleteFileSystemCacheDir();
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->deleteFileSystemCacheDir();
     }
@@ -50,6 +50,9 @@ class TestCase extends PHPUnitTestCase
         return new Logger('logger');
     }
 
+    /**
+     * @throws \Exception
+     */
     protected function getDebugLogger(): Logger
     {
         $logger = $this->getLogger();

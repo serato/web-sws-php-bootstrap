@@ -27,7 +27,7 @@ class RequestValidationTest extends TestCase
      */
     protected $requestMock;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->validation = new RequestValidation();
         $this->requestMock = Mockery::mock(Request::class);
@@ -41,7 +41,7 @@ class RequestValidationTest extends TestCase
      * @param string|null $errorExpected
      * @param array $customRules
      * @param array $exceptions
-     * @param array $expectedResult - expected result after processing the request.
+     * @param array|null $expectedResult - expected result after processing the request.
      * @group validation
      */
     public function testValidateRequestData(

@@ -18,7 +18,7 @@ class PhpErrorTest extends TestCase
 {
     private const APP_NAME = 'My Web App';
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         if (file_exists($this->getErrorLogPath())) {
@@ -26,7 +26,7 @@ class PhpErrorTest extends TestCase
         }
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         parent::setUp();
         if (file_exists($this->getErrorLogPath())) {

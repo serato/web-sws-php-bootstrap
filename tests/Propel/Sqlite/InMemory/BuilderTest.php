@@ -38,7 +38,7 @@ class BuilderTest extends TestCase
         $licenseTypeQuery2 = new LicenseTypeQuery('conn2');
 
         $this->assertTrue(count($licenseTypeQuery1->find()) > 0);
-        $this->assertEquals(count($licenseTypeQuery2->find()), 0);
+        $this->assertEquals(0, count($licenseTypeQuery2->find()));
     }
 
     public function testReadWriteDefaultDb()
@@ -54,12 +54,12 @@ class BuilderTest extends TestCase
 
         $this->assertTrue(count(LicenseTypeQuery::create()->find()) > 0);
         LicenseTypeQuery::create()->deleteAll();
-        $this->assertEquals(count(LicenseTypeQuery::create()->find()), 0);
+        $this->assertEquals(0, count(LicenseTypeQuery::create()->find()));
 
-        $this->assertEquals(count(LicenseQuery::create()->find()), 0);
+        $this->assertEquals(0, count(LicenseQuery::create()->find()));
         $license = new License();
         $license->setId('1223');
         $license->save();
-        $this->assertEquals(count(LicenseQuery::create()->find()), 1);
+        $this->assertEquals(1, count(LicenseQuery::create()->find()));
     }
 }
